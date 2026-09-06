@@ -4,8 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#07111f">
 <script src="/socket.io/socket.io.js"></script>
-<meta name="description" content="FlyMatrix â€” intelligent sports discovery, match tracking, comparison, commerce and fan engagement.">
-<title>FlyMatrix â€” Sports Discovery Engine</title>
+<meta name="description" content="FlyMatrix - intelligent sports discovery, match tracking, comparison, commerce and fan engagement.">
+<title>FlyMatrix - Sports Discovery Engine</title>
 <style>
 :root{--bg:#07111f;--p:#0d1b2c;--p2:#12263d;--line:#213852;--txt:#f7fbff;--muted:#9db0c6;--a:#4dd7ff;--g:#4fe29a;--r:20px}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#06101d,#0a1829,#07111f);color:var(--txt);font:15px system-ui,-apple-system,Segoe UI,Roboto,Arial;line-height:1.45}
@@ -30,11 +30,102 @@ footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-s
 @media(max-width:560px){.wrap{width:calc(100% - 18px)}.hero{padding-top:38px}.hero h1{letter-spacing:-2px}.search{flex-direction:column}.search .btn{width:100%}.cards,.features{grid-template-columns:1fr}.matrix{grid-template-columns:1.5fr .8fr .6fr}.desktop{display:none}}
 </style></head>
 <body>
-<header><nav class="wrap"><div class="logo">FLY<i>MATRIX</i></div><div class="links"><a href="#matches">Matches</a><a href="#matrix">My Matrix</a><a href="#sports">Sports</a><a href="#watch">Watch</a><a href="#shop">Shop</a><a href="#travel">Travel</a></div><button class="btn dark" onclick="modal('menu')">â˜°</button></nav></header>
+<header><nav class="wrap"><div class="logo">FLY<i>MATRIX</i></div><div class="links"><a href="#matches">Matches</a><a href="#matrix">My Matrix</a><a href="#sports">Sports</a><a href="#watch">Watch</a><a href="#shop">Shop</a><a href="#travel">Travel</a></div><button class="btn dark" onclick="modal('menu')">MENU</button></nav></header>
 
 <main class="wrap">
 <section class="hero">
 <span class="ey">SPORTS DISCOVERY ENGINE</span>
+<h1>Find the sports world.<br><span>Your way.</span></h1>
+<p>Search matches, teams, players, leagues, products, tickets, watch options and sports travel from one fast, intelligent interface.</p>
+<div class="search"><input id="q" placeholder="Try "Arsenal next match", "NBA games" or "football tickets"" onkeydown="if(event.key==='Enter')search()"><button class="btn" onclick="search()">Search FlyMatrix</button></div>
+<div id="results" class="card" style="display:none;margin-top:10px"></div>
+</section>
+
+<div class="grid actions">
+<button class="action" onclick="go('matches')"><span class="ico">[F]</span><b>Matches</b></button><button class="action" onclick="go('matrix')"><span class="ico">[M]</span><b>My Matrix</b></button><button class="action" onclick="modal('compare')"><span class="ico">[C]</span><b>Compare</b></button><button class="action" onclick="go('watch')"><span class="ico">[W]</span><b>Watch</b></button><button class="action" onclick="go('shop')"><span class="ico">[S]</span><b>Shop</b></button><button class="action" onclick="go('travel')"><span class="ico">[T]</span><b>Travel</b></button>
+</div>
+
+<section id="live-monitor"><div class="head"><div><h2>FlyMatrix Live Monitor</h2><p>Real-time match updates from your connected sports data provider.</p></div><span class="status" id="engine-status">CONNECTING</span></div><div class="card"><div id="live-feed"><p style="color:var(--muted)">Waiting for live match data...</p></div></div></section>
+
+<section id="matches"><div class="head"><div><h2>Live & upcoming</h2><p>Match discovery, timelines, stats, lineups and alerts.</p></div><button class="btn dark" onclick="modal('calendar')">Full calendar</button></div>
+<div class="pills"><button class="pill on">All</button><button class="pill">Football</button><button class="pill">Basketball</button><button class="pill">Tennis</button><button class="pill">F1</button><button class="pill">NFL</button><button class="pill">Boxing</button></div>
+<div class="grid cards">
+<article class="card"><div class="matchtop"><span>Premier League</span><span class="status live">LIVE</span></div><div class="teams"><div><div class="crest">ARS</div><div class="team">Arsenal</div></div><div><div class="score">2-1</div><small>68'</small></div><div><div class="crest">CHE</div><div class="team">Chelsea</div></div></div><div class="tags"><span class="tag">Timeline</span><span class="tag">Stats</span><span class="tag">Lineups</span></div><div class="row"><button class="btn" onclick="add('Arsenal vs Chelsea')">Add to Matrix</button><button class="btn dark" onclick="match('Arsenal vs Chelsea')">Details</button></div></article>
+<article class="card"><div class="matchtop"><span>LaLiga</span><span class="status">UPCOMING</span></div><div class="teams"><div><div class="crest">RMA</div><div class="team">Real Madrid</div></div><div><div class="score">20:00</div><small>Today</small></div><div><div class="crest">BAR</div><div class="team">Barcelona</div></div></div><div class="tags"><span class="tag">Preview</span><span class="tag">Lineups</span><span class="tag">Watch</span></div><div class="row"><button class="btn" onclick="add('Real Madrid vs Barcelona')">Add to Matrix</button><button class="btn dark" onclick="match('Real Madrid vs Barcelona')">Details</button></div></article>
+<article class="card"><div class="matchtop"><span>ATP Tennis</span><span class="status done">FINISHED</span></div><div class="teams"><div><div class="crest">ALC</div><div class="team">Alcaraz</div></div><div><div class="score">2-0</div><small>Final</small></div><div><div class="crest">VS</div><div class="team">Opponent</div></div></div><div class="tags"><span class="tag">Stats</span><span class="tag">Result</span><span class="tag">History</span></div><div class="row"><button class="btn" onclick="add('Alcaraz match')">Add to Matrix</button><button class="btn dark" onclick="match('Alcaraz match')">Details</button></div></article>
+</div></section>
+
+<section id="matrix"><div class="head"><div><h2>My Match Matrix(TM)</h2><p>Track the events that matter to you.</p></div><button class="btn dark" onclick="modal('matrix')">Manage</button></div>
+<div class="matrix"><div class="cell th">Event</div><div class="cell th">Time</div><div class="cell th desktop">Status</div><div class="cell th">Action</div>
+<div class="cell"><b>Arsenal vs Chelsea</b><br><small>Premier League</small></div><div class="cell">Live</div><div class="cell desktop" style="color:var(--g)">2-1</div><div class="cell"><button class="btn dark" onclick="toast('Alerts enabled')">[!]</button></div>
+<div class="cell"><b>Real Madrid vs Barcelona</b><br><small>LaLiga</small></div><div class="cell">20:00</div><div class="cell desktop">Upcoming</div><div class="cell"><button class="btn dark" onclick="toast('Match saved')">OK</button></div></div></section>
+
+<section id="sports"><div class="head"><div><h2>One platform. Every sport.</h2><p>Sport-agnostic architecture for global coverage.</p></div></div><div class="grid features">
+<div class="card feature"><div class="mini">[F]</div><h3>Football</h3><p>Leagues, clubs, players, fixtures, live matches, news and fan commerce.</p></div>
+<div class="card feature"><div class="mini">[B]</div><h3>Basketball</h3><p>Games, teams, players, schedules, scores and tracking.</p></div>
+<div class="card feature"><div class="mini">[Ten]</div><h3>Tennis</h3><p>Players, tournaments, matches, results and calendars.</p></div>
+<div class="card feature"><div class="mini">[Race]</div><h3>Motorsport</h3><p>Race calendars, drivers, teams, results and events.</p></div>
+</div></section>
+
+<section id="watch"><div class="head"><div><h2>Where to Watch</h2><p>Legal, region-aware viewing discovery.</p></div></div><div class="card"><b>WATCH ENGINE</b><p style="color:var(--muted)">Connect licensed or authorized provider data here. FlyMatrix can route fans to available broadcasters and streaming services by event and region.</p><button class="btn" onclick="toast('Watch provider integration ready')">Find Watch Options</button></div></section>
+
+<section id="shop"><div class="head"><div><h2>FlyMatrix Fan Shop</h2><p>Discover and compare relevant sports products.</p></div></div><div class="grid cards">
+<div class="card"><span class="tag">TEAM MERCH</span><h3>Jerseys</h3><p style="color:var(--muted)">Official shirts, prices, sizes and availability.</p><button class="btn" onclick="toast('Product comparison opened')">Compare</button></div>
+<div class="card"><span class="tag">FAN GEAR</span><h3>Scarves & accessories</h3><p style="color:var(--muted)">Relevant products matched to teams and events.</p><button class="btn" onclick="toast('Shop journey started')">View offers</button></div>
+<div class="card"><span class="tag">EQUIPMENT</span><h3>Sports equipment</h3><p style="color:var(--muted)">Budget, premium, beginner and professional options.</p><button class="btn" onclick="toast('Equipment search opened')">Explore</button></div>
+</div></section>
+
+<section id="travel"><div class="head"><div><h2>Sports Travel</h2><p>Match -> ticket -> flight -> hotel -> transport.</p></div></div><div class="card"><div class="grid features"><div><b>[T] Flights</b><p style="color:var(--muted)">Routes to the event.</p></div><div><b>[Ticket] Tickets</b><p style="color:var(--muted)">Authorized options.</p></div><div><b>[Hotel] Hotels</b><p style="color:var(--muted)">Stay near the venue.</p></div><div><b>[Taxi] Transport</b><p style="color:var(--muted)">Airport and stadium transfers.</p></div></div></div></section>
+
+<section><div class="head"><div><h2>FlyMatrix Intelligence Layer</h2><p>Designed around fan intent, not complicated menus.</p></div></div><div class="grid features">
+<div class="card feature"><div class="mini">[AI]</div><h3>Fan Intent Engine(TM)</h3><p>Understands what the fan wants to accomplish and routes them to the right tool.</p></div>
+<div class="card feature"><div class="mini">[C]</div><h3>Compare Anything(TM)</h3><p>Compare teams, players, products, tickets and viewing options.</p></div>
+<div class="card feature"><div class="mini">[Q]</div><h3>Intent Graph(TM)</h3><p>Connects teams, players, matches, leagues, products, tickets and travel.</p></div>
+<div class="card feature"><div class="mini">[Biz]</div><h3>Commercial Intent</h3><p>Surfaces relevant commercial options without disrupting the fan journey.</p></div>
+</div></section>
+
+<section class="cta"><h2>Monetize the journey - not the fan.</h2><p>FlyMatrix can connect useful sports information with legitimate watch, ticket, merchandise and travel options while tracking partner performance transparently.</p><div class="row"><button class="btn" onclick="toast('Fan account flow started')">Create Fan Account</button><button class="btn dark" onclick="modal('pro')">Explore FlyMatrix Pro</button></div></section>
+</main>
+<footer><div class="wrap"><b style="color:#fff">FLYMATRIX</b> - Sports discovery, intelligence, tracking and commerce.<br><br>Production live scores, viewing rights, tickets, affiliate offers and payments require appropriate provider, commercial and licensing integrations.</div></footer>
+
+<div id="modal" class="modal" onclick="if(event.target===this)closeM()"><div class="box"><button class="close" onclick="closeM()">X</button><div id="mc"></div></div></div><div id="toast" class="toast"></div>
+<script>
+const M=document.getElementById('modal'),C=document.getElementById('mc'),T=document.getElementById('toast');
+const liveFeed=document.getElementById('live-feed'), engineStatus=document.getElementById('engine-status');
+const socket=typeof io==='function'?io():null;
+function renderLive(items){
+  if(!items || !items.length){liveFeed.innerHTML='<p style="color:var(--muted)">No live matches are currently available.</p>';return;}
+  liveFeed.innerHTML=items.slice(0,8).map(m=>`<div style="padding:13px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center"><div><b>${escapeHtml(m.home_team||m.homeTeam||'Home')} vs ${escapeHtml(m.away_team||m.awayTeam||'Away')}</b><br><small style="color:var(--muted)">${escapeHtml(m.status||'Live')}</small></div><strong style="font-size:20px">${m.home_score??m.homeScore??0}-${m.away_score??m.awayScore??0}</strong></div>`).join('');
+}
+function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+if(socket){
+ socket.on('liveMatchSnapshot', renderLive);
+ socket.on('liveMatchUpdate', data=>{ renderLive([data]); toast(`${data.homeTeam||'Home'} ${data.homeScore}-${data.awayScore} ${data.awayTeam||'Away'} updated`); });
+ socket.on('liveEngineStatus', s=>{engineStatus.textContent=s.online?'LIVE ENGINE ON':'DATA OFFLINE';engineStatus.className='status '+(s.online?'done':'live');});
+}
+function toast(x){T.textContent=x;T.classList.add('show');setTimeout(()=>T.classList.remove('show'),2100)}
+function go(x){document.getElementById(x).scrollIntoView({behavior:'smooth'})}
+function add(x){toast(x+' added to My Match Matrix')}
+function closeM(){M.classList.remove('show')}
+function modal(type){
+let h={menu:`<h2>FlyMatrix Menu</h2><p style="color:var(--muted)">Matches, My Matrix, Sports Calendar, Players, Teams, Leagues, News, Watch, Tickets, Fan Shop, Travel, Fantasy, Alerts and Account.</p>`,
+compare:`<h2>Compare Anything(TM)</h2><p style="color:var(--muted)">Compare teams, players, products, tickets or viewing options.</p><input style="width:100%;padding:13px;background:#081625;border:1px solid var(--line);border-radius:12px;color:#fff" placeholder="First item"><br><br><input style="width:100%;padding:13px;background:#081625;border:1px solid var(--line);border-radius:12px;color:#fff" placeholder="Second item"><br><br><button class="btn" onclick="toast('Comparison ready');closeM()">Compare</button>`,
+calendar:`<h2>Global Sports Calendar</h2><p style="color:var(--muted)">Filter by date, sport, competition, team or player. Connect your sports data provider for live fixtures.</p>`,
+matrix:`<h2>My Match Matrix(TM)</h2><p style="color:var(--muted)">Create Weekend Matrix, My Teams, Champions League Matrix, Tennis Matrix, NBA Matrix and more.</p><button class="btn" onclick="toast('New matrix created');closeM()">+ Create Matrix</button>`,
+pro:`<h2>FlyMatrix Pro</h2><p style="color:var(--muted)">Premium intelligence, advanced statistics, alerts, research tools, sports data and business utilities. Paystack can be connected through a secure backend.</p><button class="btn" onclick="toast('Paystack checkout integration ready');closeM()">Continue</button>`}[type]||'';
+C.innerHTML=h;M.classList.add('show')
+}
+function match(x){modal('matrix');C.innerHTML=`<h2>${x}</h2><p style="color:var(--muted)">Match Center: timeline, lineups, statistics, form, H2H, watch, tickets, products and related fan actions.</p><button class="btn" onclick="add('${x}');closeM()">Add to My Matrix</button>`}
+function search(){
+let q=document.getElementById('q').value.trim(),r=document.getElementById('results');if(!q){toast('Type a sports search');return}
+let a=[['Match Center','Scores, fixtures, lineups and match intelligence'],['Where to Watch','Legal viewing options by region'],['Compare Anything(TM)','Compare teams, players or products'],['Fan Shop','Relevant sports products and offers'],['Tickets & Travel','Build the complete fan journey']];
+if(/arsenal/i.test(q))a.unshift(['Arsenal Hub','Team, fixtures, players, results and fan actions']);
+if(/ticket/i.test(q))a.unshift(['Ticket Matrix','Event tickets and authorized options']);
+if(/watch/i.test(q))a.unshift(['Watch Engine','Region-aware viewing options']);
+r.innerHTML='<b>FlyMatrix results for "'+escapeHtml(q)+'"</b>'+a.slice(0,5).map(x=>`<div style="padding:12px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:8px"><span><b>${x[0]}</b><br><small style="color:var(--muted)">${x[1]}</small></span><button class="btn dark" onclick="toast('${x[0]} opened')">Open</button></div>`).join('');r.style.display='block'
+}
+document.querySelectorAll('.pill').forEach(x=>x.onclick=()=>{document.querySelectorAll('.pill').forEach(y=>y.classList.remove('on'));x.classList.add('on')});
+</script></body></html><span class="ey">SPORTS DISCOVERY ENGINE</span>
 <h1>Find the sports world.<br><span>Your way.</span></h1>
 <p>Search matches, teams, players, leagues, products, tickets, watch options and sports travel from one fast, intelligent interface.</p>
 <div class="search"><input id="q" placeholder="Try â€œArsenal next matchâ€, â€œNBA gamesâ€ or â€œfootball ticketsâ€" onkeydown="if(event.key==='Enter')search()"><button class="btn" onclick="search()">Search FlyMatrix</button></div>
