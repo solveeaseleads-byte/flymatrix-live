@@ -8,6 +8,7 @@ const path = require('path');
 const { Server } = require('socket.io');
 const axios = require('axios');
 const knex = require('knex');
+const { registerSignalsEngine } = require('./signals-engine');
 
 const app = express();
 const server = http.createServer(app);
@@ -88,6 +89,13 @@ async function getLiveFixtures() {
   return response.data?.response || [];
 }
 
+// Raw fixtures (unnormalized) - the signals engine's evaluateOver15Signal
+// expects the raw API-FOOTBALL shape, so it reuses the same fetch as the
+// main poller rather than duplicating a second live-data call.
+async function getLiveFixturesRaw() {
+  return getLiveFixtures();
+}
+
 function getApnsJwt() {
   const keyPath = process.env.APNS_KEY_PATH;
   const teamId = process.env.APNS_TEAM_ID;
@@ -119,6 +127,7 @@ async function dispatchApnsNotification(activityPushToken, signal) {
       }
     };
     await new Promise((resolve, reject) => {
+      client.on('error', reject);
       const req = client.request({
         ':method': 'POST',
         ':path': `/3/device/${activityPushToken}`,
@@ -176,7 +185,7 @@ async function pollLiveMatches() {
       if (!fixture.fixture?.id) continue;
       if (await saveIfChanged(normalizeFixture(fixture))) changed++;
     }
-    io.emit('liveEngineStatus', { online: true, fixtures: fixtures.length, changed, at: new Date().toISOString() });
+    io.emit('liveEngineStatus', { online: Boolean(CONFIG.API_FOOTBALL_KEY), fixtures: fixtures.length, changed, at: new Date().toISOString() });
     console.log(`[Live Engine] ${fixtures.length} fixtures, ${changed} updates`);
   } catch (err) {
     console.error('[Poller Error]', err.message);
@@ -229,6 +238,8 @@ io.on('connection', async socket => {
     socket.emit('liveMatchSnapshot', latest);
   } catch (_) {}
 });
+
+registerSignalsEngine({ app, io, db, CONFIG, getLiveFixturesRaw, dispatchApnsNotification });
 
 async function start() {
   await initDatabase();
