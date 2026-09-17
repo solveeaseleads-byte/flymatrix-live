@@ -1,25 +1,12 @@
-# FlyMatrix Live Engine
+# FlyMatrix Backend
 
-This package embeds live-match infrastructure into the FlyMatrix web app.
+Node.js/Express backend for FlyMatrix. See src/server.js for the full route list.
 
-## Included
-- FlyMatrix mobile-first front end
-- Express server
-- Socket.IO real-time updates
-- API-Football live fixture polling
-- SQLite/Knex persistence
-- `/api/health`
-- `/api/signals/latest`
-- push-token registration
-- optional Apple Live Activities notifications
-- no prediction formulas or prediction logic
+## Setup
+npm install
+cp .env.example .env
+Fill in SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DUFFEL_API_KEY, FRONTEND_URL.
 
-## Run
+Run supabase/schema.sql, then seed.sql, then seed_regional_candidates.sql in the Supabase SQL editor.
 
-1. Install Node.js.
-2. Run `npm install`.
-3. Copy `.env.example` to `.env` and add the API key.
-4. Run `npm start`.
-5. Open `http://localhost:3000`.
-
-Keep all API/APNs secrets in environment variables. Do not commit `.env` or `.p8` files.
+npm start
