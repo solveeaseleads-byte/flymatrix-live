@@ -1,20 +1,22 @@
+
 {
-  "name": "flymatrix-live",
+  "name": "flymatrix-backend",
   "version": "1.0.0",
-  "description": "FlyMatrix Live Engine - Zero Break Setup",
-  "main": "server.js",
+  "description": "FlyMatrix global travel intelligence backend",
+  "type": "module",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "axios": "^1.7.0",
-    "express": "^4.19.2",
-    "jsonwebtoken": "^9.0.2",
-    "knex": "^3.1.0",
-    "socket.io": "^4.7.5",
-    "sqlite3": "^5.1.7"
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
   },
   "engines": {
-    "node": "20.x"
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0"
   }
 }
