@@ -207,7 +207,7 @@ async function vip(){
     });
     const data=await res.json();
     if(data.success){
-      alert('You're subscribed! We'll track this route and let you know about fare drops.');
+      alert('You\'re subscribed! We\'ll track this route and let you know about fare drops.');
       emailEl.value='';
     }else{
       alert(data.error||'Something went wrong. Please try again.');
