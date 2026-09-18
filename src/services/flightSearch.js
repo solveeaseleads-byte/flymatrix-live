@@ -39,7 +39,7 @@ export async function searchFlights(params) {
 
     // Fall back to Travelpayouts (cached prices) when Duffel isn't set up.
     const tpResponse = await searchTravelpayouts({
-      origin, destination, currency: currency.toLowerCase(), market: market.toLowerCase()
+      origin, destination, currency: currency.toLowerCase(), market: market.toLowerCase() === "global" ? "us" : market.toLowerCase()
     });
     result = normalizeTravelpayoutsSearch(tpResponse);
     provider = "travelpayouts";
