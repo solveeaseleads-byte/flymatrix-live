@@ -1,5 +1,6 @@
 import { searchDuffelFlights } from "./providers/duffel.js";
-import { normalizeDuffelSearch } from "./flightNormalizer.js";
+import { searchTravelpayouts } from "./providers/travelpayouts.js";
+import { normalizeDuffelSearch, normalizeTravelpayoutsSearch } from "./flightNormalizer.js";
 import { getSupabase } from "./supabase.js";
 
 function validIata(code) { return typeof code === "string" && /^[A-Z]{3}$/.test(code); }
@@ -24,17 +25,31 @@ export async function searchFlights(params) {
   const passengerCount = Math.min(Math.max(Number(passengers) || 1, 1), 9);
   const connectionLimit = Math.min(Math.max(Number(maxConnections) || 0, 0), 4);
 
-  const providerResponse = await searchDuffelFlights({
-    origin, destination, departureDate, returnDate, passengers: passengerCount, cabin, maxConnections: connectionLimit
-  });
+  let result;
+  let provider;
 
-  const result = normalizeDuffelSearch(providerResponse);
+  try {
+    const providerResponse = await searchDuffelFlights({
+      origin, destination, departureDate, returnDate, passengers: passengerCount, cabin, maxConnections: connectionLimit
+    });
+    result = normalizeDuffelSearch(providerResponse);
+    provider = "duffel";
+  } catch (error) {
+    if (error.code !== "DUFFEL_NOT_CONFIGURED") throw error;
+
+    // Fall back to Travelpayouts (cached prices) when Duffel isn't set up.
+    const tpResponse = await searchTravelpayouts({
+      origin, destination, currency: currency.toLowerCase(), market: market.toLowerCase()
+    });
+    result = normalizeTravelpayoutsSearch(tpResponse);
+    provider = "travelpayouts";
+  }
 
   try {
     const supabase = getSupabase();
     await supabase.from("flight_search_events").insert({
       origin, destination, departure_date: departureDate, return_date: returnDate,
-      passengers: passengerCount, cabin, currency, market, provider: "duffel"
+      passengers: passengerCount, cabin, currency, market, provider
     });
   } catch (error) {
     console.error("Search analytics error:", error);
