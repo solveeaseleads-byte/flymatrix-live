@@ -12,6 +12,7 @@ import trueCostRouter from "./routes/trueCost.js";
 import internalRouter from "./routes/internal.js";
 import weatherRouter from "./routes/weather.js";
 import visaRouter from "./routes/visa.js";
+import popularRoutesRouter from "./routes/popularRoutes.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api/true-cost", trueCostRouter);
 app.use("/api/internal", internalRouter);
 app.use("/api/weather", weatherRouter);
 app.use("/api/visa", visaRouter);
+app.use("/api/popular-routes", popularRoutesRouter);
 app.use("/api", leadsRouter);
 app.use("/api", alertsRouter);
 
