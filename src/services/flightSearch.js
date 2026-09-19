@@ -11,6 +11,19 @@ function validDate(value) {
   return !Number.isNaN(date.getTime());
 }
 
+// Cheapest-first. Offers with no known price sort to the end rather
+// than being dropped, since "price on partner site" is still useful.
+function sortByPrice(offers) {
+  return [...offers].sort((a, b) => {
+    const priceA = a?.price?.amount;
+    const priceB = b?.price?.amount;
+    if (priceA == null && priceB == null) return 0;
+    if (priceA == null) return 1;
+    if (priceB == null) return -1;
+    return priceA - priceB;
+  });
+}
+
 export async function searchFlights(params) {
   const {
     origin, destination, departureDate, returnDate = null, passengers = 1,
@@ -37,13 +50,15 @@ export async function searchFlights(params) {
   } catch (error) {
     if (error.code !== "DUFFEL_NOT_CONFIGURED") throw error;
 
-    // Fall back to Travelpayouts (cached prices) when Duffel isn't set up.
     const tpResponse = await searchTravelpayouts({
-      origin, destination, currency: currency.toLowerCase(), market: market.toLowerCase() === "global" ? "us" : market.toLowerCase()
+      origin, destination, currency: currency.toLowerCase(),
+      market: market.toLowerCase() === "global" ? "us" : market.toLowerCase()
     });
     result = normalizeTravelpayoutsSearch(tpResponse);
     provider = "travelpayouts";
   }
+
+  result.offers = sortByPrice(result.offers);
 
   try {
     const supabase = getSupabase();
