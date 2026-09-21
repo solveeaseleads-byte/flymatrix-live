@@ -28,6 +28,10 @@ export const config = {
     },
     flightApiKey: process.env.FLIGHT_API_KEY || "",
     flightApiBaseUrl: process.env.FLIGHT_API_BASE_URL || "",
+    travelpayoutsLinks: {
+      marker: process.env.TRAVELPAYOUTS_MARKER || "",
+      trs: process.env.TRAVELPAYOUTS_TRS || ""
+    },
     fxApiKey: process.env.FX_API_KEY || "",
     fxApiBaseUrl: process.env.FX_API_BASE_URL || ""
   },
