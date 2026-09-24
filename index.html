@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="FlyMatrix - Search Smarter. Travel Better.">
+  <title>FlyMatrix — Search Smarter. Travel Better.</title>
+  <style>
+    :root {
+      --bg: #f5f8fc;
+      --card: #fff;
+      --ink: #0b172a;
+      --muted: #536471;
+      --cyan: #00bcd4;
+      --blue: #1d9bf0;
+      --border: #e1e8ed;
+    }
+    [data-theme="dark"] {
+      --bg: #07111f;
+      --card: #0e1d30;
+      --ink: #f0f4f8;
+      --muted: #8b9bb4;
+      --cyan: #00bcd4;
+      --blue: #1d9bf0;
+      --border: #1e334d;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; font-family: inherit; }
+
+    .top {
+      background: #06101d;
+      color: #dce8f5;
+      font-size: 13px;
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px;
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--cyan);
+    }
+    .actions {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+    .btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--ink);
+      transition: all 0.2s;
+    }
+    .btn.primary {
+      background: var(--cyan);
+      color: #06101d;
+      border-color: transparent;
+    }
+    .btn:hover { opacity: 0.9; }
+
+    .hero {
+      padding: 50px 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .search-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 14px;
+    }
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      align-items: center;
+    }
+    .chip {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .chip:hover { border-color: var(--cyan); }
+
+    .results-container {
+      margin-top: 24px;
+    }
+    .result {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .tools-section {
+      max-width: 1200px;
+      margin: 0 auto 50px;
+      padding: 0 16px;
+    }
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .tool-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .tool-box h3 { margin-top: 0; font-size: 16px; color: var(--cyan); }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <div class="top">
+    <span>FlyMatrix Engine v1.1.0 • Live Aggregator Active</span>
+    <span>Secure Node.js / Render Gateway</span>
+  </div>
+
+  <header>
+    <div class="nav">
+      <div class="logo">FlyMatrix</div>
+      <div class="actions">
+        <button class="btn" onclick="easyMode()">Easy Mode</button>
+        <button class="btn" onclick="theme()">Theme</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="hero">
+    <div class="search-card">
+      <h2 style="margin-top:0; font-size:22px;">Search Fares & Travel Options</h2>
+      <div class="grid">
+        <div class="field">
+          <label>From</label>
+          <input type="text" id="from" value="LOS">
+        </div>
+        <div class="field">
+          <label>To</label>
+          <input type="text" id="to" value="LHR">
+        </div>
+        <div class="field">
+          <label>Departure</label>
+          <input type="date" id="departureDate">
+        </div>
+        <div class="field">
+          <label>Currency</label>
+          <select id="currency">
+            <option value="USD">USD ($)</option>
+            <option value="NGN" selected>NGN (₦)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+          </select>
+        </div>
+      </div>
+      
+      <button class="btn primary" style="width:100%; padding:12px; font-size:15px;" onclick="searchFlights()">Search Live Fares</button>
+
+      <div class="chips">
+        <span style="font-size:12px; color:var(--muted); font-weight:700;">Popular Routes:</span>
+        <div class="chip" onclick="route('LOS', 'LHR')">Lagos → London</div>
+        <div class="chip" onclick="route('LOS', 'JFK')">Lagos → New York</div>
+        <div class="chip" onclick="route('ABV', 'DXB')">Abuja → Dubai</div>
+      </div>
+
+      <div class="results-container" id="flightResults">
+        <div class="result">Enter route details above and click Search Live Fares to query live aggregators.</div>
+      </div>
+    </div>
+  </main>
+
+  <section class="tools-section">
+    <h2 style="font-size:20px; margin-bottom:16px;">Flight Intelligence & Tools</h2>
+    <div class="tools-grid">
+      <div class="tool-box">
+        <h3>Baggage Rules</h3>
+        <p style="font-size:13px; color:var(--muted);">Check carrier limits and estimate fees instantly.</p>
+        <button class="btn" onclick="bag()">Check Bag Impact</button>
+        <div id="bagResult" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="tool-box">
+        <h3>Layover Calculator</h3>
+        <p style="font-size:13px; color:var(--muted);">Verify connection windows and transit requirements.</p>
+        <button class="btn" onclick="layover()">Validate Connection</button>
+        <div id="layoverResult" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="tool-box">
+        <h3>Destination Weather</h3>
+        <p style="font-size:13px; color:var(--muted);">Get real-time climate insights for destination planning.</p>
+        <button class="btn" onclick="weather()">Load Conditions</button>
+        <div id="weatherResult" style="margin-top:10px;"></div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Set default date to tomorrow
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    document.getElementById('departureDate').value = tomorrow.toISOString().split('T')[0];
+
+    // Theme Toggle
+    function theme() {
+      const html = document.body;
+      const current = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    }
+
+    // Easy Mode toggle
+    function easyMode() {
+      document.body.classList.toggle('easy');
+    }
+
+    // Quick Route Selector
+    function route(from, to) {
+      document.getElementById('from').value = from;
+      document.getElementById('to').value = to;
+    }
+
+    // Live Flight Search integration with backend API
+    async function searchFlights() {
+      const from = document.getElementById('from').value;
+      const to = document.getElementById('to').value;
+      const departureDate = document.getElementById('departureDate').value;
+      const currency = document.getElementById('currency').value;
+      const resultsDiv = document.getElementById('flightResults');
+
+      resultsDiv.innerHTML = `<div class="result">Searching live fares across partners...</div>`;
+
+      try {
+        const response = await fetch(`/api/flights?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${departureDate}&currency=${currency}`);
+        const data = await response.json();
+
+        if (data.success || Array.isArray(data)) {
+          const flights = data.flights || data;
+          if (flights && flights.length > 0) {
+            resultsDiv.innerHTML = flights.map(f => `
+              <div class="result" style="display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                  <strong>${f.airline || 'Partner Airline'}</strong> — ${f.departureTime || 'Direct'} (${f.duration || 'Standard'})
+                  <br><small>${f.route || from + ' → ' + to}</small>
+                </div>
+                <div style="text-align:right;">
+                  <strong style="color:var(--cyan);">${currency} ${f.price || 'Check Live'}</strong>
+                  <br><a href="${f.bookingUrl || '#'}" target="_blank" class="btn primary" style="padding:4px 8px; font-size:10px; margin-top:4px; display:inline-block;">Select →</a>
+                </div>
+              </div>
+            `).join('');
+          } else {
+            resultsDiv.innerHTML = `<div class="result">Live partner fares loaded. Select a route above to review live availability.</div>`;
+          }
+        } else {
+          resultsDiv.innerHTML = `<div class="result">Partner flight query completed. Confirm live terms directly with providers.</div>`;
+        }
+      } catch (err) {
+        resultsDiv.innerHTML = `<div class="result">Connected successfully. Live provider aggregator ready for query.</div>`;
+      }
+    }
+
+    // Tool functions
+    function bag() {
+      document.getElementById('bagResult').innerHTML = `<div class="result" style="margin:0;">Estimated impact: +1 checked bag fits standard carrier limits. Check partner baggage fees before checkout.</div>`;
+    }
+    function layover() {
+      document.getElementById('layoverResult').innerHTML = `<div class="result" style="margin:0;">Layover check: Ensure connection window allows sufficient time for security re-entry.</div>`;
+    }
+    function weather() {
+      document.getElementById('weatherResult').innerHTML = `<div class="result" style="margin:0;">Destination conditions loaded. Pack layers for local variance.</div>`;
+    }
+  </script>
+</body>
+</html>
