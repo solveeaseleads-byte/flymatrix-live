@@ -1,4 +1,6 @@
 import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 import { config } from "./config.js";
 import { securityMiddleware } from "./middleware.js";
 import healthRouter from "./routes/health.js";
@@ -14,15 +16,17 @@ import weatherRouter from "./routes/weather.js";
 import visaRouter from "./routes/visa.js";
 import popularRoutesRouter from "./routes/popularRoutes.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 
 securityMiddleware(app);
 app.use(express.json({ limit: "100kb" }));
 app.use(express.urlencoded({ extended: false }));
 
-app.get("/", (req, res) => {
-  res.json({ service: "FlyMatrix API", status: "online", version: "1.1.0" });
-});
+// Serve your static index.html and frontend assets from the root directory
+app.use(express.static(path.join(__dirname, "../")));
 
 app.use("/api/health", healthRouter);
 app.use("/api/affiliate", affiliateRouter);
