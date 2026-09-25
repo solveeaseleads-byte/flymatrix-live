@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -18,6 +19,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+app.use(helmet({ contentSecurityPolicy: false })); // Configured to allow standard web assets
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -35,15 +37,19 @@ app.get("/api/health", (req, res) => {
   res.json({ success: true, status: "FlyMatrix Engine Online", timestamp: new Date().toISOString() });
 });
 
-// Optional: Serve static frontend build if bundled together, or handle root message
-app.get("/", (req, res) => {
-  res.json({ 
-    success: true, 
-    message: "Welcome to FlyMatrix API Engine",
-    endpoints: ["/api/flights", "/api/true-cost", "/api/weather", "/api/visa", "/go?partner=skyscanner"]
+// Serve static frontend files from the Vite/React build output directory
+const frontendDistPath = path.join(__dirname, "../frontend/dist"); // Adjust path if your frontend folder is named differently
+app.use(express.static(frontendDistPath));
+
+// Catch-all route to support single-page application client-side routing
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendDistPath, "index.html"), (err) => {
+    if (err) {
+      res.status(500).send(err.message);
+    }
   });
 });
 
 app.listen(PORT, () => {
-  console.log(`FlyMatrix backend server running on port ${PORT}`);
+  console.log(`FlyMatrix full-stack server running on port ${PORT}`);
 });
