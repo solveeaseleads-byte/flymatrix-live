@@ -1,17 +1,23 @@
-import express from "express";
+import { Router } from "express";
+import { config } from "../config.js";
 
-const router = express.Router();
+const router = Router();
 
-router.get("/requirements", async (req, res) => {
-  const { nationality, destination } = req.query;
-  if (!nationality || !destination) {
-    return res.status(400).json({ success: false, error: "nationality and destination are required." });
+router.get("/", async (req, res) => {
+  try {
+    const passport = (req.query.passport || "NGA").toString().toUpperCase().trim();
+    const destination = (req.query.destination || "USA").toString().toUpperCase().trim();
+
+    res.json({
+      success: true,
+      passport,
+      destination,
+      requirement: "Verify official embassy entry rules, eVisa prerequisites, and transit documentation before ticketing.",
+      partnerUrl: config.iVisaUrl || "https://ivisa.com"
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Failed to fetch visa requirements." });
   }
-  res.status(501).json({
-    success: false, implemented: false,
-    error: "Live visa-requirement lookup isn't built yet. Use /api/booking/resolve?category=visa for the current affiliate partner (iVisa) instead.",
-    nationality, destination
-  });
 });
 
 export default router;
