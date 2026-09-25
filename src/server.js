@@ -41,8 +41,8 @@ app.get("/api/health", (req, res) => {
 const frontendDistPath = path.join(__dirname, "../frontend/dist");
 app.use(express.static(frontendDistPath));
 
-// Safe catch-all route for Express v5 using a named wildcard parameter
-app.get("/(*)", (req, res) => {
+// Express v5 compliant named wildcard catch-all route
+app.get("/{*splat}", (req, res) => {
   res.sendFile(path.join(frontendDistPath, "index.html"), (err) => {
     if (err) {
       res.status(500).send(err.message);
