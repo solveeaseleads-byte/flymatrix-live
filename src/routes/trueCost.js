@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { config } from "../config.js";
+import { config } from "../../config.js";
 
 const router = Router();
 
@@ -7,7 +7,6 @@ router.get("/", async (req, res) => {
   try {
     const destination = (req.query.destination || "JFK").toString().toUpperCase().trim();
 
-    // Destination-specific benchmark estimates or fallback default
     const costMap = {
       JFK: { daily: "$120 – $180", food: "$30 – $60/meal", transport: "$35 local transit" },
       LHR: { daily: "£90 – £140", food: "£20 – £45/meal", transport: "£25 local transit" },
