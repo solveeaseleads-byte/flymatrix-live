@@ -19,7 +19,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(helmet({ contentSecurityPolicy: false })); // Configured to allow standard web assets
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -38,11 +38,11 @@ app.get("/api/health", (req, res) => {
 });
 
 // Serve static frontend files from the Vite/React build output directory
-const frontendDistPath = path.join(__dirname, "../frontend/dist"); // Adjust path if your frontend folder is named differently
+const frontendDistPath = path.join(__dirname, "../frontend/dist");
 app.use(express.static(frontendDistPath));
 
-// Catch-all route to support single-page application client-side routing
-app.get("*", (req, res) => {
+// Safe catch-all route for Express v5 using a named wildcard parameter
+app.get("/(*)", (req, res) => {
   res.sendFile(path.join(frontendDistPath, "index.html"), (err) => {
     if (err) {
       res.status(500).send(err.message);
