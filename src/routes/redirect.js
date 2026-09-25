@@ -1,29 +1,29 @@
-import express from "express";
-import { getSupabase } from "../services/supabase.js";
-import { recordAffiliateClick } from "../services/affiliateTracking.js";
+import { Router } from "express";
+import { config } from "../config.js";
 
-const router = express.Router();
+const router = Router();
 
-router.get("/affiliate/:id", async (req, res) => {
+router.get("/", (req, res) => {
   try {
-    const programId = req.params.id;
-    const supabase = getSupabase();
-    const { data, error } = await supabase
-      .from("affiliate_programs").select("*").eq("id", programId).eq("active", true).eq("status", "active").single();
-    if (error || !data) {
-      return res.status(404).json({ success: false, error: "Affiliate program is not active." });
-    }
-    if (!data.tracking_url) {
-      return res.status(409).json({ success: false, error: "Affiliate tracking URL is not configured." });
-    }
-    await recordAffiliateClick({
-      affiliateProgramId: data.id, category: data.category, market: data.market,
-      origin: req.query.origin || null, destination: req.query.destination || null, sessionId: req.query.sessionId || null
-    });
-    return res.redirect(302, data.tracking_url);
+    const partner = (req.query.partner || "default").toString().toLowerCase().trim();
+
+    // Map partner keys to destination affiliate URLs
+    const partnerUrls = {
+      skyscanner: "https://www.skyscanner.com",
+      kayak: "https://www.kayak.com",
+      ivisa: config.iVisaUrl || "https://ivisa.com",
+      radicalstorage: config.radicalStorageUrl || "https://radicalstorage.com",
+      getyourguide: config.getYourGuideUrl || "https://getyourguide.com"
+    };
+
+    const targetUrl = partnerUrls[partner] || "https://skyscanner.com";
+
+    // Optional: Log click telemetry for analytics tracking
+    console.log(`[Affiliate Tracking] Outbound redirect to partner: ${partner} -> ${targetUrl}`);
+
+    res.redirect(302, targetUrl);
   } catch (error) {
-    console.error("Affiliate redirect error:", error);
-    res.status(500).json({ success: false, error: "Unable to process affiliate redirect." });
+    res.status(500).json({ success: false, error: "Redirect routing failed." });
   }
 });
 
