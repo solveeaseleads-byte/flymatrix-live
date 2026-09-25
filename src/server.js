@@ -2,58 +2,48 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
-import { config } from "./config.js";
-import { securityMiddleware } from "./middleware.js";
-import healthRouter from "./routes/health.js";
-import affiliateRouter from "./routes/affiliates.js";
-import leadsRouter from "./routes/leads.js";
-import alertsRouter from "./routes/alerts.js";
-import flightsRouter from "./routes/flights.js";
-import bookingRouter from "./routes/booking.js";
-import redirectRouter from "./routes/redirect.js";
-import trueCostRouter from "./routes/trueCost.js";
-import internalRouter from "./routes/internal.js";
-import weatherRouter from "./routes/weather.js";
-import visaRouter from "./routes/visa.js";
-import popularRoutesRouter from "./routes/popularRoutes.js";
+
+// Import API routes
+import flightRoutes from "./routes/flights.js";
+import trueCostRoutes from "./routes/trueCost.js";
+import weatherRoutes from "./routes/weather.js";
+import visaRoutes from "./routes/visa.js";
+import redirectRoutes from "./routes/redirect.js";
+import alertRoutes from "./routes/alerts.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// Enable CORS so external frontends/editors can talk to this Render backend
+// Middleware
 app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-securityMiddleware(app);
-app.use(express.json({ limit: "100kb" }));
-app.use(express.urlencoded({ extended: false }));
+// API Endpoints Mapping
+app.use("/api/flights", flightRoutes);
+app.use("/api/true-cost", trueCostRoutes);
+app.use("/api/weather", weatherRoutes);
+app.use("/api/visa", visaRoutes);
+app.use("/go", redirectRoutes);
+app.use("/api", alertRoutes);
 
-// Serve your static index.html and frontend assets from the root directory
-app.use(express.static(path.join(__dirname, "../")));
-
-app.use("/api/health", healthRouter);
-app.use("/api/affiliate", affiliateRouter);
-app.use("/api/flights", flightsRouter);
-app.use("/api/booking", bookingRouter);
-app.use("/go", redirectRouter);
-app.use("/api/true-cost", trueCostRouter);
-app.use("/api/internal", internalRouter);
-app.use("/api/weather", weatherRouter);
-app.use("/api/visa", visaRouter);
-app.use("/api/popular-routes", popularRoutesRouter);
-app.use("/api", leadsRouter);
-app.use("/api", alertsRouter);
-
-app.use((req, res) => {
-  res.status(404).json({ success: false, error: "Endpoint not found." });
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  res.json({ success: true, status: "FlyMatrix Engine Online", timestamp: new Date().toISOString() });
 });
 
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ success: false, error: "Internal server error." });
+// Optional: Serve static frontend build if bundled together, or handle root message
+app.get("/", (req, res) => {
+  res.json({ 
+    success: true, 
+    message: "Welcome to FlyMatrix API Engine",
+    endpoints: ["/api/flights", "/api/true-cost", "/api/weather", "/api/visa", "/go?partner=skyscanner"]
+  });
 });
 
-app.listen(config.port, () => {
-  console.log(`FlyMatrix API running on port ${config.port}`);
+app.listen(PORT, () => {
+  console.log(`FlyMatrix backend server running on port ${PORT}`);
 });
