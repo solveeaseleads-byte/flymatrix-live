@@ -37,11 +37,11 @@ app.get("/api/health", (req, res) => {
   res.json({ success: true, status: "FlyMatrix Engine Online", timestamp: new Date().toISOString() });
 });
 
-// Serve static frontend files from the Vite/React build output directory
-const frontendDistPath = path.join(__dirname, "../frontend/dist");
+// Serve static frontend files from the root dist directory
+const frontendDistPath = path.join(__dirname, "../dist");
 app.use(express.static(frontendDistPath));
 
-// Express v5 compliant named wildcard catch-all route
+// Express v5 compliant named wildcard catch-all route for SPA client-side routing
 app.get("/{*splat}", (req, res) => {
   res.sendFile(path.join(frontendDistPath, "index.html"), (err) => {
     if (err) {
