@@ -1,12 +1,13 @@
 {
   "name": "flymatrix-backend",
   "version": "1.0.0",
-  "description": "FlyMatrix global travel intelligence backend",
+  "description": "FlyMatrix global travel intelligence full-stack engine",
   "type": "module",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
+    "build": "npm install && npm run build --prefix frontend",
     "generate:guide": "node scripts/generate-guide.js"
   },
   "engines": {
