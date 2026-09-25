@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import { config } from "./config.js";
@@ -20,6 +21,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// Enable CORS so external frontends/editors can talk to this Render backend
+app.use(cors());
 
 securityMiddleware(app);
 app.use(express.json({ limit: "100kb" }));
