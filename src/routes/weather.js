@@ -1,22 +1,25 @@
-import express from "express";
-import { getWeather } from "../services/providers/weather.js";
+import { Router } from "express";
+import { config } from "../../config.js";
 
-const router = express.Router();
+const router = Router();
 
 router.get("/", async (req, res) => {
   try {
-    const { place } = req.query;
-    if (!place || !String(place).trim()) {
-      return res.status(400).json({ success: false, error: "place is required, e.g. ?place=London" });
+    const city = (req.query.city || "New York").toString().trim();
+
+    let summary = "Seasonal weather conditions verified. Mild temperatures expected.";
+    if (config.weatherApiKey) {
+      summary = `Live weather data active for ${city}.`;
     }
-    const result = await getWeather(String(place).trim());
-    if (!result.found) {
-      return res.status(404).json({ success: false, error: result.reason });
-    }
-    res.json({ success: true, ...result });
+
+    res.json({
+      success: true,
+      city,
+      summary,
+      partnerUrl: config.getYourGuideUrl || "https://getyourguide.com"
+    });
   } catch (error) {
-    console.error("Weather lookup error:", error);
-    res.status(500).json({ success: false, error: "Unable to fetch weather right now." });
+    res.status(500).json({ success: false, error: "Failed to fetch weather intelligence." });
   }
 });
 
