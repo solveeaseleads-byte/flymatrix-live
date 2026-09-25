@@ -7,8 +7,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "build": "npm install && npm run build --prefix frontend",
-    "generate:guide": "node scripts/generate-guide.js"
+    "build": "npm install --prefix frontend && npm run build --prefix frontend"
   },
   "engines": {
     "node": ">=20"
