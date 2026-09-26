@@ -3,11 +3,11 @@ import { config } from "../config.js";
 
 const router = Router();
 
-router.get("/", async (req, res) => {
+router.get("/search", async (req, res) => {
   try {
     const origin = (req.query.origin || "LOS").toString().toUpperCase().trim();
     const destination = (req.query.destination || "JHR").toString().toUpperCase().trim();
-    const date = (req.query.date || "2026-10-01").toString().trim();
+    const date = (req.query.departureDate || req.query.date || "2026-10-01").toString().trim();
 
     // Flight search benchmark simulation or aggregator hook
     const mockFlights = [
