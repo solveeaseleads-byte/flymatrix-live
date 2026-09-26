@@ -37,13 +37,13 @@ app.get("/api/health", (req, res) => {
   res.json({ success: true, status: "FlyMatrix Engine Online", timestamp: new Date().toISOString() });
 });
 
-// Serve static frontend files from the root dist directory
-const frontendDistPath = path.join(__dirname, "../dist");
-app.use(express.static(frontendDistPath));
+// Serve static frontend files from the repository root directory
+const frontendRootPath = path.join(__dirname, "..");
+app.use(express.static(frontendRootPath));
 
 // Express v5 compliant named wildcard catch-all route for SPA client-side routing
 app.get("/{*splat}", (req, res) => {
-  res.sendFile(path.join(frontendDistPath, "index.html"), (err) => {
+  res.sendFile(path.join(frontendRootPath, "index.html"), (err) => {
     if (err) {
       res.status(500).send(err.message);
     }
