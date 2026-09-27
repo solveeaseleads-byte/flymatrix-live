@@ -1,5 +1,7 @@
 export function OfferList({ offers, selectedMarket, sessionData }) {
-  
+  // Safely ensure safeOffers is always an array, whether an array or a wrapped response object is passed
+  const safeOffers = Array.isArray(offers) ? offers : (offers?.data || []);
+
   const handleOfferClick = async (offer) => {
     try {
       if (offer.link) {
@@ -52,9 +54,13 @@ export function OfferList({ offers, selectedMarket, sessionData }) {
     }
   };
 
+  if (!safeOffers.length) {
+    return <div className="text-sm text-slate-400 p-4">No flight offers available.</div>;
+  }
+
   return (
     <div className="flex flex-col gap-3">
-      {offers.map((offer, index) => (
+      {safeOffers.map((offer, index) => (
         <div
           key={offer.id || index}
           onClick={() => handleOfferClick(offer)}
