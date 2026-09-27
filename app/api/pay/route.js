@@ -1,32 +1,39 @@
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 
 export async function POST(request) {
   try {
-    const { email, amount, metadata } = await request.json();
+    const bodyText = await request.text();
+    const signature = request.headers.get('x-paystack-signature');
 
-    const response = await fetch('https://api.paystack.co/transaction/initialize', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email,
-        amount: amount * 100, // Paystack expects amount in the lowest currency unit (e.g., kobo/cents)
-        callback_url: `${process.env.NEXT_PUBLIC_BASE_URL}/checkout/callback`,
-        metadata,
-      }),
-    });
+    // 1. Verify the signature to ensure the request is genuinely from Paystack
+    const hash = crypto
+      .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY)
+      .update(bodyText)
+      .digest('hex');
 
-    const data = await response.json();
-
-    if (!data.status) {
-      return NextResponse.json({ error: data.message }, { status: 400 });
+    if (hash !== signature) {
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
-    return NextResponse.json({ authorizationUrl: data.data.authorization_url, reference: data.data.reference });
+    const event = JSON.parse(bodyText);
+
+    // 2. Handle the specific event type
+    if (event.event === 'charge.success') {
+      const transaction = event.data;
+      const customerEmail = transaction.customer.email;
+      const planName = transaction.metadata?.plan;
+      const reference = transaction.reference;
+
+      console.log(`Payment successful for ${customerEmail} - Plan: ${planName} (Ref: ${reference})`);
+
+      // TODO: Add your database fulfillment logic here 
+      // (e.g., update user subscription status in Supabase using transaction.reference)
+    }
+
+    return NextResponse.json({ received: true }, { status: 200 });
   } catch (error) {
-    console.error('Paystack initialization error:', error);
+    console.error('Webhook processing error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
