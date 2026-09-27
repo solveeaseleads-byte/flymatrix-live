@@ -1,277 +1,174 @@
-"use client";
 
-import { useState, useEffect } from 'react';
+'use client';
 
-export default function FlyMatrixDashboard() {
+import React, { useState } from 'react';
+import { generateTravelDeepLink } from '@/utils/travelpayouts';
+
+export default function Home() {
   const [activeTab, setActiveTab] = useState('flights');
-  const [status, setStatus] = useState(null);
+  const [tripType, setTripType] = useState('round-trip');
+  const travelMarker = 'YOUR_TRAVELPAYOUTS_MARKER';
 
-  // Form states
-  const [searchForm, setSearchForm] = useState({ origin: 'LOS', destination: 'JFK', departureDate: '2026-06-01' });
-  const [searchResult, setSearchResult] = useState(null);
-  
-  const [leadForm, setLeadForm] = useState({ contact: '', origin: 'LOS', destination: 'LHR', departureDate: '' });
-  const [leadStatus, setLeadStatus] = useState('');
-
-  const [alertForm, setAlertForm] = useState({ email: '', origin: 'LOS', destination: 'CDG', departureDate: '' });
-  const [alertStatus, setAlertStatus] = useState('');
-
-  // Fetch System Status on mount
-  useEffect(() => {
-    fetch('http://localhost:10000/api/system/status')
-      .then(res => res.json())
-      .then(data => setStatus(data))
-      .catch(err => console.error('Backend offline', err));
-  }, []);
-
-  // Handle Flight Search
-  const handleFlightSearch = async (e) => {
-    e.preventDefault();
-    const res = await fetch('http://localhost:10000/api/flights/search', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(searchForm)
-    });
-    const data = await res.json();
-    setSearchResult(data);
-  };
-
-  // Handle Lead Interceptor
-  const handleLeadSubmit = async (e) => {
-    e.preventDefault();
-    const res = await fetch('http://localhost:10000/api/intercept', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(leadForm)
-    });
-    const data = await res.json();
-    setLeadStatus(data.ok ? 'Lead captured successfully!' : data.error);
-  };
-
-  // Handle Fare Alert
-  const handleAlertSubmit = async (e) => {
-    e.preventDefault();
-    const res = await fetch('http://localhost:10000/api/fare-alert', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(alertForm)
-    });
-    const data = await res.json();
-    setAlertStatus(data.ok ? 'Fare alert registered!' : data.error);
-  };
-
-  // Track Affiliate Click
-  const trackClick = async (partner, category, route) => {
-    await fetch('http://localhost:10000/api/affiliate/click', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ partner, category, route })
-    });
-  };
+  // Sample offers matching your requested layout
+  const offers = [
+    { id: 1, route: 'Abuja → Doha', airline: 'Egyptair', duration: '12d', price: '₦2,541,012', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=500&auto=format&fit=crop&q=60' },
+    { id: 2, route: 'Abuja → Lagos', airline: 'Aero', duration: '1d', price: '₦54,143', img: 'https://images.unsplash.com/photo-1578895101408-1a364fc4d187?w=500&auto=format&fit=crop&q=60' },
+    { id: 3, route: 'Lagos → Washington', airline: 'Qatar Airways', duration: '20d', price: '₦2,312,446', img: 'https://images.unsplash.com/photo-1617581629397-a72507c3de9e?w=500&auto=format&fit=crop&q=60' },
+    { id: 4, route: 'Lagos → Abuja', airline: 'Aero', duration: '1d', price: '₦44,681', img: 'https://images.unsplash.com/photo-1508873696983-2df5c920ac1c?w=500&auto=format&fit=crop&q=60' }
+  ];
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 p-6 font-sans">
-      <header className="max-w-6xl mx-auto flex justify-between items-center pb-6 border-b border-slate-800">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-emerald-400">FlyMatrix Intelligence</h1>
-          <p className="text-sm text-slate-400">Centralized Travel & Affiliate Command Center</p>
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-16">
+      
+      {/* 1. Deep Blue Hero Header */}
+      <section className="bg-gradient-to-b from-blue-900 to-blue-700 text-white pt-8 pb-32 px-4 relative">
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-6">
+            <span className="text-xs uppercase tracking-wider text-blue-200 font-semibold">YOUR TRAVEL SHOP FOR THE WORLD</span>
+            <h1 className="text-3xl md:text-5xl font-extrabold mt-1">One shop, Multiple deals</h1>
+            <p className="text-blue-100 text-sm mt-2">Trusted by 2M+ travelers · Flexible ways to pay on every booking.</p>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${status?.database ? 'bg-emerald-900/50 text-emerald-300 border border-emerald-700' : 'bg-amber-900/50 text-amber-300 border border-amber-700'}`}>
-            DB: {status?.database ? 'Connected' : 'Offline'}
-          </span>
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700">
-            Partners: {status?.partnerCount || 7} Active
-          </span>
-        </div>
-      </header>
+      </section>
 
-      {/* Navigation Tabs */}
-      <nav className="max-w-6xl mx-auto flex gap-2 my-6 overflow-x-auto pb-2">
-        {['flights', 'leads', 'alerts', 'affiliates', 'system'].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${activeTab === tab ? 'bg-emerald-600 text-white' : 'bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-slate-200'}`}
-          >
-            {tab}
-          </button>
-        ))}
-      </nav>
-
-      {/* Main Content Sections */}
-      <section className="max-w-6xl mx-auto bg-slate-900/60 border border-slate-800 rounded-xl p-6 shadow-xl">
-        
-        {/* FLIGHTS TAB */}
-        {activeTab === 'flights' && (
-          <div>
-            <h2 className="text-xl font-semibold mb-4 text-emerald-300">Flight Search & Route Intelligence</h2>
-            <form onSubmit={handleFlightSearch} className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-6">
-              <div>
-                <label className="block text-xs text-slate-400 mb-1">Origin (IATA)</label>
-                <input 
-                  type="text" 
-                  value={searchForm.origin} 
-                  onChange={e => setSearchForm({...searchForm, origin: e.target.value})}
-                  className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-white" 
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-slate-400 mb-1">Destination (IATA)</label>
-                <input 
-                  type="text" 
-                  value={searchForm.destination} 
-                  onChange={e => setSearchForm({...searchForm, destination: e.target.value})}
-                  className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-white" 
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-slate-400 mb-1">Departure Date</label>
-                <input 
-                  type="date" 
-                  value={searchForm.departureDate} 
-                  onChange={e => setSearchForm({...searchForm, departureDate: e.target.value})}
-                  className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-white" 
-                />
-              </div>
-              <div className="flex items-end">
-                <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 rounded text-sm transition-colors">
-                  Search Route
-                </button>
-              </div>
-            </form>
-
-            {searchResult && (
-              <div className="bg-slate-950 border border-slate-800 p-4 rounded-lg">
-                <h3 className="text-sm font-semibold text-slate-300 mb-2">Search Response (Request ID: {searchResult.requestId})</h3>
-                <pre className="text-xs text-emerald-400 overflow-x-auto p-2 bg-slate-900 rounded">
-                  {JSON.stringify(searchResult, null, 2)}
-                </pre>
-              </div>
-            )}
+      {/* 2. Floating Search Widget */}
+      <section className="max-w-5xl mx-auto px-4 -mt-24 relative z-10">
+        <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-100">
+          
+          {/* Top Service Tabs */}
+          <div className="flex items-center gap-6 border-b border-slate-100 pb-4 mb-6 text-sm font-semibold overflow-x-auto">
+            <button 
+              onClick={() => setActiveTab('flights')} 
+              className={`flex items-center gap-2 pb-1 border-b-2 transition-colors ${activeTab === 'flights' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500'}`}
+            >
+              ✈️ Flights
+            </button>
+            <button 
+              onClick={() => setActiveTab('hotels')} 
+              className={`flex items-center gap-2 pb-1 border-b-2 transition-colors ${activeTab === 'hotels' ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-500'}`}
+            >
+              🏨 Hotels
+            </button>
           </div>
-        )}
 
-        {/* LEADS TAB */}
-        {activeTab === 'leads' && (
-          <div>
-            <h2 className="text-xl font-semibold mb-4 text-emerald-300">Inbound Lead Interceptor</h2>
-            <form onSubmit={handleLeadSubmit} className="max-w-lg space-y-4">
-              <div>
-                <label className="block text-xs text-slate-400 mb-1">Email or WhatsApp Contact</label>
-                <input 
-                  type="text" 
-                  placeholder="user@example.com or +234..." 
-                  value={leadForm.contact}
-                  onChange={e => setLeadForm({...leadForm, contact: e.target.value})}
-                  className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-white"
-                  required 
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <input 
-                  type="text" 
-                  placeholder="Origin" 
-                  value={leadForm.origin}
-                  onChange={e => setLeadForm({...leadForm, origin: e.target.value})}
-                  className="bg-slate-950 border border-slate-700 rounded p-2 text-sm text-white" 
-                />
-                <input 
-                  type="text" 
-                  placeholder="Destination" 
-                  value={leadForm.destination}
-                  onChange={e => setLeadForm({...leadForm, destination: e.target.value})}
-                  className="bg-slate-950 border border-slate-700 rounded p-2 text-sm text-white" 
-                />
-              </div>
-              <button type="submit" className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 px-4 rounded text-sm">
-                Submit Lead Request
-              </button>
-              {leadStatus && <p className="text-sm text-emerald-400 mt-2">{leadStatus}</p>}
-            </form>
+          {/* Sub Trip Type Switcher */}
+          <div className="flex items-center gap-3 mb-6 bg-slate-100 p-1 rounded-xl w-fit text-xs font-medium">
+            <button onClick={() => setTripType('round-trip')} className={`px-4 py-2 rounded-lg transition-all ${tripType === 'round-trip' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}>Round trip</button>
+            <button onClick={() => setTripType('one-way')} className={`px-4 py-2 rounded-lg transition-all ${tripType === 'one-way' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}>One way</button>
+            <button onClick={() => setTripType('multi-city')} className={`px-4 py-2 rounded-lg transition-all ${tripType === 'multi-city' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'}`}>Multi-city</button>
           </div>
-        )}
 
-        {/* ALERTS TAB */}
-        {activeTab === 'alerts' && (
-          <div>
-            <h2 className="text-xl font-semibold mb-4 text-emerald-300">Fare Alert Subscription</h2>
-            <form onSubmit={handleAlertSubmit} className="max-w-lg space-y-4">
-              <div>
-                <label className="block text-xs text-slate-400 mb-1">Email Address</label>
-                <input 
-                  type="email" 
-                  placeholder="traveller@domain.com" 
-                  value={alertForm.email}
-                  onChange={e => setAlertForm({...alertForm, email: e.target.value})}
-                  className="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-white"
-                  required 
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <input 
-                  type="text" 
-                  placeholder="Origin" 
-                  value={alertForm.origin}
-                  onChange={e => setAlertForm({...alertForm, origin: e.target.value})}
-                  className="bg-slate-950 border border-slate-700 rounded p-2 text-sm text-white" 
-                />
-                <input 
-                  type="text" 
-                  placeholder="Destination" 
-                  value={alertForm.destination}
-                  onChange={e => setAlertForm({...alertForm, destination: e.target.value})}
-                  className="bg-slate-950 border border-slate-700 rounded p-2 text-sm text-white" 
-                />
-              </div>
-              <button type="submit" className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 px-4 rounded text-sm">
-                Activate Price Alert
-              </button>
-              {alertStatus && <p className="text-sm text-emerald-400 mt-2">{alertStatus}</p>}
-            </form>
-          </div>
-        )}
-
-        {/* AFFILIATES TAB */}
-        {activeTab === 'affiliates' && (
-          <div>
-            <h2 className="text-xl font-semibold mb-4 text-emerald-300">Partner & Affiliate Redirects</h2>
-            <p className="text-sm text-slate-400 mb-4">Clicking any partner link securely routes through the backend click tracker (`/api/go/:partner`).</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {[
-                { id: 'aviasales', name: 'Aviasales (Flights)', cat: 'flight' },
-                { id: 'ivisa', name: 'iVisa (Travel Documentation)', cat: 'visa' },
-                { id: 'booking', name: 'Booking.com (Hotels)', cat: 'hotel' },
-                { id: 'airalo', name: 'Airalo (eSIMs)', cat: 'esim' },
-                { id: 'airhelp', name: 'AirHelp (Flight Assistance)', cat: 'flight-assistance' }
-              ].map(partner => (
-                <a
-                  key={partner.id}
-                  href={`http://localhost:10000/api/go/${partner.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => trackClick(partner.id, partner.cat, 'GLOBAL')}
-                  className="block bg-slate-950 border border-slate-800 p-4 rounded-lg hover:border-emerald-500 transition-colors"
-                >
-                  <h3 className="font-medium text-white text-sm">{partner.name}</h3>
-                  <span className="text-xs text-emerald-400 mt-1 inline-block">Launch Partner →</span>
-                </a>
-              ))}
+          {/* Search Inputs Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="border border-slate-200 rounded-xl p-3 bg-slate-50/50">
+              <label className="text-xs text-slate-400 block font-medium uppercase">From</label>
+              <input type="text" placeholder="City or airport" className="w-full bg-transparent font-medium text-slate-900 focus:outline-none mt-1" defaultValue="Lagos (LOS)" />
+            </div>
+            <div className="border border-slate-200 rounded-xl p-3 bg-slate-50/50">
+              <label className="text-xs text-slate-400 block font-medium uppercase">To</label>
+              <input type="text" placeholder="City or airport" className="w-full bg-transparent font-medium text-slate-900 focus:outline-none mt-1" placeholder="City or airport" />
+            </div>
+            <div className="border border-slate-200 rounded-xl p-3 bg-slate-50/50">
+              <label className="text-xs text-slate-400 block font-medium uppercase">Travellers</label>
+              <input type="text" className="w-full bg-transparent font-medium text-slate-900 focus:outline-none mt-1" defaultValue="1 Adult, Economy" />
             </div>
           </div>
-        )}
 
-        {/* SYSTEM STATUS TAB */}
-        {activeTab === 'system' && (
-          <div>
-            <h2 className="text-xl font-semibold mb-4 text-emerald-300">System & Integration Status</h2>
-            <pre className="text-xs text-emerald-400 bg-slate-950 p-4 rounded border border-slate-800 overflow-x-auto">
-              {JSON.stringify(status, null, 2)}
-            </pre>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="border border-slate-200 rounded-xl p-3 bg-slate-50/50">
+              <label className="text-xs text-slate-400 block font-medium uppercase">Departure</label>
+              <input type="date" className="w-full bg-transparent font-medium text-slate-900 focus:outline-none mt-1" />
+            </div>
+            <div className="border border-slate-200 rounded-xl p-3 bg-slate-50/50">
+              <label className="text-xs text-slate-400 block font-medium uppercase">Return</label>
+              <input type="date" className="w-full bg-transparent font-medium text-slate-900 focus:outline-none mt-1" />
+            </div>
+            <div className="flex items-end">
+              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-md">
+                Search flights
+              </button>
+            </div>
           </div>
-        )}
 
+        </div>
       </section>
-    </main>
+
+      {/* 3. Top Destinations / Hotels Section */}
+      <section className="max-w-5xl mx-auto px-4 mt-10">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-bold text-slate-900">Top Hotel Destinations</h3>
+          <span className="text-sm font-semibold text-blue-600 cursor-pointer">See all →</span>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { city: 'Dubai', hotels: '440+ HOTELS', country: 'United Arab Emirates', img: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=500&auto=format&fit=crop&q=60' },
+            { city: 'London', hotels: '418+ HOTELS', country: 'United Kingdom', img: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=500&auto=format&fit=crop&q=60' },
+            { city: 'Nairobi', hotels: '208+ HOTELS', country: 'Kenya', img: 'https://images.unsplash.com/photo-1618245318768-ab47c276a755?w=500&auto=format&fit=crop&q=60' },
+            { city: 'Accra', hotels: '148+ HOTELS', country: 'Ghana', img: 'https://images.unsplash.com/photo-1583088514729-1662d5f8bc27?w=500&auto=format&fit=crop&q=60' }
+          ].map((dest, idx) => (
+            <div key={idx} className="bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-md transition-all">
+              <img src={dest.img} alt={dest.city} className="w-full h-32 object-cover" />
+              <div className="p-3">
+                <span className="text-[10px] font-bold text-blue-600 tracking-wider block">{dest.hotels}</span>
+                <h4 className="font-bold text-slate-900 text-base">{dest.city}</h4>
+                <p className="text-xs text-slate-400 truncate">{dest.country}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 4. Offers Grid with BOOK NOW Buttons */}
+      <section className="max-w-5xl mx-auto px-4 mt-10">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-bold text-slate-900">Offers</h3>
+          <span className="text-sm font-semibold text-blue-600 cursor-pointer">VIEW ALL →</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {offers.map((offer) => {
+            const deepLink = generateTravelDeepLink('https://www.aviasales.com', travelMarker, { subId: 'offer_card' });
+            return (
+              <div key={offer.id} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <img src={offer.img} alt={offer.route} className="w-20 h-20 rounded-xl object-cover" />
+                  <div>
+                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">FLIGHTS</span>
+                    <h4 className="font-bold text-slate-900 text-base">{offer.route}</h4>
+                    <p className="text-xs text-slate-500 mt-1">{offer.airline} · {offer.duration} · From <strong className="text-slate-900">{offer.price}</strong></p>
+                  </div>
+                </div>
+                <a 
+                  href={deepLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white font-bold text-xs py-2 px-4 rounded-xl transition-all border border-blue-100 whitespace-nowrap"
+                >
+                  BOOK NOW
+                </a>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* 5. Bottom Prime Banner */}
+      <section className="max-w-5xl mx-auto px-4 mt-10">
+        <div className="bg-gradient-to-r from-blue-900 to-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-lg">
+          <span className="text-xs font-bold bg-amber-500 text-slate-900 px-3 py-1 rounded-full uppercase tracking-wider">⭐ PRIME DEALS</span>
+          <h3 className="text-2xl font-bold mt-3">Save up to 20% on every booking</h3>
+          <p className="text-blue-200 text-sm mt-1 mb-6">Join FlyMatrix Prime and unlock exclusive discounts on flights, hotels and holiday packages.</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-blue-100">
+            <div>✓ Up to 20% off flights & hotels</div>
+            <div>✓ Priority customer support</div>
+            <div>✓ Free cancellation on select bookings</div>
+            <div>✓ Early access to flash sales</div>
+          </div>
+        </div>
+      </section>
+
+    </div>
   );
 }
