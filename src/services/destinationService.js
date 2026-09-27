@@ -3,7 +3,8 @@ app.get('/api/destinations', async (req, res) => {
   try {
     let query = supabase.from('global_destinations').select('*');
     if (category) {
-      query = query.eq('category', category);
+      // Use ilike for case-insensitive matching (handles 'leisure', 'Leisure', etc.)
+      query = query.ilike('category', category.trim());
     }
     const { data, error } = await query;
     if (error) throw error;
