@@ -1,57 +1,31 @@
 import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import path from "path";
-import { fileURLToPath } from "url";
+import { supabase } from "../services/supabase.js"; // Adjust path to your supabase client if needed
 
-// Import API routes
-import flightRoutes from "./routes/flights.js";
-import trueCostRoutes from "./routes/trueCost.js";
-import weatherRoutes from "./routes/weather.js";
-import visaRoutes from "./routes/visa.js";
-import redirectRoutes from "./routes/redirect.js";
-import alertRoutes from "./routes/alerts.js";
-import destinationsRouter from "./routes/destinations.js";
+const router = express.Router();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Middleware
-app.use(helmet({ contentSecurityPolicy: false }));
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// API Endpoints Mapping
-app.use("/api/flights", flightRoutes);
-app.use("/api/true-cost", trueCostRoutes);
-app.use("/api/weather", weatherRoutes);
-app.use("/api/visa", visaRoutes);
-app.use("/api/destinations", destinationsRouter);
-app.use("/go", redirectRoutes);
-app.use("/api", alertRoutes);
-
-// Health check endpoint
-app.get("/api/health", (req, res) => {
-  res.json({ success: true, status: "FlyMatrix Engine Online", timestamp: new Date().toISOString() });
-});
-
-// Serve static frontend files from the repository root directory
-const frontendRootPath = path.join(__dirname, "..");
-app.use(express.static(frontendRootPath));
-
-// Express v5 compliant named wildcard catch-all route for SPA client-side routing
-app.get("/{*splat}", (req, res) => {
-  res.sendFile(path.join(frontendRootPath, "index.html"), (err) => {
-    if (err) {
-      res.status(500).send(err.message);
+// GET /api/destinations
+router.get("/", async (req, res) => {
+  const { category } = req.query; // 'leisure' or 'education'
+  try {
+    let query = supabase.from("global_destinations").select("*");
+    if (category) {
+      query = query.eq("category", category);
     }
-  });
+    const { data, error } = await query;
+    if (error) throw error;
+
+    // Map database columns to match what destinationService and frontend expect
+    const formattedData = data.map((item) => ({
+      destination_name: item.title,
+      country: item.country,
+      budget_template: item.base_budget_breakdown,
+      affiliate_mappings: item.affiliate_templates,
+    }));
+
+    res.json({ success: true, data: formattedData });
+  } catch (err) {
+    res.json({ success: false, error: err.message });
+  }
 });
 
-app.listen(PORT, () => {
-  console.log(`FlyMatrix full-stack server running on port ${PORT}`);
-});
+export default router;
