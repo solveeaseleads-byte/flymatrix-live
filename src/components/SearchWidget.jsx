@@ -8,6 +8,7 @@ export default function SearchWidget() {
 
   return (
     <div className="bg-white rounded-2xl shadow-xl p-6 border border-slate-100">
+      
       {/* Top Service Tabs */}
       <div className="flex items-center gap-6 border-b border-slate-100 pb-4 mb-6 text-sm font-semibold overflow-x-auto">
         <button 
@@ -62,6 +63,7 @@ export default function SearchWidget() {
           </button>
         </div>
       </div>
+
     </div>
   );
 }
