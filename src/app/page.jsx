@@ -124,7 +124,7 @@ export default function Home() {
       {/* 3. Top Destinations Section */}
       <section className="max-w-5xl mx-auto px-4 mt-10">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold text-slate-900">Top Hotel Destinations</h3>
+          <h2 className="text-lg font-bold text-slate-900">Top Hotel Destinations</h2>
           <span className="text-xs font-semibold text-blue-600 cursor-pointer">See all →</span>
         </div>
 
@@ -139,7 +139,7 @@ export default function Home() {
               <img src={dest.img} alt={dest.city} className="w-full h-28 object-cover" />
               <div className="p-3">
                 <span className="text-[9px] font-bold text-blue-600 tracking-wider block">{dest.hotels}</span>
-                <h4 className="font-bold text-slate-900 text-sm">{dest.city}</h4>
+                <h3 className="font-bold text-slate-900 text-sm">{dest.city}</h3>
                 <p className="text-[11px] text-slate-400 truncate">{dest.country}</p>
               </div>
             </div>
@@ -150,7 +150,7 @@ export default function Home() {
       {/* 4. Offers Grid with BOOK NOW Buttons */}
       <section className="max-w-5xl mx-auto px-4 mt-10">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-bold text-slate-900">Offers</h3>
+          <h2 className="text-lg font-bold text-slate-900">Offers</h2>
           <span className="text-xs font-semibold text-blue-600 cursor-pointer">VIEW ALL →</span>
         </div>
 
@@ -163,14 +163,14 @@ export default function Home() {
                   <img src={offer.img} alt={offer.route} className="w-16 h-16 rounded-xl object-cover shrink-0" />
                   <div>
                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">FLIGHTS</span>
-                    <h4 className="font-bold text-slate-900 text-sm">{offer.route}</h4>
+                    <h3 className="font-bold text-slate-900 text-sm">{offer.route}</h3>
                     <p className="text-[11px] text-slate-500 mt-0.5">{offer.airline} · {offer.duration} · From <strong className="text-slate-900">{offer.price}</strong></p>
                   </div>
                 </div>
                 <a 
                   href={deepLink} 
                   target="_blank" 
-                  rel="noopener noreferrer"
+                  rel="nofollow noopener noreferrer"
                   className="bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white font-bold text-[11px] py-2 px-3.5 rounded-xl transition-all border border-blue-100 whitespace-nowrap"
                 >
                   BOOK NOW
@@ -185,7 +185,7 @@ export default function Home() {
       <section className="max-w-5xl mx-auto px-4 mt-10">
         <div className="bg-gradient-to-r from-blue-900 to-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-lg">
           <span className="text-[10px] font-bold bg-amber-500 text-slate-900 px-2.5 py-1 rounded-full uppercase tracking-wider">⭐ PRIME DEALS</span>
-          <h3 className="text-xl md:text-2xl font-bold mt-3">Save up to 20% on every booking</h3>
+          <h2 className="text-xl md:text-2xl font-bold mt-3">Save up to 20% on every booking</h2>
           <p className="text-blue-200 text-xs md:text-sm mt-1 mb-6">Join FlyMatrix Prime and unlock exclusive discounts on flights, hotels and holiday packages.</p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-blue-100">
