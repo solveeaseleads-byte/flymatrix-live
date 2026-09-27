@@ -11,6 +11,7 @@ import weatherRoutes from "./routes/weather.js";
 import visaRoutes from "./routes/visa.js";
 import redirectRoutes from "./routes/redirect.js";
 import alertRoutes from "./routes/alerts.js";
+import destinationsRouter from "./routes/destinations.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,6 +30,7 @@ app.use("/api/flights", flightRoutes);
 app.use("/api/true-cost", trueCostRoutes);
 app.use("/api/weather", weatherRoutes);
 app.use("/api/visa", visaRoutes);
+app.use("/api/destinations", destinationsRouter);
 app.use("/go", redirectRoutes);
 app.use("/api", alertRoutes);
 
