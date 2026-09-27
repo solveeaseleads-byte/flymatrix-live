@@ -1,39 +1,23 @@
-// Fetch all active destinations, optionally filtered by category ('leisure' or 'education')
-export async function fetchDestinations(category = '') {
+app.get('/api/destinations', async (req, res) => {
+  const { category } = req.query; // 'leisure' or 'education'
   try {
-    const url = category 
-      ? `/api/destinations?category=${category}` 
-      : '/api/destinations';
-      
-    const response = await fetch(url);
-    const result = await response.json();
-    
-    if (result.success) {
-      return result.data;
-    } else {
-      console.error('Failed to fetch destinations:', result.error);
-      return [];
+    let query = supabase.from('global_destinations').select('*');
+    if (category) {
+      query = query.eq('category', category);
     }
-  } catch (err) {
-    console.error('Network error fetching destinations:', err);
-    return [];
-  }
-}
+    const { data, error } = await query;
+    if (error) throw error;
 
-// Fetch a single destination template by its code (e.g., 'PAR-FRA')
-export async function fetchDestinationByCode(code) {
-  try {
-    const response = await fetch(`/api/destinations/${code}`);
-    const result = await response.json();
-    
-    if (result.success) {
-      return result.data;
-    } else {
-      console.error('Destination not found:', result.error);
-      return null;
-    }
+    // Map table columns to match what the frontend expects
+    const formattedData = data.map(item => ({
+      destination_name: item.title,
+      country: item.country,
+      budget_template: item.base_budget_breakdown,
+      affiliate_mappings: item.affiliate_templates
+    }));
+
+    res.json({ success: true, data: formattedData });
   } catch (err) {
-    console.error('Network error fetching destination details:', err);
-    return null;
+    res.json({ success: false, error: err.message });
   }
-}
+});
