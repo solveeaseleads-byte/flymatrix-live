@@ -1,32 +1,14 @@
-{
-  "name": "flymatrix",
-  "version": "2.0.0",
-  "private": true,
-  "type": "module",
-  "main": "server/server.js",
-  "scripts": {
-    "dev": "concurrently \"vite\" \"node --watch server/server.js\"",
-    "dev:frontend": "vite",
-    "dev:backend": "node --watch server/server.js",
-    "build": "vite build",
-    "start": "node server/server.js",
-    "seed": "node scripts/seedDatabase.js"
-  },
-  "engines": {
-    "node": ">=20"
-  },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.0",
+    "@vitejs/plugin-react": "^4.3.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "react": "^18.3.0",
-    "react-dom": "^18.3.0"
+    "react-dom": "^18.3.0",
+    "vite": "^5.2.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.0",
-    "concurrently": "^9.1.0",
-    "vite": "^5.2.0"
+    "concurrently": "^9.1.0"
   }
-}
