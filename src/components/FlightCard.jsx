@@ -1,48 +1,152 @@
-import React from 'react';
-import { generateTravelDeepLink } from '@/utils/travelpayouts';
+import React from "react";
 
-export default function FlightCard({ flight }) {
-  // Retrieve the marker from your environment variables
-  const travelMarker = process.env.NEXT_PUBLIC_TRAVELPAYOUTS_MARKER || 'YOUR_TRAVELPAYOUTS_MARKER';
+import { apiPost } from "../utils/api.js";
 
-  // Build the monetized tracking link
-  const bookingUrl = generateTravelDeepLink(flight.rawDeepLink || 'https://www.aviasales.com', travelMarker, {
-    subId: 'flymatrix_flight_card',
-    params: {
-      currency: flight.currency || 'USD',
-      adults: flight.passengers || 1
+export default function FlightCard({
+  offer,
+  sessionId
+}) {
+  const amount = Number(
+    offer?.price?.amount ??
+    offer?.price ??
+    0
+  );
+
+  const currency =
+    offer?.price?.currency ||
+    offer?.currency ||
+    "USD";
+
+  const airline =
+    offer?.airline?.name ||
+    offer?.airlineName ||
+    offer?.airline?.code ||
+    "Airline";
+
+  const origin =
+    offer?.origin?.iata ||
+    offer?.origin ||
+    "";
+
+  const destination =
+    offer?.destination?.iata ||
+    offer?.destination ||
+    "";
+
+  const departure =
+    offer?.departure?.time ||
+    offer?.departureTime ||
+    "—";
+
+  const arrival =
+    offer?.arrival?.time ||
+    offer?.arrivalTime ||
+    "—";
+
+  async function openBooking() {
+    try {
+      let trackingUrl =
+        offer?.link || null;
+
+      let affiliateProgramId =
+        offer?.affiliateProgramId || null;
+
+      if (!trackingUrl) {
+        const response =
+          await apiPost(
+            "booking/resolve",
+            {
+              category: "flights",
+              market: "GLOBAL",
+              originCountry: "NG",
+              destinationCountry:
+                offer?.destinationCountry || "",
+              origin,
+              destination,
+              sessionId
+            }
+          );
+
+        trackingUrl =
+          response.trackingUrl;
+
+        affiliateProgramId =
+          response.affiliateProgramId;
+      }
+
+      if (!trackingUrl) {
+        throw new Error(
+          "No booking partner is configured."
+        );
+      }
+
+      await apiPost(
+        "affiliate/click",
+        {
+          affiliateProgramId,
+          origin,
+          destination,
+          category: "flights",
+          market: "GLOBAL",
+          sessionId
+        }
+      ).catch(() => {});
+
+      window.open(
+        trackingUrl,
+        "_blank",
+        "noopener,noreferrer"
+      );
+    } catch (error) {
+      alert(error.message);
     }
-  });
+  }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all hover:shadow-md">
-      {/* Flight Info Details */}
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 bg-slate-50 rounded-lg flex items-center justify-center font-bold text-slate-700">
-          {flight.airlineCode}
-        </div>
-        <div>
-          <h4 className="font-semibold text-slate-900">{flight.airlineName}</h4>
-          <p className="text-sm text-slate-500">{flight.departureTime} — {flight.arrivalTime} ({flight.duration})</p>
+    <article className="fm-card fm-offer">
+
+      <div>
+        <span className="fm-badge">
+          Flight
+        </span>
+
+        <h3>{airline}</h3>
+
+        <div className="fm-meta">
+          {origin} → {destination}
         </div>
       </div>
 
-      {/* Pricing & Outbound Action */}
-      <div className="flex items-center justify-between w-full md:w-auto gap-6 border-t md:border-t-0 pt-4 md:pt-0 border-slate-100">
-        <div className="text-right">
-          <span className="text-xs text-slate-400 block">From</span>
-          <span className="text-xl font-bold text-slate-900">{flight.currencySymbol}{flight.price}</span>
-        </div>
-        
-        <a 
-          href={bookingUrl} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors shadow-sm"
-        >
-          Book Flight
-        </a>
+      <div className="fm-meta">
+        <strong>{departure}</strong>
+        {" → "}
+        <strong>{arrival}</strong>
+
+        <br />
+
+        {offer?.duration ||
+          "Duration unavailable"}
+
+        {" · "}
+
+        {offer?.stops ?? 0}
+        {" stop(s)"}
       </div>
-    </div>
+
+      <div>
+        <div className="fm-price">
+          {currency}{" "}
+          {amount.toLocaleString()}
+        </div>
+
+        <button
+          className="fm-btn fm-primary"
+          onClick={openBooking}
+        >
+          View / book
+        </button>
+      </div>
+
+    </article>
   );
 }
