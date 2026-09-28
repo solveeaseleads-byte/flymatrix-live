@@ -1,15 +1,39 @@
-import FlightCard from './FlightCard';
+import React from "react";
 
-export default function FlightResultsList({ results }) {
-  if (!results || results.length === 0) {
-    return <p className="text-slate-500 text-center py-8">No flights found matching your route.</p>;
+import FlightCard from "./FlightCard.jsx";
+
+export default function FlightResultsList({
+  data
+}) {
+  if (!data) {
+    return null;
+  }
+
+  const results =
+    data.results || [];
+
+  if (!results.length) {
+    return (
+      <div className="fm-card fm-loading">
+        No live offers were returned.
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-4">
-      {results.map((flight, index) => (
-        <FlightCard key={flight.id || index} flight={flight} />
-      ))}
+    <div className="fm-results">
+      {results.map(
+        (offer, index) => (
+          <FlightCard
+            key={
+              offer.id ||
+              `offer-${index}`
+            }
+            offer={offer}
+            sessionId={data.sessionId}
+          />
+        )
+      )}
     </div>
   );
 }
