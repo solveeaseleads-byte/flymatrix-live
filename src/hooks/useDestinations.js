@@ -1,30 +1,53 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
-export function useDestinations() {
-  const [destinations, setDestinations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+import { apiFetch } from "../utils/api.js";
+
+export function useDestinations(category = "") {
+  const [destinations, setDestinations] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
 
   useEffect(() => {
-    const fetchDestinations = async () => {
-      try {
-        const res = await fetch('/api/destinations');
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    let mounted = true;
 
-        const json = await res.json();
-        const extractedData = json.data || json || [];
-        setDestinations(Array.isArray(extractedData) ? extractedData : []);
-      } catch (err) {
-        console.error("Failed to fetch destinations:", err);
-        setError(err.message);
-        setDestinations([]); 
-      } finally {
-        setLoading(false);
-      }
+    setLoading(true);
+    setError("");
+
+    apiFetch(
+      "destinations",
+      category ? { category } : {}
+    )
+      .then((data) => {
+        if (mounted) {
+          setDestinations(
+            data.destinations || []
+          );
+        }
+      })
+      .catch((error) => {
+        if (mounted) {
+          setError(error.message);
+        }
+      })
+      .finally(() => {
+        if (mounted) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      mounted = false;
     };
+  }, [category]);
 
-    fetchDestinations();
-  }, []);
-
-  return { destinations, loading, error };
+  return {
+    destinations,
+    loading,
+    error
+  };
 }
