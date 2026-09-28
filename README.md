@@ -1,12 +1,70 @@
-# FlyMatrix Backend
+# FlyMatrix v2
 
-Node.js/Express backend for FlyMatrix. See src/server.js for the full route list.
+FlyMatrix uses:
 
-## Setup
+- React
+- Vite
+- Express
+- Supabase
+- Duffel
+- Travelpayouts
+- Paystack
+- Resend
+- Telegram
+
+## Install
+
 npm install
-cp .env.example .env
-Fill in SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, DUFFEL_API_KEY, FRONTEND_URL.
 
-Run supabase/schema.sql, then seed.sql, then seed_regional_candidates.sql in the Supabase SQL editor.
+## Development
+
+npm run dev
+
+## Frontend only
+
+npm run dev:frontend
+
+## Backend only
+
+npm run dev:backend
+
+## Build
+
+npm run build
+
+## Production
 
 npm start
+
+## Database
+
+Run:
+
+supabase/migrations/001_flymatrix.sql
+
+Then:
+
+supabase/seeds/affiliate-active.sql
+
+and:
+
+supabase/seeds/affiliate-candidates.sql
+
+## Seed destinations
+
+npm run seed
+
+## Required secrets
+
+Keep all provider secrets on the server.
+
+Never expose:
+
+SUPABASE_SERVICE_ROLE_KEY
+PAYSTACK_SECRET_KEY
+DUFFEL_API_KEY
+TRAVELPOUTS_API_KEY
+RESEND_API_KEY
+TELEGRAM_BOT_TOKEN
+
+in frontend code.
