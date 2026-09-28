@@ -60,7 +60,8 @@ const dist = path.join(root, "dist");
 
 app.use(express.static(dist));
 
-app.get("*", (req, res) => {
+// Use RegExp for Express 5 compatibility to catch all non-API frontend routes
+app.get(/(.*)/, (req, res) => {
   if (req.path.startsWith("/api/")) {
     return res.status(404).json({
       success: false,
