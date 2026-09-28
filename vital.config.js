@@ -1,20 +1,18 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-
-  server: {
-    port: 5173,
-
-    proxy: {
-      "/api": "http://localhost:10000",
-      "/go": "http://localhost:10000"
-    }
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
   },
-
   build: {
-    outDir: "dist",
-    emptyOutDir: true
-  }
+    rollupOptions: {
+      // Exclude Node-specific modules that crash browser bundlers
+      external: ['fsevents', 'express', 'cors', 'dotenv', 'helmet'],
+    },
+  },
 });
