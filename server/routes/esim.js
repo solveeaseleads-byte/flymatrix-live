@@ -6,19 +6,6 @@ import {
 
 const router = Router();
 
-function handleError(
-  res,
-  error,
-  fallbackMessage
-) {
-  res.status(400).json({
-    success: false,
-    error:
-      error?.message ||
-      fallbackMessage,
-  });
-}
-
 router.post(
   "/search",
   async (req, res) => {
@@ -30,11 +17,12 @@ router.post(
 
       res.json(result);
     } catch (error) {
-      handleError(
-        res,
-        error,
-        "eSIM search failed."
-      );
+      res.status(400).json({
+        success: false,
+        error:
+          error?.message ||
+          "eSIM search failed.",
+      });
     }
   }
 );
@@ -68,21 +56,38 @@ router.get(
           null,
       });
     } catch (error) {
-      handleError(
-        res,
-        error,
-        "eSIM provider lookup failed."
-      );
+      res.status(400).json({
+        success: false,
+        error:
+          error?.message ||
+          "eSIM provider lookup failed.",
+      });
     }
   }
 );
 
 export default router;
 
-This removes the duplicated response construction while keeping the two endpoints' different fallback error messages.
+The important change
 
-The important path correction remains:
+Old:
 
-../../services/esim.js
+from "../services/esim.js"
 
-After pushing this version, redeploy on Render and send me the next build/runtime error if one appears.
+Correct:
+
+from "../../services/esim.js"
+
+Your structure should therefore remain:
+
+src/
+├── services/
+│   └── esim.js
+│
+└── server/
+    └── route/
+        └── esim.js
+
+Do not create another "esim.js" under "server/services".
+
+After replacing the file, commit/push to GitHub and let Render redeploy.
