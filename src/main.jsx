@@ -16,8 +16,8 @@ if (!rootElement) {
         fontFamily: "Arial, sans-serif"
       }}
     >
-      <h1>FlyMatrix React Test</h1>
-      <p>React mounted successfully.</p>
+      <h1>FLYMATRIX REACT WORKS</h1>
+      <p>React module execution is working correctly.</p>
     </div>
   );
 }
