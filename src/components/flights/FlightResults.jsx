@@ -1,5 +1,107 @@
 import React, { useMemo } from "react";
-import FlightCard from "./FlightCard.jsx";
+import FlightCard from "../FlightCard.jsx";
+
+function normalizeResults(results) {
+  if (Array.isArray(results)) {
+    return results;
+  }
+
+  if (!results || typeof results !== "object") {
+    return [];
+  }
+
+  if (Array.isArray(results.flights)) {
+    return results.flights;
+  }
+
+  if (Array.isArray(results.results)) {
+    return results.results;
+  }
+
+  if (Array.isArray(results.offers)) {
+    return results.offers;
+  }
+
+  if (Array.isArray(results.data)) {
+    return results.data;
+  }
+
+  return [];
+}
+
+function getPrice(flight) {
+  return Number(
+    flight?.price?.amount ??
+      flight?.price?.total ??
+      flight?.totalPrice ??
+      flight?.total_price ??
+      flight?.amount ??
+      Infinity
+  );
+}
+
+function getDuration(flight) {
+  const value =
+    flight?.durationMinutes ??
+    flight?.duration_minutes ??
+    flight?.duration ??
+    flight?.totalDuration ??
+    flight?.total_duration;
+
+  if (typeof value === "number") {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const hours = value.match(/(\d+)\s*h/i);
+    const minutes = value.match(/(\d+)\s*m/i);
+
+    return (
+      Number(hours?.[1] || 0) * 60 +
+      Number(minutes?.[1] || 0)
+    );
+  }
+
+  return Infinity;
+}
+
+function getDepartureTime(flight) {
+  return (
+    flight?.departure?.time ||
+    flight?.departureTime ||
+    flight?.departure?.datetime ||
+    ""
+  );
+}
+
+function getArrivalTime(flight) {
+  return (
+    flight?.arrival?.time ||
+    flight?.arrivalTime ||
+    flight?.arrival?.datetime ||
+    ""
+  );
+}
+
+function getStops(flight) {
+  if (typeof flight?.stops === "number") {
+    return flight.stops;
+  }
+
+  if (typeof flight?.stopCount === "number") {
+    return flight.stopCount;
+  }
+
+  if (typeof flight?.stop_count === "number") {
+    return flight.stop_count;
+  }
+
+  if (Array.isArray(flight?.segments)) {
+    return Math.max(flight.segments.length - 1, 0);
+  }
+
+  return 0;
+}
 
 function getFlightId(flight, index) {
   return (
@@ -12,29 +114,11 @@ function getFlightId(flight, index) {
   );
 }
 
-function normalizeResults(results) {
-  if (Array.isArray(results)) {
-    return results;
-  }
-
-  if (!results || typeof results !== "object") {
-    return [];
-  }
-
-  return (
-    results.flights ||
-    results.results ||
-    results.offers ||
-    results.data ||
-    []
-  );
-}
-
 export default function FlightResults({
   results = [],
   search,
+  sessionId,
   sortBy = "price",
-  onSelectFlight,
   loading = false,
 }) {
   const flights = useMemo(
@@ -43,101 +127,74 @@ export default function FlightResults({
   );
 
   const sortedFlights = useMemo(() => {
-    const copy = [...flights];
+    const list = [...flights];
 
-    const getPrice = (flight) =>
-      Number(
-        flight?.price?.amount ??
-          flight?.price?.total ??
-          flight?.totalPrice ??
-          flight?.total_price ??
-          flight?.amount ??
-          Infinity
-      );
+    switch (sortBy) {
+      case "duration":
+        return list.sort(
+          (a, b) =>
+            getDuration(a) -
+            getDuration(b)
+        );
 
-    const getDuration = (flight) =>
-      Number(
-        flight?.durationMinutes ??
-          flight?.duration_minutes ??
-          flight?.duration ??
-          Infinity
-      );
+      case "departure":
+        return list.sort((a, b) =>
+          String(getDepartureTime(a)).localeCompare(
+            String(getDepartureTime(b))
+          )
+        );
 
-    if (sortBy === "duration") {
-      return copy.sort(
-        (a, b) => getDuration(a) - getDuration(b)
-      );
+      case "arrival":
+        return list.sort((a, b) =>
+          String(getArrivalTime(a)).localeCompare(
+            String(getArrivalTime(b))
+          )
+        );
+
+      case "stops":
+        return list.sort(
+          (a, b) =>
+            getStops(a) -
+            getStops(b)
+        );
+
+      case "price":
+      default:
+        return list.sort(
+          (a, b) =>
+            getPrice(a) -
+            getPrice(b)
+        );
     }
-
-    if (sortBy === "departure") {
-      return copy.sort((a, b) => {
-        const aTime =
-          a?.departure?.time ||
-          a?.departure?.datetime ||
-          a?.departureTime ||
-          "";
-
-        const bTime =
-          b?.departure?.time ||
-          b?.departure?.datetime ||
-          b?.departureTime ||
-          "";
-
-        return String(aTime).localeCompare(String(bTime));
-      });
-    }
-
-    if (sortBy === "arrival") {
-      return copy.sort((a, b) => {
-        const aTime =
-          a?.arrival?.time ||
-          a?.arrival?.datetime ||
-          a?.arrivalTime ||
-          "";
-
-        const bTime =
-          b?.arrival?.time ||
-          b?.arrival?.datetime ||
-          b?.arrivalTime ||
-          "";
-
-        return String(aTime).localeCompare(String(bTime));
-      });
-    }
-
-    return copy.sort((a, b) => getPrice(a) - getPrice(b));
   }, [flights, sortBy]);
 
   if (loading) {
     return (
-      <section className="flight-results" aria-live="polite">
+      <section
+        className="flight-results"
+        aria-live="polite"
+        aria-busy="true"
+      >
         <div className="flight-results-header">
           <div>
             <h2>Finding flights</h2>
             <p>
-              Searching available options for your trip...
+              Searching available flight options...
             </p>
           </div>
         </div>
 
         <div className="flight-results-loading">
-          <div className="loading-card">
-            <div className="loading-line loading-line-large" />
-            <div className="loading-line" />
-            <div className="loading-line loading-line-short" />
-          </div>
-
-          <div className="loading-card">
-            <div className="loading-line loading-line-large" />
-            <div className="loading-line" />
-            <div className="loading-line loading-line-short" />
-          </div>
-
-          <div className="loading-card">
-            <div className="loading-line loading-line-large" />
-            <div className="loading-line" />
-            <div className="loading-line loading-line-short" />
-          </div>
+          {[1, 2, 3].map((item) => (
+            <div
+              className="loading-card"
+              key={item}
+            >
+              <div className="loading-line loading-line-large" />
+              <div className="loading-line" />
+              <div className="loading-line loading-line-short" />
+            </div>
+          ))}
         </div>
       </section>
     );
@@ -145,18 +202,21 @@ export default function FlightResults({
 
   if (!sortedFlights.length) {
     return (
-      <section className="flight-results" aria-live="polite">
+      <section className="flight-results">
         <div className="empty-state">
-          <div className="empty-state-icon" aria-hidden="true">
+          <div
+            className="empty-state-icon"
+            aria-hidden="true"
+          >
             ✈
           </div>
 
           <h2>No flights found</h2>
 
           <p>
-            We couldn't find matching flight options for this
-            search. Try changing your dates, airports, cabin,
-            or number of stops.
+            We couldn't find flights matching this
+            search. Try changing your dates,
+            airports, cabin, or stop preference.
           </p>
         </div>
       </section>
@@ -164,7 +224,7 @@ export default function FlightResults({
   }
 
   return (
-    <section className="flight-results" aria-live="polite">
+    <section className="flight-results">
       <div className="flight-results-header">
         <div>
           <h2>
@@ -175,30 +235,25 @@ export default function FlightResults({
           </h2>
 
           <p>
-            Compare available options and choose the flight
-            that fits your trip.
+            Compare available flight options
+            before continuing to the booking
+            partner.
           </p>
         </div>
       </div>
 
       <div className="flight-results-list">
-        {sortedFlights.map((flight, index) => {
-          const id = getFlightId(flight, index);
-
-          return (
-            <FlightCard
-              key={id}
-              flight={flight}
-              search={search}
-              onSelect={() => {
-                if (typeof onSelectFlight === "function") {
-                  onSelectFlight(flight);
-                }
-              }}
-            />
-          );
-        })}
+        {sortedFlights.map((flight, index) => (
+          <FlightCard
+            key={getFlightId(
+              flight,
+              index
+            )}
+            offer={flight}
+            sessionId={sessionId}
+          />
+        ))}
       </div>
     </section>
   );
-        }
+}
