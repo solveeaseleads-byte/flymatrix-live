@@ -1,276 +1,252 @@
 import React from "react";
 
-const FOOTER_GROUPS = [
-  {
-    title: "Explore",
-    links: [
-      {
-        label: "Search Flights",
-        path: "/search",
-      },
-      {
-        label: "Leisure Tourism",
-        path: "/tourism/leisure",
-      },
-      {
-        label: "Education Tourism",
-        path: "/tourism/education",
-      },
-      {
-        label: "Trip Planner",
-        path: "/planner",
-      },
-    ],
-  },
-  {
-    title: "Travel Tools",
-    links: [
-      {
-        label: "Visa Guidance",
-        path: "/visa",
-      },
-      {
-        label: "Hotels",
-        path: "/hotels",
-      },
-      {
-        label: "Activities",
-        path: "/activities",
-      },
-      {
-        label: "Travel Essentials",
-        path: "/essentials",
-      },
-      {
-        label: "Fare Alerts",
-        path: "/alerts",
-      },
-    ],
-  },
-  {
-    title: "Travel Services",
-    links: [
-      {
-        label: "eSIM",
-        path: "/esim",
-      },
-      {
-        label: "Transfers",
-        path: "/transfers",
-      },
-      {
-        label: "Luggage Storage",
-        path: "/luggage",
-      },
-      {
-        label: "Travel Assistance",
-        path: "/assistance",
-      },
-    ],
-  },
-];
+function navigate(path) {
+  window.history.pushState({}, "", path);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
 export default function Footer() {
-  function navigate(path) {
-    if (
-      path === window.location.pathname
-    ) {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+  const currentYear = new Date().getFullYear();
 
-      return;
-    }
-
-    window.history.pushState(
-      {},
-      "",
-      path
-    );
-
-    window.dispatchEvent(
-      new PopStateEvent("popstate")
-    );
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  }
-
-  function goHome() {
-    navigate("/");
-  }
-
-  function handleKeyDown(event, path) {
-    if (
-      event.key === "Enter" ||
-      event.key === " "
-    ) {
-      event.preventDefault();
-      navigate(path);
-    }
+  function handleNavigation(event, path) {
+    event.preventDefault();
+    navigate(path);
   }
 
   return (
     <footer className="fm-footer">
       <div className="fm-container">
-
-        <div className="fm-footer-main">
-
+        <div className="fm-footer-grid">
+          {/* Brand */}
           <div className="fm-footer-brand">
-
             <button
               type="button"
-              className="fm-brand"
-              onClick={goHome}
+              className="fm-footer-logo"
+              onClick={() => navigate("/")}
               aria-label="FlyMatrix home"
             >
-              <span className="fm-brand-mark">
+              <span className="fm-logo-mark" aria-hidden="true">
                 ✈
               </span>
 
-              <span className="fm-brand-text">
-                <strong>
-                  FlyMatrix
-                </strong>
-
-                <small>
-                  Search smarter. Travel prepared.
-                </small>
+              <span>
+                <strong>FlyMatrix</strong>
+                <small>Search smarter. Travel prepared.</small>
               </span>
             </button>
 
             <p>
-              Global flight search and travel
-              intelligence for planning, comparing
-              and preparing journeys.
+              Global flight search and travel intelligence for comparing
+              journeys, planning trips, discovering travel services, and
+              connecting with booking providers.
             </p>
 
-            <p className="fm-footer-note">
-              Search → Compare → Prepare →
-              Plan → Book → Monitor
-            </p>
+            <div className="fm-footer-trust">
+              <span>🌍 Global</span>
+              <span>🔎 Compare</span>
+              <span>🧭 Plan</span>
+            </div>
+          </div>
 
+          {/* Flights & Planning */}
+          <div className="fm-footer-column">
+            <h3>Flights &amp; Planning</h3>
+
+            <ul>
+              <li>
+                <a
+                  href="/search"
+                  onClick={(event) => handleNavigation(event, "/search")}
+                >
+                  Search Flights
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/planner"
+                  onClick={(event) => handleNavigation(event, "/planner")}
+                >
+                  Trip Planner
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/alerts"
+                  onClick={(event) => handleNavigation(event, "/alerts")}
+                >
+                  Fare Alerts
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/essentials"
+                  onClick={(event) =>
+                    handleNavigation(event, "/essentials")
+                  }
+                >
+                  Travel Essentials
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Tourism */}
+          <div className="fm-footer-column">
+            <h3>Tourism</h3>
+
+            <ul>
+              <li>
+                <a
+                  href="/tourism/leisure"
+                  onClick={(event) =>
+                    handleNavigation(event, "/tourism/leisure")
+                  }
+                >
+                  Leisure Tourism
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/tourism/education"
+                  onClick={(event) =>
+                    handleNavigation(event, "/tourism/education")
+                  }
+                >
+                  Education Tourism
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/hotels"
+                  onClick={(event) => handleNavigation(event, "/hotels")}
+                >
+                  Hotels
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/activities"
+                  onClick={(event) =>
+                    handleNavigation(event, "/activities")
+                  }
+                >
+                  Activities
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Travel Services */}
+          <div className="fm-footer-column">
+            <h3>Travel Services</h3>
+
+            <ul>
+              <li>
+                <a
+                  href="/visa"
+                  onClick={(event) => handleNavigation(event, "/visa")}
+                >
+                  Visa Guidance
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/esim"
+                  onClick={(event) => handleNavigation(event, "/esim")}
+                >
+                  eSIM
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/transfers"
+                  onClick={(event) =>
+                    handleNavigation(event, "/transfers")
+                  }
+                >
+                  Transfers
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/luggage"
+                  onClick={(event) =>
+                    handleNavigation(event, "/luggage")
+                  }
+                >
+                  Luggage Storage
+                </a>
+              </li>
+
+              <li>
+                <a
+                  href="/assistance"
+                  onClick={(event) =>
+                    handleNavigation(event, "/assistance")
+                  }
+                >
+                  Travel Assistance
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Provider disclosure */}
+        <div className="fm-footer-disclosure">
+          <strong>Provider information</strong>
+
+          <p>
+            FlyMatrix may connect you with airlines, hotels, travel
+            providers, activity providers, visa-information services,
+            connectivity providers, and other third-party booking
+            platforms. Availability, prices, booking conditions, refunds,
+            cancellations, and final terms are confirmed by the relevant
+            provider before purchase.
+          </p>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="fm-footer-bottom">
+          <div className="fm-footer-copy">
+            © {currentYear} FlyMatrix. All rights reserved.
           </div>
 
           <div className="fm-footer-links">
-
-            {FOOTER_GROUPS.map(
-              (group) => (
-                <div
-                  className="fm-footer-column"
-                  key={group.title}
-                >
-                  <h3>
-                    {group.title}
-                  </h3>
-
-                  <nav
-                    aria-label={
-                      group.title
-                    }
-                  >
-                    {group.links.map(
-                      (link) => (
-                        <button
-                          type="button"
-                          key={link.path}
-                          onClick={() =>
-                            navigate(
-                              link.path
-                            )
-                          }
-                          onKeyDown={(event) =>
-                            handleKeyDown(
-                              event,
-                              link.path
-                            )
-                          }
-                        >
-                          {link.label}
-                        </button>
-                      )
-                    )}
-                  </nav>
-                </div>
-              )
-            )}
-
-          </div>
-
-        </div>
-
-        <div className="fm-footer-disclaimer">
-
-          <strong>
-            Travel provider notice
-          </strong>
-
-          <p>
-            FlyMatrix may use third-party travel
-            providers and affiliate partners for
-            flights, hotels, activities, connectivity,
-            transfers, luggage storage, assistance and
-            other travel services. Prices, schedules,
-            availability, eligibility, cancellation
-            rules and final booking terms are
-            determined by the relevant provider.
-          </p>
-
-          <p>
-            Where provider data is available, FlyMatrix
-            displays or uses that data according to
-            the applicable integration. Where live
-            provider data is unavailable, FlyMatrix
-            does not represent a static estimate as a
-            confirmed current price.
-          </p>
-
-        </div>
-
-        <div className="fm-footer-bottom">
-
-          <div>
-            ©{" "}
-            {new Date().getFullYear()}{" "}
-            FlyMatrix. All rights reserved.
-          </div>
-
-          <div className="fm-footer-bottom-links">
-
-            <button
-              type="button"
-              onClick={() =>
-                navigate("/")
-              }
+            <a
+              href="/"
+              onClick={(event) => handleNavigation(event, "/")}
             >
               Home
-            </button>
+            </a>
 
-            <button
-              type="button"
-              onClick={() =>
-                navigate("/planner")
+            <a
+              href="/essentials"
+              onClick={(event) =>
+                handleNavigation(event, "/essentials")
               }
             >
-              Plan a trip
-            </button>
+              Travel Essentials
+            </a>
 
-            <button
-              type="button"
-              onClick={() =>
-                navigate("/alerts")
-              }
+            <a
+              href="/planner"
+              onClick={(event) => handleNavigation(event, "/planner")}
             >
-              Fare alerts
-            </button>
-
+              Plan a Trip
+            </a>
           </div>
-
         </div>
-
       </div>
     </footer>
   );
