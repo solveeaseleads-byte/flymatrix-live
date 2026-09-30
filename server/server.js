@@ -6,8 +6,9 @@ import {
   fileURLToPath
 } from "node:url";
 
-import { config }
-  from "./config.js";
+import {
+  config
+} from "./config.js";
 
 import {
   securityMiddleware
@@ -43,6 +44,24 @@ import alertRoutes
 import paymentRoutes
   from "./routes/payments.js";
 
+import hotelsRoutes
+  from "./routes/hotels.js";
+
+import activitiesRoutes
+  from "./routes/activities.js";
+
+import esimRoutes
+  from "./routes/esim.js";
+
+import transfersRoutes
+  from "./routes/transfers.js";
+
+import luggageRoutes
+  from "./routes/luggage.js";
+
+import tourismRoutes
+  from "./routes/tourism.js";
+
 import {
   startFareMonitorJob
 } from "./jobs/fareMonitorJob.js";
@@ -73,6 +92,10 @@ app.use(
   })
 );
 
+/* =========================================
+   HEALTH
+========================================= */
+
 app.get(
   "/api/health",
   (_req, res) => {
@@ -86,55 +109,153 @@ app.get(
   }
 );
 
+/* =========================================
+   FLIGHTS
+========================================= */
+
 app.use(
   "/api/flights",
   flightsRoutes
 );
+
+/* =========================================
+   TRUE COST
+========================================= */
 
 app.use(
   "/api/true-cost",
   trueCostRoutes
 );
 
+/* =========================================
+   WEATHER
+========================================= */
+
 app.use(
   "/api/weather",
   weatherRoutes
 );
+
+/* =========================================
+   VISA
+========================================= */
 
 app.use(
   "/api/visa",
   visaRoutes
 );
 
+/* =========================================
+   DESTINATIONS
+========================================= */
+
 app.use(
   "/api/destinations",
   destinationsRoutes
 );
+
+/* =========================================
+   BOOKING
+========================================= */
 
 app.use(
   "/api/booking",
   bookingRoutes
 );
 
+/* =========================================
+   AFFILIATE TRACKING
+========================================= */
+
 app.use(
   "/api/affiliate",
   affiliateRoutes
 );
+
+/* =========================================
+   LEADS
+========================================= */
 
 app.use(
   "/api/leads",
   leadRoutes
 );
 
+/* =========================================
+   ALERTS
+========================================= */
+
 app.use(
   "/api/alerts",
   alertRoutes
 );
 
+/* =========================================
+   PAYMENTS
+========================================= */
+
 app.use(
   "/api/pay",
   paymentRoutes
 );
+
+/* =========================================
+   HOTELS
+========================================= */
+
+app.use(
+  "/api/hotels",
+  hotelsRoutes
+);
+
+/* =========================================
+   ACTIVITIES
+========================================= */
+
+app.use(
+  "/api/activities",
+  activitiesRoutes
+);
+
+/* =========================================
+   ESIM
+========================================= */
+
+app.use(
+  "/api/esim",
+  esimRoutes
+);
+
+/* =========================================
+   TRANSFERS
+========================================= */
+
+app.use(
+  "/api/transfers",
+  transfersRoutes
+);
+
+/* =========================================
+   LUGGAGE
+========================================= */
+
+app.use(
+  "/api/luggage",
+  luggageRoutes
+);
+
+/* =========================================
+   TOURISM
+========================================= */
+
+app.use(
+  "/api/tourism",
+  tourismRoutes
+);
+
+/* =========================================
+   FRONTEND STATIC FILES
+========================================= */
 
 const __filename =
   fileURLToPath(
@@ -162,6 +283,10 @@ app.use(
   express.static(dist)
 );
 
+/* =========================================
+   SPA FALLBACK
+========================================= */
+
 app.get(
   "/{*splat}",
   (req, res) => {
@@ -170,11 +295,13 @@ app.get(
         "/api/"
       )
     ) {
-      return res.status(404).json({
-        success: false,
-        error:
-          "API route not found."
-      });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          error:
+            "API route not found."
+        });
     }
 
     res.sendFile(
@@ -186,6 +313,10 @@ app.get(
   }
 );
 
+/* =========================================
+   SERVER
+========================================= */
+
 app.listen(
   config.port,
   "0.0.0.0",
@@ -196,9 +327,13 @@ app.listen(
   }
 );
 
+/* =========================================
+   BACKGROUND JOBS
+========================================= */
+
 if (
   config.nodeEnv ===
   "production"
 ) {
   startFareMonitorJob();
-}
+      }
