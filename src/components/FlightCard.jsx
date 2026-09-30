@@ -1,56 +1,226 @@
-import React from "react";
-
+import React, { useState } from "react";
 import { apiPost } from "../utils/api.js";
+
+function getAirportCode(value) {
+  if (!value) return "";
+
+  if (typeof value === "string") {
+    return value;
+  }
+
+  return (
+    value.iata ||
+    value.iataCode ||
+    value.code ||
+    value.airportCode ||
+    ""
+  );
+}
+
+function getPrice(offer) {
+  const amount =
+    offer?.price?.amount ??
+    offer?.price?.total ??
+    offer?.price ??
+    offer?.totalPrice ??
+    offer?.total_price ??
+    offer?.amount;
+
+  const numericAmount = Number(amount);
+
+  return Number.isFinite(numericAmount)
+    ? numericAmount
+    : null;
+}
+
+function getCurrency(offer) {
+  return (
+    offer?.price?.currency ||
+    offer?.currency ||
+    "USD"
+  );
+}
+
+function getAirline(offer) {
+  return (
+    offer?.airline?.name ||
+    offer?.airlineName ||
+    offer?.carrier?.name ||
+    offer?.carrierName ||
+    offer?.airline?.code ||
+    "Airline"
+  );
+}
+
+function getDeparture(offer) {
+  return (
+    offer?.departure?.time ||
+    offer?.departureTime ||
+    offer?.departure?.datetime ||
+    offer?.segments?.[0]?.departureTime ||
+    offer?.segments?.[0]?.departure?.time ||
+    "—"
+  );
+}
+
+function getArrival(offer) {
+  const segments = offer?.segments;
+
+  if (Array.isArray(segments) && segments.length) {
+    const finalSegment =
+      segments[segments.length - 1];
+
+    return (
+      finalSegment?.arrivalTime ||
+      finalSegment?.arrival?.time ||
+      finalSegment?.arrival?.datetime ||
+      offer?.arrival?.time ||
+      offer?.arrivalTime ||
+      "—"
+    );
+  }
+
+  return (
+    offer?.arrival?.time ||
+    offer?.arrivalTime ||
+    offer?.arrival?.datetime ||
+    "—"
+  );
+}
+
+function getStops(offer) {
+  if (typeof offer?.stops === "number") {
+    return offer.stops;
+  }
+
+  if (typeof offer?.stopCount === "number") {
+    return offer.stopCount;
+  }
+
+  if (typeof offer?.stop_count === "number") {
+    return offer.stop_count;
+  }
+
+  if (Array.isArray(offer?.segments)) {
+    return Math.max(
+      offer.segments.length - 1,
+      0
+    );
+  }
+
+  return 0;
+}
+
+function formatPrice(amount, currency) {
+  if (amount === null) {
+    return "Price unavailable";
+  }
+
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  } catch {
+    return `${currency} ${amount.toLocaleString()}`;
+  }
+}
 
 export default function FlightCard({
   offer,
-  sessionId
+  sessionId,
+  onSelect,
 }) {
-  const amount = Number(
-    offer?.price?.amount ??
-    offer?.price ??
-    0
-  );
+  const [booking, setBooking] =
+    useState(false);
+
+  const amount = getPrice(offer);
 
   const currency =
-    offer?.price?.currency ||
-    offer?.currency ||
-    "USD";
+    getCurrency(offer);
 
   const airline =
-    offer?.airline?.name ||
-    offer?.airlineName ||
-    offer?.airline?.code ||
-    "Airline";
+    getAirline(offer);
 
   const origin =
-    offer?.origin?.iata ||
-    offer?.origin ||
-    "";
+    getAirportCode(
+      offer?.origin ||
+      offer?.from ||
+      offer?.departureAirport ||
+      offer?.segments?.[0]?.origin ||
+      offer?.segments?.[0]?.departure
+    );
 
   const destination =
-    offer?.destination?.iata ||
-    offer?.destination ||
-    "";
+    getAirportCode(
+      offer?.destination ||
+      offer?.to ||
+      offer?.arrivalAirport ||
+      (
+        Array.isArray(offer?.segments) &&
+        offer.segments.length
+          ? offer.segments[
+              offer.segments.length - 1
+            ]?.destination ||
+            offer.segments[
+              offer.segments.length - 1
+            ]?.arrival
+          : null
+      )
+    );
 
   const departure =
-    offer?.departure?.time ||
-    offer?.departureTime ||
-    "—";
+    getDeparture(offer);
 
   const arrival =
-    offer?.arrival?.time ||
-    offer?.arrivalTime ||
-    "—";
+    getArrival(offer);
 
-  async function openBooking() {
+  const stops =
+    getStops(offer);
+
+  async function openBooking(event) {
+    event?.preventDefault();
+
+    if (booking) {
+      return;
+    }
+
+    if (!offer) {
+      alert(
+        "This flight offer is unavailable."
+      );
+      return;
+    }
+
+    /*
+     * If the parent supplied a selection handler,
+     * allow the application to store the selected
+     * flight before opening the booking flow.
+     */
+    if (typeof onSelect === "function") {
+      onSelect(offer);
+    }
+
+    setBooking(true);
+
     try {
       let trackingUrl =
-        offer?.link || null;
+        offer?.link ||
+        offer?.trackingUrl ||
+        null;
 
       let affiliateProgramId =
-        offer?.affiliateProgramId || null;
+        offer?.affiliateProgramId ||
+        null;
 
+      /*
+       * If the provider already supplied a tracked
+       * URL, use it directly.
+       *
+       * Otherwise ask the backend booking resolver
+       * to generate the correct provider URL.
+       */
       if (!trackingUrl) {
         const response =
           await apiPost(
@@ -58,69 +228,138 @@ export default function FlightCard({
             {
               category: "flights",
               market: "GLOBAL",
+
               originCountry: "NG",
+
               destinationCountry:
-                offer?.destinationCountry || "",
+                offer?.destinationCountry ||
+                offer?.destination?.countryCode ||
+                offer?.destination?.country_code ||
+                "",
+
               origin,
               destination,
-              sessionId
+
+              sessionId:
+                sessionId || null,
+
+              offerId:
+                offer?.id ||
+                offer?.offerId ||
+                offer?.offer_id ||
+                null,
+
+              provider:
+                offer?.source ||
+                offer?.provider ||
+                null,
+
+              price:
+                amount,
+
+              currency,
             }
           );
 
         trackingUrl =
-          response.trackingUrl;
+          response?.trackingUrl ||
+          response?.url ||
+          null;
 
         affiliateProgramId =
-          response.affiliateProgramId;
+          response?.affiliateProgramId ||
+          null;
       }
 
       if (!trackingUrl) {
         throw new Error(
-          "No booking partner is configured."
+          "No flight booking partner is currently configured."
         );
       }
 
-      await apiPost(
-        "affiliate/click",
-        {
-          affiliateProgramId,
-          origin,
-          destination,
-          category: "flights",
-          market: "GLOBAL",
-          sessionId
-        }
-      ).catch(() => {});
+      /*
+       * Record the affiliate click before
+       * redirecting the traveler.
+       *
+       * Tracking failure must not prevent a
+       * valid provider redirect.
+       */
+      try {
+        await apiPost(
+          "affiliate/click",
+          {
+            affiliateProgramId,
 
+            origin,
+            destination,
+
+            category:
+              "flights",
+
+            market:
+              "GLOBAL",
+
+            sessionId:
+              sessionId || null,
+          }
+        );
+      } catch (trackingError) {
+        console.warn(
+          "FlyMatrix affiliate click tracking failed:",
+          trackingError
+        );
+      }
+
+      /*
+       * Open the provider in a new tab.
+       */
       window.open(
         trackingUrl,
         "_blank",
         "noopener,noreferrer"
       );
     } catch (error) {
-      alert(error.message);
+      console.error(
+        "FlyMatrix booking flow failed:",
+        error
+      );
+
+      alert(
+        error?.message ||
+          "Unable to open the booking partner. Please try again."
+      );
+    } finally {
+      setBooking(false);
     }
   }
 
   return (
     <article className="fm-card fm-offer">
-
       <div>
         <span className="fm-badge">
           Flight
         </span>
 
-        <h3>{airline}</h3>
+        <h3>
+          {airline}
+        </h3>
 
         <div className="fm-meta">
-          {origin} → {destination}
+          {origin || "Origin"} →{" "}
+          {destination || "Destination"}
         </div>
       </div>
 
       <div className="fm-meta">
-        <strong>{departure}</strong>
+        <strong>
+          {departure}
+        </strong>
+
         {" → "}
-        <strong>{arrival}</strong>
+
+        <strong>
+          {arrival}
+        </strong>
 
         <br />
 
@@ -129,24 +368,33 @@ export default function FlightCard({
 
         {" · "}
 
-        {offer?.stops ?? 0}
-        {" stop(s)"}
+        {stops}
+
+        {stops === 1
+          ? " stop"
+          : " stops"}
       </div>
 
       <div>
         <div className="fm-price">
-          {currency}{" "}
-          {amount.toLocaleString()}
+          {formatPrice(
+            amount,
+            currency
+          )}
         </div>
 
         <button
+          type="button"
           className="fm-btn fm-primary"
           onClick={openBooking}
+          disabled={booking}
+          aria-busy={booking}
         >
-          View / book
+          {booking
+            ? "Opening booking..."
+            : "View / book"}
         </button>
       </div>
-
     </article>
   );
 }
