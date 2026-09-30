@@ -10,27 +10,30 @@ export function securityMiddleware(app) {
     })
   );
 
+  const allowedOrigins = [
+    config.frontendUrl,
+    "https://flymatrix-live.onrender.com",
+    "http://localhost:5173",
+    "http://localhost:4173"
+  ].filter(Boolean);
+
   app.use(
     cors({
       origin(origin, callback) {
+        // Allow requests that have no Origin header
+        // such as server-to-server requests and health checks.
         if (!origin) {
           return callback(null, true);
         }
 
-        const allowed = [
-          config.frontendUrl,
-          "http://localhost:5173",
-          "http://localhost:4173"
-        ];
-
-        if (allowed.includes(origin)) {
+        if (allowedOrigins.includes(origin)) {
           return callback(null, true);
         }
 
+        console.warn(`CORS blocked origin: ${origin}`);
+
         return callback(
-          new Error(
-            "CORS origin not allowed"
-          )
+          new Error("CORS origin not allowed")
         );
       },
 
