@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import {
   searchEsim,
-} from "../services/esim.js";
+} from "../../services/esim.js";
 
 const router = Router();
 
@@ -67,3 +67,27 @@ router.get(
 );
 
 export default router;
+
+The important change
+
+Old:
+
+from "../services/esim.js"
+
+Correct:
+
+from "../../services/esim.js"
+
+Your structure should therefore remain:
+
+src/
+├── services/
+│   └── esim.js
+│
+└── server/
+    └── route/
+        └── esim.js
+
+Do not create another "esim.js" under "server/services".
+
+After replacing the file, commit/push to GitHub and let Render redeploy.
