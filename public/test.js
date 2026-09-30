@@ -1,0 +1,1 @@
+document.getElementById("root").innerHTML = "<h1>EXTERNAL JAVASCRIPT WORKS</h1><p>The browser successfully executed an external JavaScript file.</p>";
