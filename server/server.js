@@ -14,6 +14,11 @@ import {
   securityMiddleware
 } from "./securityMiddleware.js";
 
+import {
+  notFoundHandler,
+  errorHandler
+} from "./errorHandler.js";
+
 import flightsRoutes
   from "./routes/flights.js";
 
@@ -244,33 +249,19 @@ app.use(
 );
 
 /* =========================================
-   SPA FALLBACK
+   CENTRALIZED 404 HANDLER
 ========================================= */
 
-app.get(
-  "/{*splat}",
-  (req, res) => {
-    if (
-      req.path.startsWith(
-        "/api/"
-      )
-    ) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          error:
-            "API route not found."
-        });
-    }
+app.use(
+  notFoundHandler
+);
 
-    res.sendFile(
-      path.join(
-        dist,
-        "index.html"
-      )
-    );
-  }
+/* =========================================
+   CENTRALIZED ERROR HANDLER
+========================================= */
+
+app.use(
+  errorHandler
 );
 
 /* =========================================
