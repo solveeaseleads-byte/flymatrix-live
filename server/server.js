@@ -59,6 +59,9 @@ import transfersRoutes
 import luggageRoutes
   from "./routes/luggage.js";
 
+import assistanceRoutes
+  from "./routes/assistance.js";
+
 import tourismRoutes
   from "./routes/tourism.js";
 
@@ -69,7 +72,15 @@ import {
 const app =
   express();
 
+/* =========================================
+   SECURITY
+========================================= */
+
 securityMiddleware(app);
+
+/* =========================================
+   BODY PARSING
+========================================= */
 
 app.use(
   express.json({
@@ -110,7 +121,7 @@ app.get(
 );
 
 /* =========================================
-   FLIGHTS
+   CORE API ROUTES
 ========================================= */
 
 app.use(
@@ -118,81 +129,45 @@ app.use(
   flightsRoutes
 );
 
-/* =========================================
-   TRUE COST
-========================================= */
-
 app.use(
   "/api/true-cost",
   trueCostRoutes
 );
-
-/* =========================================
-   WEATHER
-========================================= */
 
 app.use(
   "/api/weather",
   weatherRoutes
 );
 
-/* =========================================
-   VISA
-========================================= */
-
 app.use(
   "/api/visa",
   visaRoutes
 );
-
-/* =========================================
-   DESTINATIONS
-========================================= */
 
 app.use(
   "/api/destinations",
   destinationsRoutes
 );
 
-/* =========================================
-   BOOKING
-========================================= */
-
 app.use(
   "/api/booking",
   bookingRoutes
 );
-
-/* =========================================
-   AFFILIATE TRACKING
-========================================= */
 
 app.use(
   "/api/affiliate",
   affiliateRoutes
 );
 
-/* =========================================
-   LEADS
-========================================= */
-
 app.use(
   "/api/leads",
   leadRoutes
 );
 
-/* =========================================
-   ALERTS
-========================================= */
-
 app.use(
   "/api/alerts",
   alertRoutes
 );
-
-/* =========================================
-   PAYMENTS
-========================================= */
 
 app.use(
   "/api/pay",
@@ -200,7 +175,7 @@ app.use(
 );
 
 /* =========================================
-   HOTELS
+   TRAVEL SERVICE ROUTES
 ========================================= */
 
 app.use(
@@ -208,45 +183,30 @@ app.use(
   hotelsRoutes
 );
 
-/* =========================================
-   ACTIVITIES
-========================================= */
-
 app.use(
   "/api/activities",
   activitiesRoutes
 );
-
-/* =========================================
-   ESIM
-========================================= */
 
 app.use(
   "/api/esim",
   esimRoutes
 );
 
-/* =========================================
-   TRANSFERS
-========================================= */
-
 app.use(
   "/api/transfers",
   transfersRoutes
 );
-
-/* =========================================
-   LUGGAGE
-========================================= */
 
 app.use(
   "/api/luggage",
   luggageRoutes
 );
 
-/* =========================================
-   TOURISM
-========================================= */
+app.use(
+  "/api/assistance",
+  assistanceRoutes
+);
 
 app.use(
   "/api/tourism",
@@ -314,7 +274,7 @@ app.get(
 );
 
 /* =========================================
-   SERVER
+   START SERVER
 ========================================= */
 
 app.listen(
@@ -328,7 +288,7 @@ app.listen(
 );
 
 /* =========================================
-   BACKGROUND JOBS
+   PRODUCTION JOBS
 ========================================= */
 
 if (
@@ -336,4 +296,4 @@ if (
   "production"
 ) {
   startFareMonitorJob();
-      }
+}
