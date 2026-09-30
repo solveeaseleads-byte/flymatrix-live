@@ -15,95 +15,117 @@ import {
 const IATA =
   /^[A-Z]{3}$/;
 
-export async function searchFlights(
-  params
+const DATE =
+  /^\d{4}-\d{2}-\d{2}$/;
+
+function normalizeIata(
+  value
 ) {
-  const origin =
-    String(
-      params.origin || ""
-    ).toUpperCase();
+  return String(
+    value || ""
+  )
+    .trim()
+    .toUpperCase();
+}
 
-  const destination =
-    String(
-      params.destination || ""
-    ).toUpperCase();
+function normalizeDate(
+  value
+) {
+  return String(
+    value || ""
+  ).trim();
+}
 
-  const departureDate =
-    String(
-      params.departureDate || ""
-    );
-
+function validateSearch({
+  origin,
+  destination,
+  departureDate
+}) {
   if (
     !IATA.test(origin) ||
     !IATA.test(destination)
   ) {
-    throw new Error(
-      "Origin and destination must be valid 3-letter IATA codes."
-    );
+    const error =
+      new Error(
+        "Origin and destination must be valid 3-letter IATA codes."
+      );
+
+    error.statusCode =
+      400;
+
+    error.code =
+      "INVALID_AIRPORT_CODE";
+
+    error.expose =
+      true;
+
+    throw error;
   }
 
   if (
-    !/^\d{4}-\d{2}-\d{2}$/.test(
+    !DATE.test(
       departureDate
     )
   ) {
-    throw new Error(
-      "A valid departure date is required."
-    );
+    const error =
+      new Error(
+        "A valid departure date is required."
+      );
+
+    error.statusCode =
+      400;
+
+    error.code =
+      "INVALID_DEPARTURE_DATE";
+
+    error.expose =
+      true;
+
+    throw error;
   }
+}
 
-  const sessionId =
-    crypto.randomUUID();
+function getPriceAmount(
+  result
+) {
+  const amount =
+    result?.price?.amount ??
+    result?.price ??
+    0;
 
-  let results = [];
+  const numeric =
+    Number(amount);
 
-  let providerMessage = "";
+  return Number.isFinite(
+    numeric
+  )
+    ? numeric
+    : Number.POSITIVE_INFINITY;
+}
 
-  try {
-    results =
-      await searchDuffelFlights({
-        ...params,
-        origin,
-        destination,
-        departureDate
-      });
-
-    providerMessage =
-      "Live offers returned by Duffel.";
-  } catch (error) {
-    if (
-      error.code !==
-      "DUFFEL_NOT_CONFIGURED"
-    ) {
-      throw error;
-    }
-
-    const fallback =
-      await searchTravelpayouts({
-        origin,
-        destination,
-        departureDate
-      });
-
-    results =
-      fallback.results;
-
-    providerMessage =
-      fallback.available
-        ? "Live offers returned by Travelpayouts."
-        : "No live flight provider is configured.";
-  }
-
-  results.sort(
+function sortResults(
+  results
+) {
+  return [
+    ...(Array.isArray(
+      results
+    )
+      ? results
+      : [])
+  ].sort(
     (a, b) =>
-      Number(
-        a?.price?.amount || 0
-      ) -
-      Number(
-        b?.price?.amount || 0
-      )
+      getPriceAmount(a) -
+      getPriceAmount(b)
   );
+}
 
+async function recordSearchEvent({
+  sessionId,
+  origin,
+  destination,
+  departureDate,
+  results
+}) {
   try {
     await getSupabase()
       .from(
@@ -128,16 +150,215 @@ export async function searchFlights(
           "none"
       });
   } catch {
-    // Analytics must not break search.
+    /*
+     * Analytics must never break
+     * a customer flight search.
+     */
   }
+}
+
+async function searchWithDuffel(
+  params
+) {
+  try {
+    const results =
+      await searchDuffelFlights(
+        params
+      );
+
+    return {
+      available: true,
+      configured: true,
+      provider:
+        "Duffel",
+      source:
+        "duffel",
+      results:
+        Array.isArray(
+          results
+        )
+          ? results
+          : []
+    };
+  } catch (error) {
+    if (
+      error?.code !==
+      "DUFFEL_NOT_CONFIGURED"
+    ) {
+      throw error;
+    }
+
+    return {
+      available: false,
+      configured: false,
+      provider:
+        "Duffel",
+      source:
+        "duffel",
+      results: []
+    };
+  }
+}
+
+async function searchWithTravelpayouts(
+  params
+) {
+  const result =
+    await searchTravelpayouts(
+      params
+    );
 
   return {
-    success: true,
+    available:
+      result?.available === true,
+
+    configured:
+      result?.configured === true,
+
+    provider:
+      result?.provider ||
+      "Aviasales",
+
+    network:
+      result?.network ||
+      "Travelpayouts",
+
+    source:
+      result?.source ||
+      "travelpayouts",
+
+    results:
+      Array.isArray(
+        result?.results
+      )
+        ? result.results
+        : []
+  };
+}
+
+export async function searchFlights(
+  params = {}
+) {
+  const origin =
+    normalizeIata(
+      params.origin
+    );
+
+  const destination =
+    normalizeIata(
+      params.destination
+    );
+
+  const departureDate =
+    normalizeDate(
+      params.departureDate
+    );
+
+  validateSearch({
+    origin,
+    destination,
+    departureDate
+  });
+
+  const sessionId =
+    crypto.randomUUID();
+
+  const searchParams = {
+    ...params,
+
+    origin,
+    destination,
+    departureDate
+  };
+
+  /*
+   * ------------------------------------------------------
+   * Primary provider: Duffel
+   * ------------------------------------------------------
+   */
+  const duffel =
+    await searchWithDuffel(
+      searchParams
+    );
+
+  let results =
+    duffel.results;
+
+  let providerMessage =
+    "";
+
+  let providerUsed =
+    duffel.available
+      ? "duffel"
+      : null;
+
+  /*
+   * ------------------------------------------------------
+   * Fallback provider:
+   * Travelpayouts / Aviasales
+   * ------------------------------------------------------
+   */
+  if (
+    !duffel.available
+  ) {
+    const travelpayouts =
+      await searchWithTravelpayouts(
+        searchParams
+      );
+
+    results =
+      travelpayouts.results;
+
+    providerUsed =
+      travelpayouts.available
+        ? "travelpayouts"
+        : null;
+
+    providerMessage =
+      travelpayouts.available
+        ? "Live offers returned by Travelpayouts / Aviasales."
+        : "No live flight provider is configured.";
+  } else {
+    providerMessage =
+      "Live offers returned by Duffel.";
+  }
+
+  results =
+    sortResults(
+      results
+    );
+
+  await recordSearchEvent({
     sessionId,
     origin,
     destination,
     departureDate,
+    results
+  });
+
+  return {
+    success: true,
+
+    sessionId,
+
+    origin,
+
+    destination,
+
+    departureDate,
+
+    provider:
+      providerUsed,
+
     providerMessage,
+
+    resultsCount:
+      results.length,
+
     results
   };
 }
+
+export default {
+  searchFlights
+};
