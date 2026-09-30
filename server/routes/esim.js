@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import {
   searchEsim,
-} from "../../services/esim.js";
+} from "../../src/services/esim.js";
 
 const router = Router();
 
