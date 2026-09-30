@@ -1,81 +1,257 @@
-const API_BASE = (
-  import.meta.env.VITE_API_BASE_URL || ""
-).replace(/\/$/, "");
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "";
 
+/*
+ * Build a backend API URL.
+ *
+ * Examples:
+ *   apiUrl("flights")
+ *   -> /api/flights
+ *
+ *   apiUrl("booking/resolve")
+ *   -> /api/booking/resolve
+ */
+export function apiUrl(path = "") {
+  const cleanPath =
+    String(path)
+      .replace(/^\/+/, "");
+
+  const base =
+    API_BASE.replace(/\/+$/, "");
+
+  if (!cleanPath) {
+    return `${base}/api`;
+  }
+
+  return `${base}/api/${cleanPath}`;
+}
+
+/*
+ * Safely parse a JSON response.
+ */
 async function parseResponse(response) {
   const contentType =
-    response.headers.get("content-type") || "";
+    response.headers.get(
+      "content-type"
+    ) || "";
 
-  const data = contentType.includes("application/json")
-    ? await response.json()
-    : await response.text();
+  if (
+    contentType.includes(
+      "application/json"
+    )
+  ) {
+    return response.json();
+  }
+
+  const text =
+    await response.text();
+
+  return text
+    ? { data: text }
+    : {};
+}
+
+/*
+ * Common error extraction.
+ */
+function getErrorMessage(
+  data,
+  response
+) {
+  if (
+    data &&
+    typeof data === "object"
+  ) {
+    return (
+      data.error ||
+      data.message ||
+      data.details ||
+      `Request failed with status ${response.status}.`
+    );
+  }
+
+  return (
+    `Request failed with status ${response.status}.`
+  );
+}
+
+/*
+ * Generic request helper.
+ */
+export async function apiRequest(
+  path,
+  options = {}
+) {
+  const {
+    method = "GET",
+    body,
+    headers = {},
+    signal,
+    ...rest
+  } = options;
+
+  const requestHeaders = {
+    Accept:
+      "application/json",
+    ...headers,
+  };
+
+  let requestBody = body;
+
+  /*
+   * Automatically serialize plain objects.
+   */
+  if (
+    body !== undefined &&
+    body !== null &&
+    typeof body === "object" &&
+    !(body instanceof FormData) &&
+    !(body instanceof Blob)
+  ) {
+    requestHeaders[
+      "Content-Type"
+    ] =
+      requestHeaders[
+        "Content-Type"
+      ] ||
+      "application/json";
+
+    requestBody =
+      JSON.stringify(body);
+  }
+
+  const response =
+    await fetch(
+      apiUrl(path),
+      {
+        method,
+        headers:
+          requestHeaders,
+        body:
+          requestBody,
+        signal,
+        ...rest,
+      }
+    );
+
+  const data =
+    await parseResponse(
+      response
+    );
 
   if (!response.ok) {
-    throw new Error(
-      typeof data === "string"
-        ? data
-        : data.error || "API request failed"
-    );
+    const error =
+      new Error(
+        getErrorMessage(
+          data,
+          response
+        )
+      );
+
+    error.status =
+      response.status;
+
+    error.response =
+      data;
+
+    throw error;
   }
 
   return data;
 }
 
-export async function apiFetch(
-  endpoint,
-  params = {},
+/*
+ * GET request.
+ */
+export function apiGet(
+  path,
   options = {}
 ) {
-  const query = new URLSearchParams();
-
-  Object.entries(params).forEach(
-    ([key, value]) => {
-      if (
-        value !== undefined &&
-        value !== null &&
-        value !== ""
-      ) {
-        query.set(key, value);
-      }
+  return apiRequest(
+    path,
+    {
+      ...options,
+      method: "GET",
     }
   );
-
-  const queryString = query.toString();
-
-  const url =
-    `${API_BASE}/api/${endpoint.replace(/^\/+/, "")}` +
-    (queryString ? `?${queryString}` : "");
-
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {})
-    }
-  });
-
-  return parseResponse(response);
 }
 
-export async function apiPost(
-  endpoint,
-  body = {},
+/*
+ * POST request.
+ */
+export function apiPost(
+  path,
+  body,
   options = {}
 ) {
-  const url =
-    `${API_BASE}/api/${endpoint.replace(/^\/+/, "")}`;
-
-  const response = await fetch(url, {
-    method: "POST",
-    ...options,
-
-    headers: {
-      "Content-Type": "application/json",
-      ...(options.headers || {})
-    },
-
-    body: JSON.stringify(body)
-  });
-
-  return parseResponse(response);
+  return apiRequest(
+    path,
+    {
+      ...options,
+      method: "POST",
+      body,
+    }
+  );
 }
+
+/*
+ * PUT request.
+ */
+export function apiPut(
+  path,
+  body,
+  options = {}
+) {
+  return apiRequest(
+    path,
+    {
+      ...options,
+      method: "PUT",
+      body,
+    }
+  );
+}
+
+/*
+ * PATCH request.
+ */
+export function apiPatch(
+  path,
+  body,
+  options = {}
+) {
+  return apiRequest(
+    path,
+    {
+      ...options,
+      method: "PATCH",
+      body,
+    }
+  );
+}
+
+/*
+ * DELETE request.
+ */
+export function apiDelete(
+  path,
+  options = {}
+) {
+  return apiRequest(
+    path,
+    {
+      ...options,
+      method: "DELETE",
+    }
+  );
+}
+
+export default {
+  apiUrl,
+  apiRequest,
+  apiGet,
+  apiPost,
+  apiPut,
+  apiPatch,
+  apiDelete,
+};
