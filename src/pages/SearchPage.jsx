@@ -1,24 +1,36 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
 import FlightSearchForm from "../components/flights/FlightSearchForm.jsx";
 import SearchSummary from "../components/flights/SearchSummary.jsx";
 import FlightResults from "../components/flights/FlightResults.jsx";
 import { navigate } from "../router/AppRouter.jsx";
 
 const EMPTY_SEARCH = {
+  searchId: "",
   tripType: "roundtrip",
+
   origin: null,
   destination: null,
+
   departureDate: "",
   returnDate: "",
+
   adults: 1,
   children: 0,
   infants: 0,
+
   cabin: "economy",
   stops: "any",
 };
 
 function normalizeAirport(value) {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
 
   return {
     code:
@@ -26,49 +38,81 @@ function normalizeAirport(value) {
       value.iata ||
       value.iataCode ||
       "",
+
     name:
       value.name ||
       value.airportName ||
       "",
+
     city:
       value.city ||
       value.cityName ||
       "",
+
     country:
       value.country ||
       value.countryName ||
       "",
+
     countryCode:
       value.countryCode ||
       value.country_code ||
       "",
+
     type:
       value.type ||
       "airport",
   };
 }
 
-function readNumber(value, fallback = 0) {
-  const number = Number(value);
+function readNumber(
+  value,
+  fallback = 0
+) {
+  const number =
+    Number(value);
 
-  return Number.isFinite(number)
+  return Number.isFinite(
+    number
+  )
     ? number
     : fallback;
 }
 
-function readSearchFromUrl() {
-  const params = new URLSearchParams(
-    window.location.search
+function normalizePassengerCount(
+  value,
+  fallback,
+  minimum
+) {
+  return Math.max(
+    minimum,
+    readNumber(
+      value,
+      fallback
+    )
   );
+}
+
+function readSearchFromUrl() {
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
 
   const originCode =
-    params.get("origin") || "";
+    params.get("origin") ||
+    "";
 
   const destinationCode =
-    params.get("destination") || "";
+    params.get("destination") ||
+    "";
 
   return {
     ...EMPTY_SEARCH,
+
+    searchId:
+      params.get("searchId") ||
+      "",
 
     tripType:
       params.get("trip") ||
@@ -77,7 +121,11 @@ function readSearchFromUrl() {
 
     origin: originCode
       ? {
-          code: originCode.toUpperCase(),
+          code:
+            originCode
+              .trim()
+              .toUpperCase(),
+
           name: "",
           city: "",
           country: "",
@@ -86,50 +134,63 @@ function readSearchFromUrl() {
         }
       : null,
 
-    destination: destinationCode
-      ? {
-          code:
-            destinationCode.toUpperCase(),
-          name: "",
-          city: "",
-          country: "",
-          countryCode: "",
-          type: "airport",
-        }
-      : null,
+    destination:
+      destinationCode
+        ? {
+            code:
+              destinationCode
+                .trim()
+                .toUpperCase(),
+
+            name: "",
+            city: "",
+            country: "",
+            countryCode: "",
+            type: "airport",
+          }
+        : null,
 
     departureDate:
-      params.get("departure") ||
-      params.get("depart") ||
+      params.get(
+        "departureDate"
+      ) ||
+      params.get(
+        "departure"
+      ) ||
+      params.get(
+        "depart"
+      ) ||
       "",
 
     returnDate:
-      params.get("return") ||
+      params.get(
+        "returnDate"
+      ) ||
+      params.get(
+        "return"
+      ) ||
       "",
 
-    adults: Math.max(
-      1,
-      readNumber(
+    adults:
+      normalizePassengerCount(
         params.get("adults"),
+        1,
         1
-      )
-    ),
+      ),
 
-    children: Math.max(
-      0,
-      readNumber(
+    children:
+      normalizePassengerCount(
         params.get("children"),
+        0,
         0
-      )
-    ),
+      ),
 
-    infants: Math.max(
-      0,
-      readNumber(
+    infants:
+      normalizePassengerCount(
         params.get("infants"),
+        0,
         0
-      )
-    ),
+      ),
 
     cabin:
       params.get("cabin") ||
@@ -148,50 +209,81 @@ function readStoredSearch() {
         "flymatrix:lastSearch"
       );
 
-    if (!stored) return null;
+    if (!stored) {
+      return null;
+    }
 
-    const parsed = JSON.parse(stored);
+    const parsed =
+      JSON.parse(stored);
 
-    if (!parsed) return null;
+    if (!parsed) {
+      return null;
+    }
 
     return {
       ...EMPTY_SEARCH,
       ...parsed,
 
-      origin: normalizeAirport(
-        parsed.origin
-      ),
+      searchId:
+        parsed.searchId ||
+        "",
 
-      destination: normalizeAirport(
-        parsed.destination
-      ),
+      tripType:
+        parsed.tripType ||
+        parsed.trip ||
+        "roundtrip",
 
-      adults: Math.max(
-        1,
-        readNumber(
+      origin:
+        normalizeAirport(
+          parsed.origin
+        ),
+
+      destination:
+        normalizeAirport(
+          parsed.destination
+        ),
+
+      departureDate:
+        parsed.departureDate ||
+        parsed.departure ||
+        "",
+
+      returnDate:
+        parsed.returnDate ||
+        parsed.return ||
+        "",
+
+      adults:
+        normalizePassengerCount(
           parsed.passengers?.adults ??
             parsed.adults,
+          1,
           1
-        )
-      ),
+        ),
 
-      children: Math.max(
-        0,
-        readNumber(
+      children:
+        normalizePassengerCount(
           parsed.passengers?.children ??
             parsed.children,
+          0,
           0
-        )
-      ),
+        ),
 
-      infants: Math.max(
-        0,
-        readNumber(
+      infants:
+        normalizePassengerCount(
           parsed.passengers?.infants ??
             parsed.infants,
+          0,
           0
-        )
-      ),
+        ),
+
+      cabin:
+        parsed.cabin ||
+        "economy",
+
+      stops:
+        parsed.stops ||
+        "any",
     };
   } catch (error) {
     console.warn(
@@ -210,97 +302,292 @@ function mergeSearchData() {
   const storedSearch =
     readStoredSearch();
 
-  /*
-   * URL values are authoritative when they exist.
-   * Stored search fills in airport metadata that may
-   * not fit into a short URL.
-   */
-  return {
+  const merged = {
     ...EMPTY_SEARCH,
+
     ...(storedSearch || {}),
     ...(urlSearch || {}),
-    origin:
-      urlSearch.origin?.code &&
-      storedSearch?.origin?.code ===
-        urlSearch.origin.code
-        ? storedSearch.origin
-        : urlSearch.origin ||
-          storedSearch?.origin ||
-          null,
-    destination:
-      urlSearch.destination?.code &&
-      storedSearch?.destination?.code ===
-        urlSearch.destination.code
-        ? storedSearch.destination
-        : urlSearch.destination ||
-          storedSearch?.destination ||
-          null,
   };
+
+  /*
+   * URL values are authoritative when
+   * they contain an actual value.
+   *
+   * Stored airport objects are used to
+   * restore names/cities/countries that
+   * are intentionally omitted from the URL.
+   */
+  if (
+    urlSearch.origin?.code &&
+    storedSearch?.origin?.code ===
+      urlSearch.origin.code
+  ) {
+    merged.origin =
+      storedSearch.origin;
+  }
+
+  if (
+    urlSearch.destination?.code &&
+    storedSearch?.destination?.code ===
+      urlSearch.destination.code
+  ) {
+    merged.destination =
+      storedSearch.destination;
+  }
+
+  return merged;
 }
 
 function createInitialSearch() {
   return mergeSearchData();
 }
 
-function hasMeaningfulSearch(search) {
+function hasMeaningfulSearch(
+  search
+) {
   return Boolean(
-    search.origin?.code ||
-      search.destination?.code ||
-      search.departureDate ||
-      search.returnDate
+    search?.origin?.code &&
+      search?.destination?.code &&
+      search?.departureDate
   );
 }
 
-function buildSearchPayload(search) {
+function buildSearchPayload(
+  search
+) {
+  const adults =
+    normalizePassengerCount(
+      search?.adults,
+      1,
+      1
+    );
+
+  const children =
+    normalizePassengerCount(
+      search?.children,
+      0,
+      0
+    );
+
+  const infants =
+    normalizePassengerCount(
+      search?.infants,
+      0,
+      0
+    );
+
   return {
     searchId:
-      search.searchId ||
+      search?.searchId ||
       `fm_${Date.now()}`,
 
     tripType:
-      search.tripType ||
+      search?.tripType ||
       "roundtrip",
 
     origin:
-      normalizeAirport(search.origin),
+      normalizeAirport(
+        search?.origin
+      ),
 
     destination:
       normalizeAirport(
-        search.destination
+        search?.destination
       ),
 
     departureDate:
-      search.departureDate || "",
+      search?.departureDate ||
+      "",
 
     returnDate:
-      search.returnDate || "",
+      search?.returnDate ||
+      "",
 
     passengers: {
-      adults: Math.max(
-        1,
-        readNumber(search.adults, 1)
-      ),
-      children: Math.max(
-        0,
-        readNumber(search.children, 0)
-      ),
-      infants: Math.max(
-        0,
-        readNumber(search.infants, 0)
-      ),
+      adults,
+      children,
+      infants,
     },
 
     cabin:
-      search.cabin || "economy",
+      search?.cabin ||
+      "economy",
 
     stops:
-      search.stops || "any",
+      search?.stops ||
+      "any",
   };
+}
+
+function buildSearchQuery(
+  payload
+) {
+  const params =
+    new URLSearchParams();
+
+  if (payload.searchId) {
+    params.set(
+      "searchId",
+      payload.searchId
+    );
+  }
+
+  if (payload.tripType) {
+    params.set(
+      "trip",
+      payload.tripType
+    );
+
+    params.set(
+      "tripType",
+      payload.tripType
+    );
+  }
+
+  if (payload.origin?.code) {
+    params.set(
+      "origin",
+      payload.origin.code
+    );
+  }
+
+  if (
+    payload.destination?.code
+  ) {
+    params.set(
+      "destination",
+      payload.destination.code
+    );
+  }
+
+  if (
+    payload.departureDate
+  ) {
+    params.set(
+      "departureDate",
+      payload.departureDate
+    );
+
+    params.set(
+      "departure",
+      payload.departureDate
+    );
+  }
+
+  if (
+    payload.returnDate
+  ) {
+    params.set(
+      "returnDate",
+      payload.returnDate
+    );
+
+    params.set(
+      "return",
+      payload.returnDate
+    );
+  }
+
+  params.set(
+    "adults",
+    String(
+      payload.passengers
+        ?.adults || 1
+    )
+  );
+
+  params.set(
+    "children",
+    String(
+      payload.passengers
+        ?.children || 0
+    )
+  );
+
+  params.set(
+    "infants",
+    String(
+      payload.passengers
+        ?.infants || 0
+    )
+  );
+
+  params.set(
+    "cabin",
+    payload.cabin ||
+      "economy"
+  );
+
+  params.set(
+    "stops",
+    payload.stops ||
+      "any"
+  );
+
+  return params.toString();
+}
+
+function extractResults(
+  data
+) {
+  if (
+    Array.isArray(data)
+  ) {
+    return data;
+  }
+
+  if (
+    Array.isArray(
+      data?.results
+    )
+  ) {
+    return data.results;
+  }
+
+  if (
+    Array.isArray(
+      data?.flights
+    )
+  ) {
+    return data.flights;
+  }
+
+  if (
+    Array.isArray(
+      data?.offers
+    )
+  ) {
+    return data.offers;
+  }
+
+  if (
+    Array.isArray(
+      data?.data
+    )
+  ) {
+    return data.data;
+  }
+
+  return [];
+}
+
+function getResponseSessionId(
+  data,
+  fallback
+) {
+  return (
+    data?.sessionId ||
+    data?.session_id ||
+    fallback ||
+    ""
+  );
 }
 
 export default function SearchPage() {
   const [search, setSearch] =
-    useState(createInitialSearch);
+    useState(
+      createInitialSearch
+    );
 
   const [results, setResults] =
     useState([]);
@@ -314,6 +601,9 @@ export default function SearchPage() {
   const [hasSearched, setHasSearched] =
     useState(false);
 
+  const [sessionId, setSessionId] =
+    useState("");
+
   const [sortBy, setSortBy] =
     useState("recommended");
 
@@ -325,9 +615,46 @@ export default function SearchPage() {
     });
 
   useEffect(() => {
-    const handleNavigation = () => {
-      setSearch(createInitialSearch());
-    };
+    const initial =
+      createInitialSearch();
+
+    setSearch(initial);
+
+    /*
+     * If the URL contains a complete
+     * search, execute it automatically.
+     *
+     * This supports links generated by
+     * FlightSearchForm.
+     */
+    if (
+      hasMeaningfulSearch(
+        initial
+      )
+    ) {
+      performSearch(initial);
+    }
+
+    const handleNavigation =
+      () => {
+        const next =
+          createInitialSearch();
+
+        setSearch(next);
+        setResults([]);
+        setSearchError("");
+        setSessionId("");
+
+        if (
+          hasMeaningfulSearch(
+            next
+          )
+        ) {
+          performSearch(next);
+        } else {
+          setHasSearched(false);
+        }
+      };
 
     window.addEventListener(
       "popstate",
@@ -343,78 +670,109 @@ export default function SearchPage() {
   }, []);
 
   const payload = useMemo(
-    () => buildSearchPayload(search),
+    () =>
+      buildSearchPayload(
+        search
+      ),
     [search]
   );
 
-  async function performSearch(nextSearch) {
+  async function performSearch(
+    nextSearch
+  ) {
     const nextPayload =
-      buildSearchPayload(nextSearch);
+      buildSearchPayload(
+        nextSearch
+      );
 
-    setSearch(nextSearch);
+    setSearch(
+      nextSearch
+    );
+
     setLoading(true);
     setSearchError("");
     setHasSearched(true);
     setResults([]);
 
     try {
-      /*
-       * The frontend sends normalized search details
-       * to the existing backend flight endpoint.
-       *
-       * The backend remains responsible for provider
-       * credentials and live provider communication.
-       */
-      const response = await fetch(
-        "/api/flights/search",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-            Accept:
-              "application/json",
-          },
-          body: JSON.stringify(
-            nextPayload
-          ),
-        }
-      );
+      const response =
+        await fetch(
+          "/api/flights/search",
+          {
+            method: "POST",
 
-      if (!response.ok) {
-        throw new Error(
-          `Flight search failed with status ${response.status}`
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              Accept:
+                "application/json",
+            },
+
+            body:
+              JSON.stringify(
+                nextPayload
+              ),
+          }
         );
+
+      let data = null;
+
+      try {
+        data =
+          await response.json();
+      } catch {
+        data = null;
       }
 
-      const data =
-        await response.json();
+      if (!response.ok) {
+        const message =
+          data?.error ||
+          `Flight search failed with status ${response.status}.`;
+
+        const error =
+          new Error(message);
+
+        error.statusCode =
+          response.status;
+
+        throw error;
+      }
 
       const flightResults =
-        Array.isArray(data)
-          ? data
-          : Array.isArray(data.results)
-          ? data.results
-          : Array.isArray(data.flights)
-          ? data.flights
-          : Array.isArray(data.data)
-          ? data.data
-          : [];
+        extractResults(
+          data
+        );
 
-      setResults(flightResults);
+      const returnedSessionId =
+        getResponseSessionId(
+          data,
+          nextPayload.searchId
+        );
 
-      /*
-       * Preserve the complete search so a refresh,
-       * details page or affiliate-link adapter can
-       * access the exact search.
-       */
+      setResults(
+        flightResults
+      );
+
+      setSessionId(
+        returnedSessionId
+      );
+
+      const storedPayload = {
+        ...nextPayload,
+
+        sessionId:
+          returnedSessionId,
+
+        createdAt:
+          new Date().toISOString(),
+      };
+
       sessionStorage.setItem(
         "flymatrix:lastSearch",
-        JSON.stringify({
-          ...nextPayload,
-          createdAt:
-            new Date().toISOString(),
-        })
+        JSON.stringify(
+          storedPayload
+        )
       );
     } catch (error) {
       console.error(
@@ -422,12 +780,6 @@ export default function SearchPage() {
         error
       );
 
-      /*
-       * The backend may not yet expose the live
-       * provider route during frontend construction.
-       * Keep the page usable and show a clear state
-       * rather than inventing flight prices.
-       */
       setResults([]);
 
       setSearchError(
@@ -439,40 +791,102 @@ export default function SearchPage() {
     }
   }
 
-  function handleSearch(nextPayload) {
+  function handleSearch(
+    nextPayload
+  ) {
     const nextSearch = {
       ...EMPTY_SEARCH,
+
       ...nextPayload,
 
-      origin: normalizeAirport(
-        nextPayload.origin
-      ),
+      origin:
+        normalizeAirport(
+          nextPayload.origin
+        ),
 
-      destination: normalizeAirport(
-        nextPayload.destination
-      ),
+      destination:
+        normalizeAirport(
+          nextPayload.destination
+        ),
+
+      departureDate:
+        nextPayload.departureDate ||
+        nextPayload.departure ||
+        "",
+
+      returnDate:
+        nextPayload.returnDate ||
+        nextPayload.return ||
+        "",
 
       adults:
-        nextPayload.passengers?.adults ||
-        1,
+        normalizePassengerCount(
+          nextPayload.passengers
+            ?.adults ??
+            nextPayload.adults,
+          1,
+          1
+        ),
 
       children:
-        nextPayload.passengers?.children ||
-        0,
+        normalizePassengerCount(
+          nextPayload.passengers
+            ?.children ??
+            nextPayload.children,
+          0,
+          0
+        ),
 
       infants:
-        nextPayload.passengers?.infants ||
-        0,
+        normalizePassengerCount(
+          nextPayload.passengers
+            ?.infants ??
+            nextPayload.infants,
+          0,
+          0
+        ),
+
+      cabin:
+        nextPayload.cabin ||
+        "economy",
+
+      stops:
+        nextPayload.stops ||
+        "any",
+
+      searchId:
+        nextPayload.searchId ||
+        `fm_${Date.now()}`,
     };
 
-    return performSearch(nextSearch);
+    const normalizedPayload =
+      buildSearchPayload(
+        nextSearch
+      );
+
+    const query =
+      buildSearchQuery(
+        normalizedPayload
+      );
+
+    navigate(
+      `/search?${query}`
+    );
+
+    return performSearch(
+      nextSearch
+    );
   }
 
-  function handleFlightSelect(flight) {
+  function handleFlightSelect(
+    flight
+  ) {
     try {
       sessionStorage.setItem(
         "flymatrix:selectedFlight",
-        JSON.stringify(flight)
+        JSON.stringify(
+          flight
+        )
       );
     } catch (error) {
       console.warn(
@@ -481,17 +895,48 @@ export default function SearchPage() {
       );
     }
 
+    const activeSessionId =
+      sessionId ||
+      payload.searchId ||
+      "";
+
+    const query =
+      new URLSearchParams();
+
+    if (activeSessionId) {
+      query.set(
+        "searchId",
+        activeSessionId
+      );
+    }
+
+    if (payload.origin?.code) {
+      query.set(
+        "origin",
+        payload.origin.code
+      );
+    }
+
+    if (
+      payload.destination?.code
+    ) {
+      query.set(
+        "destination",
+        payload.destination.code
+      );
+    }
+
     navigate(
-      `/flights/details?searchId=${encodeURIComponent(
-        payload.searchId
-      )}`
+      `/flights/details?${query.toString()}`
     );
   }
 
   function handleFilterChange(
     nextFilters
   ) {
-    setFilters(nextFilters);
+    setFilters(
+      nextFilters
+    );
   }
 
   function clearSearch() {
@@ -499,17 +944,40 @@ export default function SearchPage() {
       "flymatrix:lastSearch"
     );
 
-    setSearch(EMPTY_SEARCH);
+    sessionStorage.removeItem(
+      "flymatrix:selectedFlight"
+    );
+
+    setSearch(
+      EMPTY_SEARCH
+    );
+
     setResults([]);
     setSearchError("");
+    setSessionId("");
     setHasSearched(false);
 
-    navigate("/search");
+    setFilters({
+      maxStops: "any",
+      maxPrice: "",
+      airlines: [],
+    });
+
+    navigate(
+      "/search"
+    );
+  }
+
+  function editSearch() {
+    setHasSearched(false);
+    setSearchError("");
   }
 
   const showSearchForm =
     !hasSearched ||
-    !hasMeaningfulSearch(search);
+    !hasMeaningfulSearch(
+      search
+    );
 
   return (
     <main className="search-page">
@@ -524,8 +992,9 @@ export default function SearchPage() {
           </h1>
 
           <p>
-            Search using your exact route, travel
-            dates and passenger requirements.
+            Search using your exact route,
+            travel dates and passenger
+            requirements.
           </p>
         </div>
       </section>
@@ -535,8 +1004,12 @@ export default function SearchPage() {
           {showSearchForm ? (
             <div className="search-page-panel">
               <FlightSearchForm
-                initialSearch={search}
-                onSearch={handleSearch}
+                initialSearch={
+                  search
+                }
+                onSearch={
+                  handleSearch
+                }
               />
             </div>
           ) : (
@@ -544,10 +1017,9 @@ export default function SearchPage() {
               <div className="search-summary-wrapper">
                 <SearchSummary
                   search={search}
-                  onEdit={() => {
-                    setHasSearched(false);
-                    setSearchError("");
-                  }}
+                  onEdit={
+                    editSearch
+                  }
                 />
               </div>
 
@@ -563,9 +1035,12 @@ export default function SearchPage() {
                         type="button"
                         onClick={() =>
                           setFilters({
-                            maxStops: "any",
-                            maxPrice: "",
-                            airlines: [],
+                            maxStops:
+                              "any",
+                            maxPrice:
+                              "",
+                            airlines:
+                              [],
                           })
                         }
                       >
@@ -583,13 +1058,19 @@ export default function SearchPage() {
                         value={
                           filters.maxStops
                         }
-                        onChange={(event) =>
-                          handleFilterChange({
-                            ...filters,
-                            maxStops:
-                              event.target
-                                .value,
-                          })
+                        onChange={(
+                          event
+                        ) =>
+                          handleFilterChange(
+                            {
+                              ...filters,
+
+                              maxStops:
+                                event
+                                  .target
+                                  .value,
+                            }
+                          )
                         }
                       >
                         <option value="any">
@@ -624,13 +1105,19 @@ export default function SearchPage() {
                         value={
                           filters.maxPrice
                         }
-                        onChange={(event) =>
-                          handleFilterChange({
-                            ...filters,
-                            maxPrice:
-                              event.target
-                                .value,
-                          })
+                        onChange={(
+                          event
+                        ) =>
+                          handleFilterChange(
+                            {
+                              ...filters,
+
+                              maxPrice:
+                                event
+                                  .target
+                                  .value,
+                            }
+                          )
                         }
                       />
                     </div>
@@ -649,7 +1136,8 @@ export default function SearchPage() {
                       </strong>
 
                       <span>
-                        {search.origin?.code ||
+                        {search.origin
+                          ?.code ||
                           "Origin"}{" "}
                         →{" "}
                         {search.destination
@@ -665,10 +1153,15 @@ export default function SearchPage() {
 
                       <select
                         id="sort-results"
-                        value={sortBy}
-                        onChange={(event) =>
+                        value={
+                          sortBy
+                        }
+                        onChange={(
+                          event
+                        ) =>
                           setSortBy(
-                            event.target
+                            event
+                              .target
                               .value
                           )
                         }
@@ -728,9 +1221,11 @@ export default function SearchPage() {
                         </h2>
 
                         <p>
-                          Start the search to request
-                          current flight options from
-                          the configured provider.
+                          Start the search
+                          to request current
+                          flight options from
+                          the configured
+                          provider.
                         </p>
 
                         <button
@@ -748,12 +1243,24 @@ export default function SearchPage() {
                     )}
 
                   <FlightResults
-                    results={results}
-                    loading={loading}
-                    sortBy={sortBy}
-                    filters={filters}
+                    results={
+                      results
+                    }
+                    loading={
+                      loading
+                    }
+                    sortBy={
+                      sortBy
+                    }
+                    filters={
+                      filters
+                    }
                     onSelect={
                       handleFlightSelect
+                    }
+                    sessionId={
+                      sessionId ||
+                      payload.searchId
                     }
                   />
                 </section>
@@ -776,7 +1283,9 @@ export default function SearchPage() {
               <button
                 type="button"
                 className="btn btn-secondary"
-                onClick={clearSearch}
+                onClick={
+                  clearSearch
+                }
               >
                 Clear search
               </button>
