@@ -120,17 +120,15 @@ const FACILITIES = [
 function buildQuery(values) {
   const query = new URLSearchParams();
 
-  Object.entries(values).forEach(
-    ([key, value]) => {
-      if (
-        value !== undefined &&
-        value !== null &&
-        value !== ""
-      ) {
-        query.set(key, String(value));
-      }
+  Object.entries(values).forEach(([key, value]) => {
+    if (
+      value !== undefined &&
+      value !== null &&
+      value !== ""
+    ) {
+      query.set(key, String(value));
     }
-  );
+  });
 
   return query.toString();
 }
@@ -138,19 +136,27 @@ function buildQuery(values) {
 export default function EducationTourismPage() {
   const [country, setCountry] = useState("");
   const [city, setCity] = useState("");
+
   const [level, setLevel] = useState(
     "Certificate"
   );
+
   const [field, setField] = useState(
     "Information Technology"
   );
+
   const [budget, setBudget] = useState("");
+
   const [duration, setDuration] =
     useState("1-3-months");
+
   const [studyMode, setStudyMode] =
     useState("On campus");
-  const [selectedFacilities, setSelectedFacilities] =
-    useState([]);
+
+  const [
+    selectedFacilities,
+    setSelectedFacilities,
+  ] = useState([]);
 
   const selectedDestination = useMemo(
     () =>
@@ -340,3 +346,199 @@ export default function EducationTourismPage() {
 
             <select
               id="education-field"
+              value={field}
+              onChange={(event) =>
+                setField(event.target.value)
+              }
+            >
+              {STUDY_FIELDS.map((item) => (
+                <option
+                  key={item}
+                  value={item}
+                >
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="education-budget">
+              Estimated budget
+            </label>
+
+            <select
+              id="education-budget"
+              value={budget}
+              onChange={(event) =>
+                setBudget(event.target.value)
+              }
+            >
+              <option value="">
+                Any budget
+              </option>
+
+              <option value="under-5000">
+                Under $5,000
+              </option>
+
+              <option value="5000-10000">
+                $5,000 – $10,000
+              </option>
+
+              <option value="10000-20000">
+                $10,000 – $20,000
+              </option>
+
+              <option value="20000-40000">
+                $20,000 – $40,000
+              </option>
+
+              <option value="over-40000">
+                Over $40,000
+              </option>
+            </select>
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="education-duration">
+              Study duration
+            </label>
+
+            <select
+              id="education-duration"
+              value={duration}
+              onChange={(event) =>
+                setDuration(event.target.value)
+              }
+            >
+              <option value="1-3-months">
+                1–3 months
+              </option>
+
+              <option value="3-6-months">
+                3–6 months
+              </option>
+
+              <option value="6-12-months">
+                6–12 months
+              </option>
+
+              <option value="1-2-years">
+                1–2 years
+              </option>
+
+              <option value="2-4-years">
+                2–4 years
+              </option>
+
+              <option value="4-plus-years">
+                4+ years
+              </option>
+            </select>
+          </div>
+
+          <div className="form-field">
+            <label htmlFor="education-mode">
+              Study mode
+            </label>
+
+            <select
+              id="education-mode"
+              value={studyMode}
+              onChange={(event) =>
+                setStudyMode(event.target.value)
+              }
+            >
+              {STUDY_MODES.map((item) => (
+                <option
+                  key={item}
+                  value={item}
+                >
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <section className="tourism-facilities">
+          <div>
+            <span className="section-kicker">
+              Travel preparation
+            </span>
+
+            <h3>
+              What would you like included?
+            </h3>
+
+            <p>
+              Select the travel and preparation
+              services you want to consider with
+              your education journey.
+            </p>
+          </div>
+
+          <div className="facility-grid">
+            {FACILITIES.map((facility) => {
+              const selected =
+                selectedFacilities.includes(
+                  facility
+                );
+
+              return (
+                <label
+                  key={facility}
+                  className={`facility-option${
+                    selected
+                      ? " is-selected"
+                      : ""
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selected}
+                    onChange={() =>
+                      toggleFacility(
+                        facility
+                      )
+                    }
+                  />
+
+                  <span>
+                    {facility}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="tourism-form-actions">
+          <div>
+            <span className="section-kicker">
+              Ready?
+            </span>
+
+            <strong>
+              Explore education options
+            </strong>
+
+            <p>
+              Your selections will be passed to
+              the education results page.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={handleExplore}
+          >
+            Explore education options →
+          </button>
+        </section>
+      </section>
+    </main>
+  );
+}
