@@ -28,9 +28,7 @@ function formatCurrency(value, currency = "USD") {
       maximumFractionDigits: 0,
     }).format(amount);
   } catch {
-    return `${currency} ${Math.round(
-      amount
-    ).toLocaleString()}`;
+    return `${currency} ${Math.round(amount).toLocaleString()}`;
   }
 }
 
@@ -71,10 +69,7 @@ function getPrice(option) {
 
   if (price && typeof price === "object") {
     return {
-      amount:
-        price.amount ??
-        price.total ??
-        price.value,
+      amount: price.amount ?? price.total ?? price.value,
       currency:
         price.currency ||
         option?.currency ||
@@ -87,8 +82,7 @@ function getPrice(option) {
       option?.amount ??
       option?.estimatedPrice ??
       null,
-    currency:
-      option?.currency || "USD",
+    currency: option?.currency || "USD",
   };
 }
 
@@ -154,64 +148,18 @@ function getTravelAffiliate(category) {
   return AFFILIATES[category] || null;
 }
 
-function getTravelCategory(value) {
-  const text = String(value || "").toLowerCase();
-
-  if (
-    text.includes("flight") ||
-    text.includes("air")
-  ) {
-    return "flights";
-  }
-
-  if (
-    text.includes("hotel") ||
-    text.includes("accommodation") ||
-    text.includes("stay")
-  ) {
-    return "hotels";
-  }
-
-  if (
-    text.includes("activity") ||
-    text.includes("tour")
-  ) {
-    return "activities";
-  }
-
-  if (text.includes("esim")) {
-    return "esim";
-  }
-
-  if (text.includes("luggage")) {
-    return "luggage";
-  }
-
-  if (text.includes("visa")) {
-    return "visa";
-  }
-
-  if (text.includes("assist")) {
-    return "assistance";
-  }
-
-  return null;
-}
-
 async function fetchEducationOptions(params) {
   const query = new URLSearchParams();
 
-  Object.entries(params).forEach(
-    ([key, value]) => {
-      if (
-        value !== undefined &&
-        value !== null &&
-        value !== ""
-      ) {
-        query.set(key, String(value));
-      }
+  Object.entries(params).forEach(([key, value]) => {
+    if (
+      value !== undefined &&
+      value !== null &&
+      value !== ""
+    ) {
+      query.set(key, String(value));
     }
-  );
+  });
 
   const response = await fetch(
     `/api/tourism/education?${query.toString()}`,
@@ -238,9 +186,7 @@ function ProviderStatus({ source }) {
     return null;
   }
 
-  const normalized = String(
-    source
-  ).toLowerCase();
+  const normalized = String(source).toLowerCase();
 
   let label = "Provider data";
 
@@ -265,14 +211,11 @@ function ProviderStatus({ source }) {
 function OptionCard({ option, onOpen }) {
   const price = getPrice(option);
   const title = getTitle(option);
-  const institution =
-    getInstitution(option);
-  const category =
-    getCategory(option);
+  const institution = getInstitution(option);
+  const category = getCategory(option);
   const source = getSource(option);
 
-  const directUrl =
-    getBookingUrl(option);
+  const directUrl = getBookingUrl(option);
 
   return (
     <article className="tourism-option-card">
@@ -281,9 +224,7 @@ function OptionCard({ option, onOpen }) {
           {category}
         </span>
 
-        <ProviderStatus
-          source={source}
-        />
+        <ProviderStatus source={source} />
       </div>
 
       <h3>{title}</h3>
@@ -292,9 +233,7 @@ function OptionCard({ option, onOpen }) {
         {institution}
       </div>
 
-      <p>
-        {getDescription(option)}
-      </p>
+      <p>{getDescription(option)}</p>
 
       {option?.city && (
         <div className="tourism-option-provider">
@@ -319,6 +258,22 @@ function OptionCard({ option, onOpen }) {
         </strong>
       </div>
 
+      {option?.duration && (
+        <div className="tourism-option-provider">
+          <span>Duration</span>
+
+          <strong>{option.duration}</strong>
+        </div>
+      )}
+
+      {option?.studyMode && (
+        <div className="tourism-option-provider">
+          <span>Study mode</span>
+
+          <strong>{option.studyMode}</strong>
+        </div>
+      )}
+
       <div className="tourism-option-bottom">
         <div>
           <span className="tourism-option-price-label">
@@ -337,9 +292,7 @@ function OptionCard({ option, onOpen }) {
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() =>
-              onOpen(directUrl)
-            }
+            onClick={() => onOpen(directUrl)}
           >
             View provider
           </button>
@@ -355,8 +308,7 @@ function TravelServiceCard({
   category,
   onOpen,
 }) {
-  const url =
-    getTravelAffiliate(category);
+  const url = getTravelAffiliate(category);
 
   if (!url) {
     return null;
@@ -389,50 +341,26 @@ export default function EducationResultsPage() {
     []
   );
 
-  const country =
-    params.get("country") || "";
+  const country = params.get("country") || "";
+  const city = params.get("city") || "";
+  const level = params.get("level") || "";
+  const field = params.get("field") || "";
+  const budget = params.get("budget") || "";
+  const duration = params.get("duration") || "";
+  const studyMode = params.get("studyMode") || "";
 
-  const city =
-    params.get("city") || "";
+  const facilities = params.get("facilities")
+    ? params
+        .get("facilities")
+        .split(",")
+        .filter(Boolean)
+    : [];
 
-  const level =
-    params.get("level") || "";
-
-  const field =
-    params.get("field") || "";
-
-  const budget =
-    params.get("budget") || "";
-
-  const duration =
-    params.get("duration") || "";
-
-  const studyMode =
-    params.get("studyMode") || "";
-
-  const facilities =
-    params.get("facilities")
-      ? params
-          .get("facilities")
-          .split(",")
-          .filter(Boolean)
-      : [];
-
-  const [options, setOptions] =
-    useState([]);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState("");
-
-  const [source, setSource] =
-    useState("");
-
-  const [sortOrder, setSortOrder] =
-    useState("price");
-
+  const [options, setOptions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [source, setSource] = useState("");
+  const [sortOrder, setSortOrder] = useState("price");
   const [categoryFilter, setCategoryFilter] =
     useState("all");
 
@@ -453,8 +381,7 @@ export default function EducationResultsPage() {
             budget,
             duration,
             studyMode,
-            facilities:
-              facilities.join(","),
+            facilities: facilities.join(","),
           });
 
         if (!active) {
@@ -512,13 +439,12 @@ export default function EducationResultsPage() {
         categoryFilter.toLowerCase();
 
       result = result.filter((option) => {
-        const category =
-          String(
-            option?.category ||
-              option?.level ||
-              option?.studyLevel ||
-              ""
-          ).toLowerCase();
+        const category = String(
+          option?.category ||
+            option?.level ||
+            option?.studyLevel ||
+            ""
+        ).toLowerCase();
 
         return category.includes(filter);
       });
@@ -530,17 +456,37 @@ export default function EducationResultsPage() {
           getTitle(b)
         )
       );
+    } else if (sortOrder === "price-desc") {
+      result.sort((a, b) => {
+        const aPrice = Number(
+          getPrice(a).amount
+        );
+
+        const bPrice = Number(
+          getPrice(b).amount
+        );
+
+        const aValue =
+          Number.isFinite(aPrice)
+            ? aPrice
+            : -Infinity;
+
+        const bValue =
+          Number.isFinite(bPrice)
+            ? bPrice
+            : -Infinity;
+
+        return bValue - aValue;
+      });
     } else {
       result.sort((a, b) => {
-        const aPrice =
-          Number(
-            getPrice(a).amount
-          );
+        const aPrice = Number(
+          getPrice(a).amount
+        );
 
-        const bPrice =
-          Number(
-            getPrice(b).amount
-          );
+        const bPrice = Number(
+          getPrice(b).amount
+        );
 
         const aValue =
           Number.isFinite(aPrice)
@@ -572,6 +518,34 @@ export default function EducationResultsPage() {
       url,
       "_blank",
       "noopener,noreferrer"
+    );
+  }
+
+  function retrySearch() {
+    setError("");
+    setLoading(true);
+
+    const query = new URLSearchParams();
+
+    if (country) query.set("country", country);
+    if (city) query.set("city", city);
+    if (level) query.set("level", level);
+    if (field) query.set("field", field);
+    if (budget) query.set("budget", budget);
+    if (duration) query.set("duration", duration);
+    if (studyMode) {
+      query.set("studyMode", studyMode);
+    }
+
+    if (facilities.length) {
+      query.set(
+        "facilities",
+        facilities.join(",")
+      );
+    }
+
+    navigate(
+      `/tourism/education/results?${query.toString()}`
     );
   }
 
@@ -614,7 +588,9 @@ export default function EducationResultsPage() {
           <span>Destination</span>
 
           <strong>
-            {city || country || "Not specified"}
+            {city ||
+              country ||
+              "Not specified"}
           </strong>
         </div>
 
@@ -699,3 +675,199 @@ export default function EducationResultsPage() {
 
           <label htmlFor="education-sort">
             Sort
+          </label>
+
+          <select
+            id="education-sort"
+            value={sortOrder}
+            onChange={(event) =>
+              setSortOrder(
+                event.target.value
+              )
+            }
+          >
+            <option value="price">
+              Lowest price
+            </option>
+
+            <option value="price-desc">
+              Highest price
+            </option>
+
+            <option value="name">
+              Name
+            </option>
+          </select>
+        </div>
+      </section>
+
+      {error && (
+        <section className="tourism-error">
+          <div>
+            <strong>
+              Education search unavailable
+            </strong>
+
+            <p>{error}</p>
+          </div>
+
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={retrySearch}
+          >
+            Try again
+          </button>
+        </section>
+      )}
+
+      {loading && (
+        <section className="tourism-results-grid">
+          <article className="tourism-option-card">
+            <span className="fm-badge">
+              Searching
+            </span>
+
+            <h3>
+              Finding education options...
+            </h3>
+
+            <p>
+              We are checking the connected
+              education service using your
+              selected requirements.
+            </p>
+          </article>
+        </section>
+      )}
+
+      {!loading &&
+        !error &&
+        sortedOptions.length === 0 && (
+          <section className="tourism-empty-state">
+            <span className="fm-badge">
+              No matching options
+            </span>
+
+            <h2>
+              No education options were
+              returned.
+            </h2>
+
+            <p>
+              Try changing the destination,
+              study level, field, duration,
+              budget, or study mode.
+            </p>
+
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() =>
+                navigate(
+                  "/tourism/education"
+                )
+              }
+            >
+              Change study plan
+            </button>
+          </section>
+        )}
+
+      {!loading &&
+        !error &&
+        sortedOptions.length > 0 && (
+          <section className="tourism-results-grid">
+            {sortedOptions.map(
+              (option, index) => (
+                <OptionCard
+                  key={
+                    option?.id ||
+                    option?.programId ||
+                    option?.institutionId ||
+                    `${getTitle(option)}-${index}`
+                  }
+                  option={option}
+                  onOpen={openProvider}
+                />
+              )
+            )}
+          </section>
+        )}
+
+      {!loading && !error && (
+        <section className="tourism-support-section">
+          <div>
+            <span className="fm-badge">
+              Travel preparation
+            </span>
+
+            <h2>
+              Prepare for your education
+              journey
+            </h2>
+
+            <p>
+              After selecting an education
+              option, use the connected travel
+              services to prepare flights,
+              accommodation, activities, visa
+              information, eSIM and assistance.
+            </p>
+          </div>
+
+          <div className="tourism-track-grid">
+            <TravelServiceCard
+              title="Flights"
+              description="Search flight options for your education destination."
+              category="flights"
+              onOpen={openProvider}
+            />
+
+            <TravelServiceCard
+              title="Accommodation"
+              description="Find accommodation options for your study stay."
+              category="hotels"
+              onOpen={openProvider}
+            />
+
+            <TravelServiceCard
+              title="Activities"
+              description="Explore activities and things to do at your destination."
+              category="activities"
+              onOpen={openProvider}
+            />
+
+            <TravelServiceCard
+              title="eSIM"
+              description="Prepare mobile connectivity before travelling."
+              category="esim"
+              onOpen={openProvider}
+            />
+
+            <TravelServiceCard
+              title="Visa information"
+              description="Check visa information and application requirements."
+              category="visa"
+              onOpen={openProvider}
+            />
+
+            <TravelServiceCard
+              title="Travel assistance"
+              description="Explore travel assistance options before departure."
+              category="assistance"
+              onOpen={openProvider}
+            />
+
+            <TravelServiceCard
+              title="Luggage storage"
+              description="Find luggage storage options when needed."
+              category="luggage"
+              onOpen={openProvider}
+            />
+          </div>
+        </section>
+      )}
+    </main>
+  );
+}
