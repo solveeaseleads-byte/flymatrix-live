@@ -1,12 +1,3 @@
-import { config } from "../config.js";
-
-import {
-  getTravelpayoutsStatus,
-  getSafeConfiguration,
-  getAffiliateMarker,
-  createPartnerLink
-} from "./travelpayoutsClient.js";
-
 const AFFILIATE_PROVIDERS = {
   flights: {
     name: "Aviasales",
@@ -17,7 +8,7 @@ const AFFILIATE_PROVIDERS = {
       process.env.TRAVELPAYOUTS_AVIASALES_TRS ||
       null,
     url:
-      "https://aviasales.tpk.lv/zXqbkMmK"
+      "https://aviasales.tpk.lv/zXqbkMmK",
   },
 
   hotels: {
@@ -29,7 +20,7 @@ const AFFILIATE_PROVIDERS = {
       process.env.TRAVELPAYOUTS_BOOKING_TRS ||
       null,
     url:
-      "https://booking.tpk.lv/zXqbkMmK"
+      "https://booking.tpk.lv/zXqbkMmK",
   },
 
   activities: {
@@ -41,7 +32,7 @@ const AFFILIATE_PROVIDERS = {
       process.env.TRAVELPAYOUTS_GETYOURGUIDE_TRS ||
       null,
     url:
-      "https://getyourguide.tpk.lv/zXqbkMmK"
+      "https://getyourguide.tpk.lv/zXqbkMmK",
   },
 
   esim: {
@@ -53,7 +44,7 @@ const AFFILIATE_PROVIDERS = {
       process.env.TRAVELPAYOUTS_AIRALO_TRS ||
       null,
     url:
-      "https://airalo.tpk.lv/SMhYBmH2"
+      "https://airalo.tpk.lv/SMhYBmH2",
   },
 
   assistance: {
@@ -65,7 +56,7 @@ const AFFILIATE_PROVIDERS = {
       process.env.TRAVELPAYOUTS_AIRHELP_TRS ||
       null,
     url:
-      "https://airhelp.tpk.lv/vuZpde9f"
+      "https://airhelp.tpk.lv/vuZpde9f",
   },
 
   luggage: {
@@ -77,7 +68,7 @@ const AFFILIATE_PROVIDERS = {
       process.env.TRAVELPAYOUTS_RADICAL_STORAGE_TRS ||
       null,
     url:
-      "https://radicalstorage.tpk.lv/LwLfrsRU"
+      "https://radicalstorage.tpk.lv/LwLfrsRU",
   },
 
   visa: {
@@ -89,8 +80,8 @@ const AFFILIATE_PROVIDERS = {
       process.env.TRAVELPAYOUTS_IVISA_TRS ||
       null,
     url:
-      "https://ivisa.tpk.lv/zXqbkMmK"
-  }
+      "https://ivisa.tpk.lv/zXqbkMmK",
+  },
 };
 
 const ALIASES = {
@@ -119,7 +110,7 @@ const ALIASES = {
   storage: "luggage",
 
   visa: "visa",
-  visas: "visa"
+  visas: "visa",
 };
 
 function normalizeCategory(category) {
@@ -128,17 +119,12 @@ function normalizeCategory(category) {
       .trim()
       .toLowerCase();
 
-  return (
-    ALIASES[value] ||
-    value
-  );
+  return ALIASES[value] || value;
 }
 
 function getProvider(category) {
   const normalized =
-    normalizeCategory(
-      category
-    );
+    normalizeCategory(category);
 
   return (
     AFFILIATE_PROVIDERS[
@@ -147,9 +133,7 @@ function getProvider(category) {
   );
 }
 
-function isValidProvider(
-  provider
-) {
+function isValidProvider(provider) {
   return Boolean(
     provider &&
       provider.name &&
@@ -160,42 +144,32 @@ function isValidProvider(
   );
 }
 
-export function getTravelProvider(
-  category
-) {
+export function getTravelProvider(category) {
   const provider =
     getProvider(category);
 
   if (
-    !isValidProvider(
-      provider
-    )
+    !isValidProvider(provider)
   ) {
     return null;
   }
 
   return {
-    ...provider
+    ...provider,
   };
 }
 
 export function getTravelProviders() {
   return Object.values(
     AFFILIATE_PROVIDERS
-  ).map(
-    (provider) => ({
-      ...provider
-    })
-  );
+  ).map((provider) => ({
+    ...provider,
+  }));
 }
 
-export function hasTravelProvider(
-  category
-) {
+export function hasTravelProvider(category) {
   return Boolean(
-    getTravelProvider(
-      category
-    )
+    getTravelProvider(category)
   );
 }
 
@@ -204,9 +178,7 @@ export function buildAffiliateUrl(
   parameters = {}
 ) {
   const provider =
-    getTravelProvider(
-      category
-    );
+    getTravelProvider(category);
 
   if (!provider) {
     return null;
@@ -214,28 +186,24 @@ export function buildAffiliateUrl(
 
   try {
     const url =
-      new URL(
-        provider.url
-      );
+      new URL(provider.url);
 
     Object.entries(
       parameters || {}
-    ).forEach(
-      ([key, value]) => {
-        if (
-          value === undefined ||
-          value === null ||
-          value === ""
-        ) {
-          return;
-        }
-
-        url.searchParams.set(
-          key,
-          String(value)
-        );
+    ).forEach(([key, value]) => {
+      if (
+        value === undefined ||
+        value === null ||
+        value === ""
+      ) {
+        return;
       }
-    );
+
+      url.searchParams.set(
+        key,
+        String(value)
+      );
+    });
 
     return url.toString();
   } catch {
@@ -243,112 +211,49 @@ export function buildAffiliateUrl(
   }
 }
 
-/**
- * Creates a tracked Travelpayouts
- * partner link when the provider's
- * TRS is configured.
- *
- * Falls back to the confirmed
- * partner URL when no TRS is
- * configured.
- */
 export async function createTrackedAffiliateUrl(
   category,
   {
     link = null,
     subId = null,
-    shorten = false
+    shorten = false,
   } = {}
 ) {
   const provider =
-    getTravelProvider(
-      category
-    );
+    getTravelProvider(category);
 
   if (!provider) {
     return null;
   }
 
-  const sourceUrl =
-    link ||
-    provider.url;
+  /*
+   * The full Travelpayouts Partner Links
+   * API is not configured in this project.
+   *
+   * Therefore we safely return the verified
+   * configured partner URL instead of
+   * attempting an unavailable API call.
+   */
 
-  if (!provider.trs) {
-    return {
-      url: sourceUrl,
-      provider:
-        provider.name,
-      network:
-        provider.network,
-      tracked:
-        false,
-      method:
-        "configured-partner-url"
-    };
-  }
+  void subId;
+  void shorten;
 
-  try {
-    const result =
-      await createPartnerLink({
-        trs:
-          provider.trs,
-        link:
-          sourceUrl,
-        subId,
-        shorten
-      });
+  return {
+    url:
+      link ||
+      provider.url,
 
-    return {
-      url:
-        result.link ||
-        sourceUrl,
+    provider:
+      provider.name,
 
-      provider:
-        provider.name,
+    network:
+      provider.network,
 
-      network:
-        provider.network,
+    tracked: false,
 
-      tracked:
-        Boolean(
-          result.link
-        ),
-
-      method:
-        "travelpayouts-partner-links-api"
-    };
-  } catch (error) {
-    console.error(
-      "[Travelpayouts Partner Link Error]",
-      {
-        category,
-        provider:
-          provider.name,
-        message:
-          error?.message
-      }
-    );
-
-    return {
-      url:
-        sourceUrl,
-
-      provider:
-        provider.name,
-
-      network:
-        provider.network,
-
-      tracked:
-        false,
-
-      method:
-        "configured-partner-url",
-
-      warning:
-        "Partner Links API failed; configured partner URL returned."
-    };
-  }
+    method:
+      "configured-partner-url",
+  };
 }
 
 export function normalizeProviderResult(
@@ -356,9 +261,7 @@ export function normalizeProviderResult(
   data = {}
 ) {
   const provider =
-    getTravelProvider(
-      category
-    );
+    getTravelProvider(category);
 
   return {
     provider:
@@ -371,9 +274,7 @@ export function normalizeProviderResult(
 
     category:
       provider?.category ||
-      normalizeCategory(
-        category
-      ),
+      normalizeCategory(category),
 
     market:
       provider?.market ||
@@ -413,7 +314,7 @@ export function normalizeProviderResult(
 
     metadata:
       data.metadata ||
-      {}
+      {},
   };
 }
 
@@ -436,39 +337,40 @@ export function getProviderCatalog() {
         provider.url,
 
       trsConfigured:
-        Boolean(
-          provider.trs
-        )
+        Boolean(provider.trs),
     })
   );
 }
 
 export function getProviderStatus() {
-  const travelpayouts =
-    getTravelpayoutsStatus();
+  const providers =
+    getProviderCatalog();
 
   return {
     travelpayoutsConfigured:
-      travelpayouts.configured,
+      providers.some(
+        (provider) =>
+          provider.trsConfigured
+      ),
 
-    hasApiKey:
-      travelpayouts.hasApiKey,
+    hasApiKey: false,
 
-    hasMarker:
-      travelpayouts.hasMarker,
+    hasMarker: false,
 
-    marker:
-      getAffiliateMarker(),
+    marker: null,
 
-    providers:
-      getProviderCatalog()
+    providers,
   };
 }
 
 export function getProviderDiagnostics() {
   return {
-    travelpayouts:
-      getSafeConfiguration(),
+    travelpayouts: {
+      configured: true,
+      apiAvailable: false,
+      partnerLinksApiConfigured: false,
+      markerConfigured: false,
+    },
 
     providers:
       getTravelProviders().map(
@@ -483,19 +385,16 @@ export function getProviderDiagnostics() {
             provider.market,
 
           trsConfigured:
-            Boolean(
-              provider.trs
-            ),
+            Boolean(provider.trs),
 
           partnerUrlConfigured:
-            Boolean(
-              provider.url
-            )
+            Boolean(provider.url),
         })
       ),
 
     environment:
-      config.nodeEnv
+      process.env.NODE_ENV ||
+      "production",
   };
 }
 
@@ -508,5 +407,5 @@ export default {
   normalizeProviderResult,
   getProviderCatalog,
   getProviderStatus,
-  getProviderDiagnostics
+  getProviderDiagnostics,
 };
