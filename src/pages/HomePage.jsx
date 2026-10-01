@@ -1,5 +1,6 @@
 import React from "react";
 import FlightSearchForm from "../components/flights/FlightSearchForm.jsx";
+import { navigate } from "../router/AppRouter.jsx";
 
 const FEATURED_ROUTES = [
   {
@@ -108,21 +109,6 @@ const TOOLS = [
   },
 ];
 
-function navigate(path) {
-  window.history.pushState({}, "", path);
-
-  window.dispatchEvent(
-    new PopStateEvent("popstate", {
-      state: {},
-    })
-  );
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-}
-
 function InternalLink({
   path,
   children,
@@ -204,6 +190,7 @@ function ToolCard({ tool }) {
 
       <span>
         <strong>{tool.title}</strong>
+
         <span>{tool.description}</span>
       </span>
 
@@ -329,6 +316,7 @@ export default function HomePage() {
           </div>
 
           <div className="tourism-grid">
+            {/* LEISURE TOURISM */}
             <button
               type="button"
               className="tourism-card tourism-card-leisure"
@@ -361,6 +349,7 @@ export default function HomePage() {
               </span>
             </button>
 
+            {/* EDUCATION TOURISM */}
             <button
               type="button"
               className="tourism-card tourism-card-education"
@@ -467,7 +456,9 @@ export default function HomePage() {
           <div className="workflow-grid">
             <div className="workflow-step">
               <span>01</span>
+
               <strong>Search</strong>
+
               <p>
                 Enter your route, dates and passenger
                 requirements.
@@ -476,7 +467,9 @@ export default function HomePage() {
 
             <div className="workflow-step">
               <span>02</span>
+
               <strong>Compare</strong>
+
               <p>
                 Review available travel options and
                 relevant provider information.
@@ -485,7 +478,9 @@ export default function HomePage() {
 
             <div className="workflow-step">
               <span>03</span>
+
               <strong>Prepare</strong>
+
               <p>
                 Review visa, baggage, connectivity and
                 destination requirements.
@@ -494,7 +489,9 @@ export default function HomePage() {
 
             <div className="workflow-step">
               <span>04</span>
+
               <strong>Book</strong>
+
               <p>
                 Continue to the relevant travel provider
                 when you are ready.
@@ -503,7 +500,9 @@ export default function HomePage() {
 
             <div className="workflow-step">
               <span>05</span>
+
               <strong>Monitor</strong>
+
               <p>
                 Use alerts and preparation tools to stay
                 organised around your trip.
@@ -552,4 +551,4 @@ export default function HomePage() {
       </section>
     </main>
   );
-        }
+}
