@@ -2,11 +2,11 @@ import { Router } from "express";
 
 import {
   searchLeisureTourism,
-} from "../services/leisureTourism.js";
+} from "../../src/Services/leisureTourism.js";
 
 import {
   searchEducationTourism,
-} from "../services/educationTourism.js";
+} from "../../src/Services/educationTourism.js";
 
 const router = Router();
 
