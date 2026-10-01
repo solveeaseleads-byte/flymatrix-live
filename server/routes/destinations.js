@@ -6,7 +6,9 @@ import {
 
 const router = Router();
 
-function normalizeSearch(value) {
+const MIN_SEARCH_LENGTH = 3;
+
+function normalize(value) {
   return String(value || "")
     .trim()
     .toLowerCase();
@@ -14,74 +16,102 @@ function normalizeSearch(value) {
 
 function normalizeDestination(item) {
   return {
-    code: item.destination_code,
-    name: item.destination_name,
-    category: item.category,
-    country: item.country
+    code: item.destination_code || "",
+    name: item.destination_name || "",
+    category: item.category || "",
+    country: item.country || ""
   };
 }
 
-function matchesSearch(item, search) {
-  const query = normalizeSearch(search);
+function matchesPrefix(item, search) {
+  const q = normalize(search);
 
-  if (!query) {
+  if (!q) {
     return true;
   }
 
-  const code = normalizeSearch(item.destination_code);
-  const name = normalizeSearch(item.destination_name);
-  const country = normalizeSearch(item.country);
+  const code = normalize(
+    item.destination_code
+  );
+
+  const name = normalize(
+    item.destination_name
+  );
+
+  const country = normalize(
+    item.country
+  );
 
   return (
-    code.startsWith(query) ||
-    name.startsWith(query) ||
-    country.startsWith(query)
+    code.startsWith(q) ||
+    name.startsWith(q) ||
+    country.startsWith(q)
   );
 }
 
 /*
  * GET /api/destinations
  *
- * Supports:
- *   /api/destinations
- *   /api/destinations?search=JOS
- *   /api/destinations?search=LAG
- *   /api/destinations?search=LOS
- *   /api/destinations?category=city
+ * Examples:
  *
- * Search is intentionally prefix-based so unrelated destinations
- * are not returned for airport autocomplete.
+ * /api/destinations
+ * /api/destinations?search=JOS
+ * /api/destinations?search=LAG
+ * /api/destinations?search=LOS
+ * /api/destinations?search=LON
+ * /api/destinations?search=KAN
  */
 router.get(
   "/",
   async (req, res) => {
+    const search =
+      String(
+        req.query.search || ""
+      ).trim();
+
+    const category =
+      String(
+        req.query.category || ""
+      ).trim();
+
     try {
-      const search =
-        String(req.query.search || "").trim();
-
-      const category =
-        String(req.query.category || "").trim();
-
       /*
-       * AirportSearch requires at least three characters.
-       * Return an empty successful response instead of treating
-       * short input as an API failure.
+       * Do not query the database for
+       * incomplete autocomplete input.
        */
-      if (search && search.length < 3) {
+      if (
+        search &&
+        search.length < MIN_SEARCH_LENGTH
+      ) {
         return res.json({
           success: true,
+          available: true,
           destinations: [],
           search,
-          count: 0
+          count: 0,
+          message:
+            "Enter at least 3 characters."
         });
       }
 
       let query =
         getSupabase()
-          .from("global_destinations")
-          .select("*")
-          .eq("is_active", true)
-          .order("destination_name");
+          .from(
+            "global_destinations"
+          )
+          .select(
+            "destination_code,destination_name,category,country,is_active"
+          )
+          .eq(
+            "is_active",
+            true
+          )
+          .order(
+            "destination_name",
+            {
+              ascending: true
+            }
+          );
 
       if (category) {
         query =
@@ -97,39 +127,56 @@ router.get(
       } = await query;
 
       if (error) {
-        throw error;
+        console.error(
+          "Supabase global_destinations error:",
+          error
+        );
+
+        return res.status(500).json({
+          success: false,
+          available: false,
+          destinations: [],
+          search,
+          error:
+            error.message ||
+            "Destination database query failed.",
+          code:
+            error.code || null,
+          details:
+            error.details || null,
+          hint:
+            error.hint || null
+        });
       }
 
-      const sourceData =
+      const records =
         Array.isArray(data)
           ? data
           : [];
 
-      /*
-       * Apply strict prefix matching after retrieval.
-       *
-       * This prevents a loose backend match from sending unrelated
-       * destinations such as Kano when the user searches "Lag"
-       * or Los Angeles when the user searches "Kan".
-       */
       const filtered =
         search
-          ? sourceData.filter(
+          ? records.filter(
               (item) =>
-                matchesSearch(
+                matchesPrefix(
                   item,
                   search
                 )
             )
-          : sourceData;
+          : records;
 
       const destinations =
         filtered.map(
           normalizeDestination
         );
 
-      res.json({
+      console.log(
+        `Destination search "${search || "*"}": ${destinations.length} result(s)`
+      );
+
+      return res.json({
         success: true,
+        available: true,
         destinations,
         search,
         count:
@@ -137,30 +184,28 @@ router.get(
       });
     } catch (error) {
       console.error(
-        "Destination search error:",
+        "Destination route failure:",
         error
       );
 
-      /*
-       * Keep the error response structured so the frontend can
-       * distinguish a real backend failure from an empty search.
-       */
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         available: false,
+        destinations: [],
+        search,
         error:
           error?.message ||
-          "Destination search is temporarily unavailable.",
-        destinations: []
+          "Destination search failed.",
+        name:
+          error?.name || null
       });
     }
   }
 );
 
+
 /*
  * GET /api/destinations/:code
- *
- * Existing destination lookup remains supported.
  */
 router.get(
   "/:code",
@@ -186,7 +231,9 @@ router.get(
         error
       } =
         await getSupabase()
-          .from("global_destinations")
+          .from(
+            "global_destinations"
+          )
           .select("*")
           .eq(
             "destination_code",
@@ -206,17 +253,17 @@ router.get(
         });
       }
 
-      res.json({
+      return res.json({
         success: true,
         destination: data
       });
     } catch (error) {
       console.error(
-        "Destination lookup error:",
+        "Destination lookup failure:",
         error
       );
 
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         error:
           error?.message ||
