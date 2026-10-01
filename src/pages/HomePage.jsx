@@ -134,24 +134,52 @@ function RouteCard({ route }) {
       type="button"
       className="route-card"
       onClick={() => {
-        const params = new URLSearchParams();
+        const params =
+          new URLSearchParams();
 
-        params.set("origin", route.fromCode);
-        params.set("destination", route.toCode);
+        params.set(
+          "origin",
+          route.fromCode
+        );
 
-        navigate(`/search?${params.toString()}`);
+        params.set(
+          "destination",
+          route.toCode
+        );
+
+        navigate(
+          `/search?${params.toString()}`
+        );
       }}
     >
-      <div className="route-card-top">
-        <span>{route.fromCode}</span>
-        <span className="route-arrow">→</span>
-        <span>{route.toCode}</span>
-      </div>
+      <span className="route-card-top">
+        <span className="route-location">
+          {route.from}
+        </span>
 
-      <strong>{route.label}</strong>
+        <span className="route-code">
+          {route.fromCode}
+        </span>
+
+        <span className="route-arrow">
+          →
+        </span>
+
+        <span className="route-code">
+          {route.toCode}
+        </span>
+
+        <span className="route-location">
+          {route.to}
+        </span>
+      </span>
+
+      <strong>
+        {route.label}
+      </strong>
 
       <span className="route-card-action">
-        Search route
+        Search route →
       </span>
     </button>
   );
@@ -168,12 +196,18 @@ function ServiceCard({ service }) {
       </span>
 
       <span className="service-card-content">
-        <strong>{service.title}</strong>
+        <strong>
+          {service.title}
+        </strong>
 
-        <span>{service.description}</span>
+        <span>
+          {service.description}
+        </span>
       </span>
 
-      <span className="service-arrow">→</span>
+      <span className="service-arrow">
+        →
+      </span>
     </InternalLink>
   );
 }
@@ -188,140 +222,183 @@ function ToolCard({ tool }) {
         {tool.icon}
       </span>
 
-      <span>
-        <strong>{tool.title}</strong>
+      <span className="tool-card-content">
+        <strong>
+          {tool.title}
+        </strong>
 
-        <span>{tool.description}</span>
+        <span>
+          {tool.description}
+        </span>
       </span>
 
-      <span className="tool-arrow">→</span>
+      <span className="tool-arrow">
+        →
+      </span>
     </InternalLink>
+  );
+}
+
+function SectionHeading({
+  eyebrow,
+  title,
+  description,
+}) {
+  return (
+    <div className="section-heading">
+      <span className="eyebrow">
+        {eyebrow}
+      </span>
+
+      <h2>{title}</h2>
+
+      {description && (
+        <p>{description}</p>
+      )}
+    </div>
   );
 }
 
 export default function HomePage() {
   return (
-    <main className="home-page">
-      {/* HERO */}
+    <div className="home-page">
+
+      {/* ==================================================
+          HERO
+      ================================================== */}
+
       <section className="hero-section">
-        <div className="hero-content">
-          <span className="eyebrow">
-            GLOBAL FLIGHT SEARCH & TRAVEL INTELLIGENCE
-          </span>
+        <div className="section-container">
+          <div className="hero-content">
 
-          <h1>
-            Search smarter.
-            <br />
-            Travel prepared.
-          </h1>
+            <span className="eyebrow">
+              GLOBAL FLIGHT SEARCH & TRAVEL INTELLIGENCE
+            </span>
 
-          <p className="hero-description">
-            Search flights, compare travel options and prepare
-            your journey with FlyMatrix.
-          </p>
+            <h1>
+              Search smarter.
+              <br />
+              Travel prepared.
+            </h1>
 
-          <div className="hero-actions">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => navigate("/search")}
-            >
-              Search Flights
-            </button>
+            <p className="hero-description">
+              Search flights, explore destinations,
+              compare travel options and prepare your
+              journey with FlyMatrix.
+            </p>
 
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => navigate("/planner")}
-            >
-              Plan My Trip
-            </button>
-          </div>
+            <div className="hero-actions">
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() =>
+                  navigate("/search")
+                }
+              >
+                Search Flights
+              </button>
 
-          <div className="hero-trust">
-            <span>✓ Global routes</span>
-            <span>✓ Travel partner connections</span>
-            <span>✓ Travel preparation tools</span>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() =>
+                  navigate("/planner")
+                }
+              >
+                Plan My Trip
+              </button>
+            </div>
+
+            <div className="hero-trust">
+              <span>
+                ✓ Global routes
+              </span>
+
+              <span>
+                ✓ Travel partner connections
+              </span>
+
+              <span>
+                ✓ Travel preparation tools
+              </span>
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* FLIGHT SEARCH */}
+
+      {/* ==================================================
+          FLIGHT SEARCH
+      ================================================== */}
+
       <section className="search-section">
         <div className="section-container">
-          <div className="section-heading">
-            <span className="eyebrow">
-              FLIGHT SEARCH
-            </span>
 
-            <h2>Find your next flight</h2>
-
-            <p>
-              Enter your exact travel requirements and
-              continue to available flight results.
-            </p>
-          </div>
+          <SectionHeading
+            eyebrow="FLIGHT SEARCH"
+            title="Find your next flight"
+            description="Enter your exact travel requirements and continue to available flight results."
+          />
 
           <div className="search-panel">
             <FlightSearchForm />
           </div>
+
         </div>
       </section>
 
-      {/* FEATURED ROUTES */}
+
+      {/* ==================================================
+          POPULAR ROUTES
+      ================================================== */}
+
       <section className="routes-section">
         <div className="section-container">
-          <div className="section-heading">
-            <span className="eyebrow">
-              POPULAR ROUTES
-            </span>
 
-            <h2>Start with a popular route</h2>
-
-            <p>
-              Select a route to open the flight-search
-              workflow with the airports already selected.
-            </p>
-          </div>
+          <SectionHeading
+            eyebrow="POPULAR ROUTES"
+            title="Start with a popular route"
+            description="Choose a route to open the flight-search workflow with the airports already selected."
+          />
 
           <div className="routes-grid">
-            {FEATURED_ROUTES.map((route) => (
-              <RouteCard
-                key={`${route.fromCode}-${route.toCode}`}
-                route={route}
-              />
-            ))}
+            {FEATURED_ROUTES.map(
+              (route) => (
+                <RouteCard
+                  key={`${route.fromCode}-${route.toCode}`}
+                  route={route}
+                />
+              )
+            )}
           </div>
+
         </div>
       </section>
 
-      {/* TOURISM */}
+
+      {/* ==================================================
+          TOURISM INTELLIGENCE
+      ================================================== */}
+
       <section className="tourism-section">
         <div className="section-container">
-          <div className="tourism-intro">
-            <div>
-              <span className="eyebrow">
-                TOURISM INTELLIGENCE
-              </span>
 
-              <h2>
-                Travel for leisure or education
-              </h2>
-
-              <p>
-                Explore destination options using separate
-                leisure and education travel workflows.
-              </p>
-            </div>
-          </div>
+          <SectionHeading
+            eyebrow="TOURISM INTELLIGENCE"
+            title="Travel for leisure or education"
+            description="Explore destinations through dedicated leisure and education travel workflows."
+          />
 
           <div className="tourism-grid">
-            {/* LEISURE TOURISM */}
+
             <button
               type="button"
               className="tourism-card tourism-card-leisure"
               onClick={() =>
-                navigate("/tourism/leisure")
+                navigate(
+                  "/tourism/leisure"
+                )
               }
             >
               <span className="tourism-card-icon">
@@ -329,6 +406,7 @@ export default function HomePage() {
               </span>
 
               <span className="tourism-card-body">
+
                 <span className="eyebrow">
                   LEISURE TOURISM
                 </span>
@@ -338,10 +416,12 @@ export default function HomePage() {
                 </strong>
 
                 <span>
-                  Explore destinations around your budget,
-                  trip length, lifestyle and preferred
+                  Explore destinations around
+                  your budget, trip length,
+                  lifestyle and preferred
                   facilities.
                 </span>
+
               </span>
 
               <span className="tourism-card-action">
@@ -349,12 +429,14 @@ export default function HomePage() {
               </span>
             </button>
 
-            {/* EDUCATION TOURISM */}
+
             <button
               type="button"
               className="tourism-card tourism-card-education"
               onClick={() =>
-                navigate("/tourism/education")
+                navigate(
+                  "/tourism/education"
+                )
               }
             >
               <span className="tourism-card-icon">
@@ -362,6 +444,7 @@ export default function HomePage() {
               </span>
 
               <span className="tourism-card-body">
+
                 <span className="eyebrow">
                   EDUCATION TOURISM
                 </span>
@@ -371,118 +454,131 @@ export default function HomePage() {
                 </strong>
 
                 <span>
-                  Research education-focused destinations,
-                  accommodation and travel preparation.
+                  Research education-focused
+                  destinations, accommodation
+                  and travel preparation.
                 </span>
+
               </span>
 
               <span className="tourism-card-action">
                 Explore Education →
               </span>
             </button>
+
           </div>
+
         </div>
       </section>
 
-      {/* TRAVEL TOOLS */}
+
+      {/* ==================================================
+          TRAVEL INTELLIGENCE
+      ================================================== */}
+
       <section className="tools-section">
         <div className="section-container">
-          <div className="section-heading">
-            <span className="eyebrow">
-              TRAVEL INTELLIGENCE
-            </span>
 
-            <h2>Prepare before you travel</h2>
-
-            <p>
-              FlyMatrix brings planning and preparation
-              tools together around your journey.
-            </p>
-          </div>
+          <SectionHeading
+            eyebrow="TRAVEL INTELLIGENCE"
+            title="Prepare before you travel"
+            description="Bring planning, preparation and monitoring tools together around your journey."
+          />
 
           <div className="tools-grid">
-            {TOOLS.map((tool) => (
-              <ToolCard
-                key={tool.path}
-                tool={tool}
-              />
-            ))}
+            {TOOLS.map(
+              (tool) => (
+                <ToolCard
+                  key={tool.path}
+                  tool={tool}
+                />
+              )
+            )}
           </div>
+
         </div>
       </section>
 
-      {/* SERVICES */}
+
+      {/* ==================================================
+          TRAVEL SERVICES
+      ================================================== */}
+
       <section className="services-section">
         <div className="section-container">
-          <div className="section-heading">
-            <span className="eyebrow">
-              TRAVEL SERVICES
-            </span>
 
-            <h2>
-              Useful services for your journey
-            </h2>
-
-            <p>
-              Access partner-connected travel services
-              from the same FlyMatrix workflow.
-            </p>
-          </div>
+          <SectionHeading
+            eyebrow="TRAVEL SERVICES"
+            title="Useful services for your journey"
+            description="Access partner-connected travel services from the same FlyMatrix workflow."
+          />
 
           <div className="services-grid">
-            {SERVICES.map((service) => (
-              <ServiceCard
-                key={service.path}
-                service={service}
-              />
-            ))}
+            {SERVICES.map(
+              (service) => (
+                <ServiceCard
+                  key={service.path}
+                  service={service}
+                />
+              )
+            )}
           </div>
+
         </div>
       </section>
 
-      {/* WORKFLOW */}
+
+      {/* ==================================================
+          WORKFLOW
+      ================================================== */}
+
       <section className="workflow-section">
         <div className="section-container">
-          <div className="section-heading">
-            <span className="eyebrow">
-              FLYMATRIX WORKFLOW
-            </span>
 
-            <h2>
-              From search to travel preparation
-            </h2>
-          </div>
+          <SectionHeading
+            eyebrow="FLYMATRIX WORKFLOW"
+            title="From search to travel preparation"
+          />
 
           <div className="workflow-grid">
+
             <div className="workflow-step">
               <span>01</span>
 
-              <strong>Search</strong>
+              <strong>
+                Search
+              </strong>
 
               <p>
-                Enter your route, dates and passenger
-                requirements.
+                Enter your route, dates
+                and passenger requirements.
               </p>
             </div>
 
             <div className="workflow-step">
               <span>02</span>
 
-              <strong>Compare</strong>
+              <strong>
+                Compare
+              </strong>
 
               <p>
-                Review available travel options and
-                relevant provider information.
+                Review available travel
+                options and provider
+                information.
               </p>
             </div>
 
             <div className="workflow-step">
               <span>03</span>
 
-              <strong>Prepare</strong>
+              <strong>
+                Prepare
+              </strong>
 
               <p>
-                Review visa, baggage, connectivity and
+                Review visa, baggage,
+                connectivity and
                 destination requirements.
               </p>
             </div>
@@ -490,50 +586,70 @@ export default function HomePage() {
             <div className="workflow-step">
               <span>04</span>
 
-              <strong>Book</strong>
+              <strong>
+                Book
+              </strong>
 
               <p>
-                Continue to the relevant travel provider
-                when you are ready.
+                Continue to the relevant
+                travel provider when
+                you are ready.
               </p>
             </div>
 
             <div className="workflow-step">
               <span>05</span>
 
-              <strong>Monitor</strong>
+              <strong>
+                Monitor
+              </strong>
 
               <p>
-                Use alerts and preparation tools to stay
-                organised around your trip.
+                Use alerts and preparation
+                tools to stay organised
+                around your trip.
               </p>
             </div>
+
           </div>
+
         </div>
       </section>
 
-      {/* FINAL CTA */}
+
+      {/* ==================================================
+          FINAL CTA
+      ================================================== */}
+
       <section className="final-cta-section">
         <div className="section-container">
+
           <div className="final-cta">
+
             <span className="eyebrow">
               READY TO START?
             </span>
 
             <h2>
-              Build your next journey with FlyMatrix.
+              Build your next journey
+              with FlyMatrix.
             </h2>
 
             <p>
-              Search flights or start planning your trip
-              with the information you already have.
+              Search flights or start
+              planning your trip with
+              the information you already
+              have.
             </p>
 
             <div className="hero-actions">
+
               <button
                 type="button"
                 className="btn btn-primary"
-                onClick={() => navigate("/search")}
+                onClick={() =>
+                  navigate("/search")
+                }
               >
                 Search Flights
               </button>
@@ -541,14 +657,20 @@ export default function HomePage() {
               <button
                 type="button"
                 className="btn btn-secondary"
-                onClick={() => navigate("/planner")}
+                onClick={() =>
+                  navigate("/planner")
+                }
               >
                 Plan My Trip
               </button>
+
             </div>
+
           </div>
+
         </div>
       </section>
-    </main>
+
+    </div>
   );
-}
+              }
