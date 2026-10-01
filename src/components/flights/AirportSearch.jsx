@@ -4,112 +4,13 @@ import React, {
   useState
 } from "react";
 
-const FALLBACK_AIRPORTS = [
-  {
-    code: "LOS",
-    name: "Murtala Muhammed International Airport",
-    city: "Lagos",
-    country: "Nigeria",
-    countryCode: "NG",
-    type: "airport",
-  },
-  {
-    code: "ABV",
-    name: "Nnamdi Azikiwe International Airport",
-    city: "Abuja",
-    country: "Nigeria",
-    countryCode: "NG",
-    type: "airport",
-  },
-  {
-    code: "KAN",
-    name: "Mallam Aminu Kano International Airport",
-    city: "Kano",
-    country: "Nigeria",
-    countryCode: "NG",
-    type: "airport",
-  },
-  {
-    code: "PHC",
-    name: "Port Harcourt International Airport",
-    city: "Port Harcourt",
-    country: "Nigeria",
-    countryCode: "NG",
-    type: "airport",
-  },
-  {
-    code: "LHR",
-    name: "London Heathrow Airport",
-    city: "London",
-    country: "United Kingdom",
-    countryCode: "GB",
-    type: "airport",
-  },
-  {
-    code: "LGW",
-    name: "London Gatwick Airport",
-    city: "London",
-    country: "United Kingdom",
-    countryCode: "GB",
-    type: "airport",
-  },
-  {
-    code: "STN",
-    name: "London Stansted Airport",
-    city: "London",
-    country: "United Kingdom",
-    countryCode: "GB",
-    type: "airport",
-  },
-  {
-    code: "LTN",
-    name: "London Luton Airport",
-    city: "London",
-    country: "United Kingdom",
-    countryCode: "GB",
-    type: "airport",
-  },
-  {
-    code: "JFK",
-    name: "John F. Kennedy International Airport",
-    city: "New York",
-    country: "United States",
-    countryCode: "US",
-    type: "airport",
-  },
-  {
-    code: "LAX",
-    name: "Los Angeles International Airport",
-    city: "Los Angeles",
-    country: "United States",
-    countryCode: "US",
-    type: "airport",
-  },
-  {
-    code: "YYZ",
-    name: "Toronto Pearson International Airport",
-    city: "Toronto",
-    country: "Canada",
-    countryCode: "CA",
-    type: "airport",
-  },
-  {
-    code: "DXB",
-    name: "Dubai International Airport",
-    city: "Dubai",
-    country: "United Arab Emirates",
-    countryCode: "AE",
-    type: "airport",
-  },
-  {
-    code: "CDG",
-    name: "Paris Charles de Gaulle Airport",
-    city: "Paris",
-    country: "France",
-    countryCode: "FR",
-    type: "airport",
-  },
-];
+import {
+  AIRPORTS,
+  searchLocalAirports
+} from "../../data/airports.js";
+
+const MIN_SEARCH_LENGTH = 3;
+const MAX_RESULTS = 12;
 
 function normalizeAirport(item) {
   if (!item) {
@@ -122,26 +23,35 @@ function normalizeAirport(item) {
       item.iata ||
       item.iataCode ||
       "",
+
     name:
       item.name ||
       item.airportName ||
       item.label ||
       "",
+
     city:
       item.city ||
       item.cityName ||
       "",
+
     country:
       item.country ||
       item.countryName ||
       "",
+
     countryCode:
       item.countryCode ||
       item.country_code ||
       "",
+
+    region:
+      item.region ||
+      "",
+
     type:
       item.type ||
-      "airport",
+      "airport"
   };
 }
 
@@ -152,30 +62,14 @@ function normalizeSearchValue(value) {
     .replace(/\s+/g, " ");
 }
 
-/*
- * A search becomes active only after three characters.
- *
- * This prevents very broad one- and two-character
- * searches from producing unrelated results.
- */
-const MIN_SEARCH_LENGTH = 3;
-
-/*
- * Strict prefix matching.
- *
- * A result is valid when the beginning of its:
- * - IATA code
- * - city name
- * - airport name
- *
- * matches the beginning of the user's query.
- *
- * We intentionally do NOT use String.includes()
- * here because that can produce unrelated results.
- */
-function isPrefixMatch(airport, query) {
+function isPrefixMatch(
+  airport,
+  query
+) {
   const q =
-    normalizeSearchValue(query);
+    normalizeSearchValue(
+      query
+    );
 
   if (
     q.length <
@@ -206,143 +100,15 @@ function isPrefixMatch(airport, query) {
   );
 }
 
-function scoreAirport(
-  airport,
-  query
-) {
-  const q =
-    normalizeSearchValue(query);
-
-  if (
-    q.length <
-    MIN_SEARCH_LENGTH
-  ) {
-    return 0;
-  }
-
-  const code =
-    normalizeSearchValue(
-      airport.code
-    );
-
-  const city =
-    normalizeSearchValue(
-      airport.city
-    );
-
-  const name =
-    normalizeSearchValue(
-      airport.name
-    );
-
-  /*
-   * Exact IATA code is the strongest match.
-   */
-  if (code === q) {
-    return 1000;
-  }
-
-  /*
-   * Exact city match comes next.
-   */
-  if (city === q) {
-    return 900;
-  }
-
-  /*
-   * Exact airport name.
-   */
-  if (name === q) {
-    return 800;
-  }
-
-  /*
-   * City prefix is preferred because the
-   * user is primarily searching for a
-   * city or airport destination.
-   */
-  if (city.startsWith(q)) {
-    return 700;
-  }
-
-  /*
-   * Airport name prefix.
-   */
-  if (name.startsWith(q)) {
-    return 600;
-  }
-
-  /*
-   * IATA prefix.
-   */
-  if (code.startsWith(q)) {
-    return 500;
-  }
-
-  return 0;
-}
-
-function rankAirports(
-  items,
-  query
-) {
-  const normalized =
-    deduplicateAirports(items);
-
-  return normalized
-    .map((airport) => ({
-      airport,
-      score: scoreAirport(
-        airport,
-        query
-      ),
-    }))
-    .filter(
-      (item) =>
-        item.score > 0 &&
-        isPrefixMatch(
-          item.airport,
-          query
-        )
-    )
-    .sort((a, b) => {
-      if (
-        b.score !==
-        a.score
-      ) {
-        return (
-          b.score -
-          a.score
-        );
-      }
-
-      const cityCompare =
-        a.airport.city.localeCompare(
-          b.airport.city
-        );
-
-      if (
-        cityCompare !== 0
-      ) {
-        return cityCompare;
-      }
-
-      return a.airport.name.localeCompare(
-        b.airport.name
-      );
-    })
-    .map(
-      (item) =>
-        item.airport
-    );
-}
-
 function deduplicateAirports(
   items
 ) {
   const map = new Map();
 
-  items.forEach((item) => {
+  for (
+    const item of
+    items || []
+  ) {
     const airport =
       normalizeAirport(item);
 
@@ -350,7 +116,7 @@ function deduplicateAirports(
       !airport ||
       !airport.code
     ) {
-      return;
+      continue;
     }
 
     const key =
@@ -364,19 +130,21 @@ function deduplicateAirports(
         airport
       );
     }
-  });
+  }
 
   return Array.from(
     map.values()
   );
 }
 
-function getLocalResults(
-  airports,
+function rankAirports(
+  items,
   query
 ) {
   const q =
-    normalizeSearchValue(query);
+    normalizeSearchValue(
+      query
+    );
 
   if (
     q.length <
@@ -385,10 +153,157 @@ function getLocalResults(
     return [];
   }
 
+  return deduplicateAirports(
+    items
+  )
+    .filter(
+      (airport) =>
+        isPrefixMatch(
+          airport,
+          q
+        )
+    )
+    .map(
+      (airport) => {
+        const code =
+          normalizeSearchValue(
+            airport.code
+          );
+
+        const city =
+          normalizeSearchValue(
+            airport.city
+          );
+
+        const name =
+          normalizeSearchValue(
+            airport.name
+          );
+
+        let score = 0;
+
+        if (
+          code === q
+        ) {
+          score = 1000;
+        } else if (
+          city === q
+        ) {
+          score = 900;
+        } else if (
+          name === q
+        ) {
+          score = 800;
+        } else if (
+          city.startsWith(q)
+        ) {
+          score = 700;
+        } else if (
+          name.startsWith(q)
+        ) {
+          score = 600;
+        } else if (
+          code.startsWith(q)
+        ) {
+          score = 500;
+        }
+
+        return {
+          airport,
+          score
+        };
+      }
+    )
+    .filter(
+      (item) =>
+        item.score > 0
+    )
+    .sort(
+      (a, b) => {
+        if (
+          b.score !==
+          a.score
+        ) {
+          return (
+            b.score -
+            a.score
+          );
+        }
+
+        const cityCompare =
+          a.airport.city.localeCompare(
+            b.airport.city
+          );
+
+        if (
+          cityCompare !== 0
+        ) {
+          return cityCompare;
+        }
+
+        return a.airport.name.localeCompare(
+          b.airport.name
+        );
+      }
+    )
+    .map(
+      (item) =>
+        item.airport
+    )
+    .slice(
+      0,
+      MAX_RESULTS
+    );
+}
+
+function getLocalAirportResults(
+  query
+) {
+  const q =
+    normalizeSearchValue(
+      query
+    );
+
+  if (
+    q.length <
+    MIN_SEARCH_LENGTH
+  ) {
+    return [];
+  }
+
+  /*
+   * Use the existing FlyMatrix airport
+   * dataset as the primary local fallback.
+   *
+   * searchLocalAirports provides broader
+   * ranking, while rankAirports enforces
+   * the strict prefix rule required by
+   * the autocomplete UI.
+   */
+  const localCandidates =
+    searchLocalAirports(
+      q,
+      {
+        limit: 100,
+        nigeriaFirst: true
+      }
+    );
+
+  /*
+   * Also use the complete exported AIRPORTS
+   * array so we do not depend on the search
+   * helper's ranking rules.
+   */
+  const combined =
+    deduplicateAirports([
+      ...localCandidates,
+      ...AIRPORTS
+    ]);
+
   return rankAirports(
-    airports,
+    combined,
     q
-  ).slice(0, 12);
+  );
 }
 
 export default function AirportSearch({
@@ -397,7 +312,7 @@ export default function AirportSearch({
   onChange,
   placeholder = "City or airport",
   ariaLabel,
-  disabled = false,
+  disabled = false
 }) {
   const containerRef =
     useRef(null);
@@ -511,11 +426,6 @@ export default function AirportSearch({
         term
       );
 
-    /*
-     * Do not perform an airport search
-     * until at least three characters
-     * have been entered.
-     */
     if (
       normalizedTerm.length <
       MIN_SEARCH_LENGTH
@@ -532,6 +442,16 @@ export default function AirportSearch({
     setLoading(true);
     setError("");
 
+    /*
+     * Always prepare the local dataset first.
+     * This means airport autocomplete can still
+     * function when the backend is unavailable.
+     */
+    const localResults =
+      getLocalAirportResults(
+        normalizedTerm
+      );
+
     try {
       const response =
         await fetch(
@@ -541,8 +461,8 @@ export default function AirportSearch({
           {
             headers: {
               Accept:
-                "application/json",
-            },
+                "application/json"
+            }
           }
         );
 
@@ -579,53 +499,43 @@ export default function AirportSearch({
           ? data.airports
           : [];
 
-      const normalized =
-        deduplicateAirports(
-          apiItems
-        );
-
       /*
-       * The backend response is NEVER trusted
-       * blindly. Filter it using the same strict
-       * prefix rule as the fallback data.
+       * API results are strictly filtered before
+       * they are allowed into the dropdown.
        */
-      const apiMatches =
-        getLocalResults(
-          normalized,
+      const apiResults =
+        rankAirports(
+          apiItems,
           normalizedTerm
         );
 
       /*
-       * Fallback data is also filtered strictly.
-       * Therefore Kano cannot leak into "Lag"
-       * or "Los" simply because it exists in the
-       * fallback list.
-       */
-      const fallbackMatches =
-        getLocalResults(
-          FALLBACK_AIRPORTS,
-          normalizedTerm
-        );
-
-      /*
-       * API results take priority, while fallback
-       * records fill gaps where appropriate.
+       * API + local inventory.
+       *
+       * Local inventory guarantees that a temporary
+       * backend problem does not destroy autocomplete.
        */
       const combined =
-        deduplicateAirports([
-          ...apiMatches,
-          ...fallbackMatches,
-        ]);
-
-      const ranked =
         rankAirports(
-          combined,
+          [
+            ...apiResults,
+            ...localResults
+          ],
           normalizedTerm
         );
 
       setResults(
-        ranked.slice(0, 12)
+        combined.slice(
+          0,
+          MAX_RESULTS
+        )
       );
+
+      /*
+       * An empty result is a valid search outcome,
+       * not an "unavailable" error.
+       */
+      setError("");
     } catch (requestError) {
       if (
         requestId !==
@@ -635,30 +545,24 @@ export default function AirportSearch({
       }
 
       console.warn(
-        "FlyMatrix airport search:",
+        "FlyMatrix airport API unavailable; using local airport dataset.",
         requestError
       );
 
       /*
-       * If the backend is unavailable,
-       * use the same strict prefix matching
-       * against the local fallback dataset.
+       * Backend failure does NOT mean airport
+       * search is unavailable.
+       *
+       * Use the local FlyMatrix dataset instead.
        */
-      const fallback =
-        getLocalResults(
-          FALLBACK_AIRPORTS,
-          normalizedTerm
-        );
-
       setResults(
-        fallback
+        localResults.slice(
+          0,
+          MAX_RESULTS
+        )
       );
 
-      setError(
-        fallback.length
-          ? ""
-          : "Airport search is temporarily unavailable."
-      );
+      setError("");
     } finally {
       if (
         requestId ===
@@ -677,11 +581,6 @@ export default function AirportSearch({
         query
       );
 
-    /*
-     * We intentionally do not display a broad
-     * airport list on focus. The user must type
-     * at least three characters.
-     */
     if (
       normalizedQuery.length <
       MIN_SEARCH_LENGTH
@@ -701,9 +600,6 @@ export default function AirportSearch({
     setIsOpen(true);
     setError("");
 
-    /*
-     * Typing replaces the previous selection.
-     */
     onChange?.(null);
 
     const normalizedValue =
@@ -719,10 +615,6 @@ export default function AirportSearch({
       );
     }
 
-    /*
-     * Clear results for fewer than
-     * three characters.
-     */
     if (
       normalizedValue.length <
       MIN_SEARCH_LENGTH
@@ -732,9 +624,6 @@ export default function AirportSearch({
       return;
     }
 
-    /*
-     * Debounce backend searches.
-     */
     timerRef.current =
       setTimeout(() => {
         searchAirports(
@@ -968,25 +857,13 @@ export default function AirportSearch({
 
           {!needsMoreCharacters &&
             !loading &&
-            !results.length &&
-            !error && (
+            !results.length && (
               <div className="airport-status">
                 No matching airports found.
-              </div>
-            )}
-
-          {!needsMoreCharacters &&
-            !loading &&
-            error && (
-              <div
-                className="airport-status airport-error"
-                role="alert"
-              >
-                {error}
               </div>
             )}
         </div>
       )}
     </div>
   );
-    }
+      }
