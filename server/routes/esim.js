@@ -1,41 +1,28 @@
 import { Router } from "express";
 
-import {
-  searchEsim,
-} from "../../src/services/esim.js";
+import { searchEsim } from "../../src/Services/esim.js";
 
 const router = Router();
 
 function handleError(res, error, fallbackMessage) {
   res.status(400).json({
     success: false,
-    error:
-      error?.message ||
-      fallbackMessage,
+    error: error?.message || fallbackMessage,
   });
 }
 
 router.post("/search", async (req, res) => {
   try {
-    const result = await searchEsim(
-      req.body || {}
-    );
-
+    const result = await searchEsim(req.body || {});
     res.json(result);
   } catch (error) {
-    handleError(
-      res,
-      error,
-      "eSIM search failed."
-    );
+    handleError(res, error, "eSIM search failed.");
   }
 });
 
 router.get("/provider", async (req, res) => {
   try {
-    const result = await searchEsim(
-      req.query || {}
-    );
+    const result = await searchEsim(req.query || {});
 
     res.json({
       success: result.success,
