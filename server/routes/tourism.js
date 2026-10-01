@@ -11,7 +11,9 @@ import {
 const router = Router();
 
 /*
- * Leisure Tourism
+ * =========================================
+ * LEISURE TOURISM
+ * =========================================
  *
  * POST /api/tourism/leisure
  */
@@ -37,7 +39,35 @@ router.post(
 );
 
 /*
- * Education Tourism
+ * GET /api/tourism/leisure
+ *
+ * Supports frontend query-string searches.
+ */
+router.get(
+  "/leisure",
+  async (req, res) => {
+    try {
+      const result =
+        await searchLeisureTourism(
+          req.query || {}
+        );
+
+      res.json(result);
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        error:
+          error?.message ||
+          "Leisure tourism search failed.",
+      });
+    }
+  }
+);
+
+/*
+ * =========================================
+ * EDUCATION TOURISM
+ * =========================================
  *
  * POST /api/tourism/education
  */
@@ -63,7 +93,45 @@ router.post(
 );
 
 /*
- * Leisure provider information
+ * GET /api/tourism/education
+ *
+ * Supports the current EducationResultsPage
+ * query-string request.
+ *
+ * Example:
+ *
+ * /api/tourism/education
+ * ?country=Netherlands
+ * &city=Rotterdam
+ * &level=Diploma
+ * &duration=6-12-months
+ * &studyMode=Hybrid
+ */
+router.get(
+  "/education",
+  async (req, res) => {
+    try {
+      const result =
+        await searchEducationTourism(
+          req.query || {}
+        );
+
+      res.json(result);
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        error:
+          error?.message ||
+          "Education tourism search failed.",
+      });
+    }
+  }
+);
+
+/*
+ * =========================================
+ * LEISURE PROVIDER INFORMATION
+ * =========================================
  *
  * GET /api/tourism/leisure/provider
  */
@@ -107,7 +175,9 @@ router.get(
 );
 
 /*
- * Education provider information
+ * =========================================
+ * EDUCATION PROVIDER INFORMATION
+ * =========================================
  *
  * GET /api/tourism/education/provider
  */
