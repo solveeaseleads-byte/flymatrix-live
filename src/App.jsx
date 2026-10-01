@@ -70,40 +70,97 @@ const FEATURED_ROUTES = [
     from: "LOS",
     to: "LON",
     title: "Lagos → London",
-    description: "Compare flight options between Lagos and London.",
+    description:
+      "Compare flight options between Lagos and London.",
   },
   {
     from: "LOS",
     to: "DXB",
     title: "Lagos → Dubai",
-    description: "Explore flight options for Dubai.",
+    description:
+      "Explore flight options for Dubai.",
   },
   {
     from: "LOS",
     to: "YYZ",
     title: "Lagos → Toronto",
-    description: "Search travel options for Toronto.",
+    description:
+      "Search travel options for Toronto.",
   },
   {
     from: "LOS",
     to: "MAN",
     title: "Lagos → Manchester",
-    description: "Explore Manchester flight options.",
+    description:
+      "Explore Manchester flight options.",
   },
 ];
+
+/* =========================================================
+   PAGE MODULE DISCOVERY
+   =========================================================
+ *
+ * Vite discovers the actual files that exist inside
+ * src/pages/.
+ *
+ * This avoids inventing file paths such as:
+ *
+ * ../pages/SearchPage.jsx
+ *
+ * when the repository may use a different filename.
+ *
+ * Each discovered module is checked for a usable default
+ * React component before it is rendered.
+ *
+ * ========================================================= */
+
+const PAGE_MODULES = import.meta.glob(
+  "./pages/**/*.{jsx,js,tsx,ts}",
+  {
+    eager: true,
+  }
+);
 
 /* =========================================================
    UTILITIES
    ========================================================= */
 
 function getCurrentPath() {
-  return window.location.pathname || "/";
+  const pathname =
+    window.location.pathname || "/";
+
+  const search =
+    window.location.search || "";
+
+  return `${pathname}${search}`;
 }
 
 function navigate(path) {
   if (!path) return;
 
-  window.history.pushState({}, "", path);
+  const target = String(path).startsWith("/")
+    ? String(path)
+    : `/${String(path)}`;
+
+  const current =
+    `${window.location.pathname}${window.location.search}`;
+
+  if (target === current) {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
+    return;
+  }
+
+  window.history.pushState(
+    {
+      path: target,
+    },
+    "",
+    target
+  );
 
   window.dispatchEvent(
     new PopStateEvent("popstate")
@@ -116,7 +173,9 @@ function navigate(path) {
 }
 
 function usePath() {
-  const [path, setPath] = useState(getCurrentPath);
+  const [path, setPath] = useState(
+    getCurrentPath
+  );
 
   useEffect(() => {
     const handleNavigation = () => {
@@ -141,17 +200,23 @@ function usePath() {
 
 function useDarkMode() {
   const [dark, setDark] = useState(() => {
-    const stored =
-      window.localStorage.getItem(
-        "flymatrix-dark-mode"
-      );
+    try {
+      const stored =
+        window.localStorage.getItem(
+          "flymatrix-dark-mode"
+        );
 
-    if (stored === "true") return true;
-    if (stored === "false") return false;
+      if (stored === "true") return true;
+      if (stored === "false") return false;
+    } catch {
+      // Ignore unavailable localStorage.
+    }
 
-    return window.matchMedia?.(
-      "(prefers-color-scheme: dark)"
-    ).matches;
+    return (
+      window.matchMedia?.(
+        "(prefers-color-scheme: dark)"
+      ).matches || false
+    );
   });
 
   useEffect(() => {
@@ -160,13 +225,165 @@ function useDarkMode() {
       dark
     );
 
-    window.localStorage.setItem(
-      "flymatrix-dark-mode",
-      String(dark)
-    );
+    try {
+      window.localStorage.setItem(
+        "flymatrix-dark-mode",
+        String(dark)
+      );
+    } catch {
+      // Ignore unavailable localStorage.
+    }
   }, [dark]);
 
   return [dark, setDark];
+}
+
+/* =========================================================
+   PAGE RESOLUTION HELPERS
+   ========================================================= */
+
+function normalizePageName(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
+
+function getModuleFileName(filePath) {
+  const parts =
+    String(filePath || "").split("/");
+
+  const fileName =
+    parts[parts.length - 1] || "";
+
+  return fileName.replace(
+    /\.(jsx|js|tsx|ts)$/,
+    ""
+  );
+}
+
+function getDefaultPageComponent(module) {
+  if (!module) {
+    return null;
+  }
+
+  const candidates = [
+    module.default,
+    module.Page,
+    module.Component,
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate === "function") {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
+function findPageComponent(candidates = []) {
+  const normalizedCandidates =
+    candidates
+      .map(normalizePageName)
+      .filter(Boolean);
+
+  if (
+    normalizedCandidates.length === 0
+  ) {
+    return null;
+  }
+
+  for (const [
+    filePath,
+    module,
+  ] of Object.entries(PAGE_MODULES)) {
+    const fileName =
+      getModuleFileName(filePath);
+
+    const normalizedFileName =
+      normalizePageName(fileName);
+
+    if (
+      normalizedCandidates.includes(
+        normalizedFileName
+      )
+    ) {
+      const component =
+        getDefaultPageComponent(module);
+
+      if (component) {
+        return component;
+      }
+    }
+  }
+
+  return null;
+}
+
+/*
+ * A second resolver checks the actual route name.
+ *
+ * Example:
+ *
+ * /esim
+ *
+ * can match:
+ *
+ * Esim.jsx
+ * EsimPage.jsx
+ * ESIM.jsx
+ * ESIMPage.jsx
+ *
+ * without us hardcoding a filesystem path.
+ */
+
+function findRoutePageComponent(
+  routeCandidates = []
+) {
+  const explicit =
+    findPageComponent(routeCandidates);
+
+  if (explicit) {
+    return explicit;
+  }
+
+  const normalizedCandidates =
+    routeCandidates
+      .map(normalizePageName)
+      .filter(Boolean);
+
+  for (const [
+    filePath,
+    module,
+  ] of Object.entries(PAGE_MODULES)) {
+    const fileName =
+      getModuleFileName(filePath);
+
+    const normalizedFileName =
+      normalizePageName(fileName);
+
+    const matches =
+      normalizedCandidates.some(
+        (candidate) =>
+          normalizedFileName === candidate ||
+          normalizedFileName ===
+            `${candidate}page` ||
+          normalizedFileName.endsWith(
+            candidate
+          )
+      );
+
+    if (matches) {
+      const component =
+        getDefaultPageComponent(module);
+
+      if (component) {
+        return component;
+      }
+    }
+  }
+
+  return null;
 }
 
 /* =========================================================
@@ -175,14 +392,18 @@ function useDarkMode() {
 
 export default function App() {
   const path = usePath();
-  const [dark, setDark] = useDarkMode();
+
+  const [dark, setDark] =
+    useDarkMode();
 
   return (
     <div className="fm-app">
       <Header
         path={path}
         dark={dark}
-        onToggleDark={() => setDark((value) => !value)}
+        onToggleDark={() =>
+          setDark((value) => !value)
+        }
       />
 
       <main>
@@ -201,118 +422,434 @@ export default function App() {
    ========================================================= */
 
 function RouteView({ path }) {
-  if (path === "/") {
+  /*
+   * Keep the complete URL available to the page,
+   * but use only pathname when selecting the route.
+   *
+   * Example:
+   *
+   * /search?origin=LOS&destination=LON
+   *
+   * becomes:
+   *
+   * /search
+   */
+
+  const cleanPath =
+    String(path || "/").split("?")[0] || "/";
+
+  /* =======================================================
+     HOME
+     ======================================================= */
+
+  if (cleanPath === "/") {
     return <HomePage />;
   }
 
-  if (
-    path === "/search" ||
-    path === "/flights"
-  ) {
-    return <PlaceholderPage title="Search Flights" />;
-  }
+  /* =======================================================
+     FLIGHTS / SEARCH
+     ======================================================= */
 
   if (
-    path === "/tourism/leisure"
+    cleanPath === "/search" ||
+    cleanPath === "/flights"
   ) {
     return (
-      <PlaceholderPage
+      <RealPage
+        candidates={[
+          "SearchPage",
+          "FlightSearchPage",
+          "FlightsPage",
+          "Search",
+          "Flights",
+        ]}
+        title="Search Flights"
+        path={cleanPath}
+      />
+    );
+  }
+
+  /* =======================================================
+     LEISURE TOURISM
+     ======================================================= */
+
+  if (
+    cleanPath === "/tourism/leisure"
+  ) {
+    return (
+      <RealPage
+        candidates={[
+          "LeisureTourismPage",
+          "LeisurePage",
+          "TourismLeisurePage",
+          "LeisureTourism",
+          "Leisure",
+        ]}
         title="Leisure Tourism"
+        path={cleanPath}
       />
     );
   }
+
+  /* =======================================================
+     EDUCATION TOURISM
+     ======================================================= */
 
   if (
-    path === "/tourism/education"
+    cleanPath === "/tourism/education"
   ) {
     return (
-      <PlaceholderPage
+      <RealPage
+        candidates={[
+          "EducationTourismPage",
+          "EducationPage",
+          "TourismEducationPage",
+          "EducationTourism",
+          "Education",
+        ]}
         title="Education Tourism"
+        path={cleanPath}
       />
     );
   }
 
-  if (path === "/planner") {
+  /* =======================================================
+     PLANNER
+     ======================================================= */
+
+  if (cleanPath === "/planner") {
     return (
-      <PlaceholderPage
+      <RealPage
+        candidates={[
+          "PlannerPage",
+          "TripPlannerPage",
+          "TravelPlannerPage",
+          "Planner",
+          "TripPlanner",
+          "TravelPlanner",
+        ]}
         title="Trip Planner"
+        path={cleanPath}
       />
     );
   }
 
-  if (path === "/visa") {
+  /* =======================================================
+     VISA
+     ======================================================= */
+
+  if (cleanPath === "/visa") {
     return (
-      <PlaceholderPage
+      <RealPage
+        candidates={[
+          "VisaPage",
+          "VisaGuidancePage",
+          "VisaCheckerPage",
+          "Visa",
+          "VisaGuidance",
+          "VisaChecker",
+        ]}
         title="Visa Guidance"
+        path={cleanPath}
       />
     );
   }
 
-  if (path === "/hotels") {
+  /* =======================================================
+     HOTELS
+     ======================================================= */
+
+  if (cleanPath === "/hotels") {
     return (
-      <PlaceholderPage title="Hotels" />
+      <RealPage
+        candidates={[
+          "HotelsPage",
+          "HotelPage",
+          "Hotels",
+          "Hotel",
+        ]}
+        title="Hotels"
+        path={cleanPath}
+      />
     );
   }
 
-  if (path === "/activities") {
+  /* =======================================================
+     ACTIVITIES
+     ======================================================= */
+
+  if (cleanPath === "/activities") {
     return (
-      <PlaceholderPage
+      <RealPage
+        candidates={[
+          "ActivitiesPage",
+          "ActivityPage",
+          "Activities",
+          "Activity",
+        ]}
         title="Activities"
+        path={cleanPath}
       />
     );
   }
 
-  if (path === "/essentials") {
+  /* =======================================================
+     ESSENTIALS
+     ======================================================= */
+
+  if (cleanPath === "/essentials") {
     return (
-      <PlaceholderPage
+      <RealPage
+        candidates={[
+          "EssentialsPage",
+          "TravelEssentialsPage",
+          "Essentials",
+          "TravelEssentials",
+        ]}
         title="Travel Essentials"
+        path={cleanPath}
       />
     );
   }
 
-  if (path === "/esim") {
+  /* =======================================================
+     eSIM
+     ======================================================= */
+
+  if (cleanPath === "/esim") {
     return (
-      <PlaceholderPage title="eSIM" />
+      <RealPage
+        candidates={[
+          "EsimPage",
+          "ESIMPage",
+          "ESimPage",
+          "Esim",
+          "ESIM",
+          "ESim",
+        ]}
+        title="eSIM"
+        path={cleanPath}
+      />
     );
   }
 
-  if (path === "/transfers") {
+  /* =======================================================
+     TRANSFERS
+     ======================================================= */
+
+  if (cleanPath === "/transfers") {
     return (
-      <PlaceholderPage
+      <RealPage
+        candidates={[
+          "TransfersPage",
+          "TransferPage",
+          "Transfers",
+          "Transfer",
+        ]}
         title="Transfers"
+        path={cleanPath}
       />
     );
   }
 
-  if (path === "/luggage") {
+  /* =======================================================
+     LUGGAGE
+     ======================================================= */
+
+  if (cleanPath === "/luggage") {
     return (
-      <PlaceholderPage
+      <RealPage
+        candidates={[
+          "LuggagePage",
+          "LuggageStoragePage",
+          "Luggage",
+          "LuggageStorage",
+        ]}
         title="Luggage Storage"
+        path={cleanPath}
       />
     );
   }
 
-  if (path === "/assistance") {
+  /* =======================================================
+     ASSISTANCE
+     ======================================================= */
+
+  if (cleanPath === "/assistance") {
     return (
-      <PlaceholderPage
+      <RealPage
+        candidates={[
+          "AssistancePage",
+          "TravelAssistancePage",
+          "Assistance",
+          "TravelAssistance",
+        ]}
         title="Travel Assistance"
+        path={cleanPath}
       />
     );
   }
 
-  if (path === "/alerts") {
+  /* =======================================================
+     FARE ALERTS
+     ======================================================= */
+
+  if (cleanPath === "/alerts") {
     return (
-      <PlaceholderPage
+      <RealPage
+        candidates={[
+          "AlertsPage",
+          "FareAlertsPage",
+          "FareAlertPage",
+          "Alerts",
+          "FareAlerts",
+          "FareAlert",
+        ]}
         title="Fare Alerts"
+        path={cleanPath}
       />
     );
   }
+
+  /* =======================================================
+     404
+     ======================================================= */
 
   return (
     <PlaceholderPage
       title="Page Not Found"
       notFound
     />
+  );
+}
+
+/* =========================================================
+   REAL PAGE RENDERER
+   ========================================================= */
+
+function RealPage({
+  candidates,
+  title,
+  path,
+}) {
+  const PageComponent =
+    findRoutePageComponent(
+      candidates
+    );
+
+  if (PageComponent) {
+    return <PageComponent />;
+  }
+
+  /*
+   * This is deliberately different from the old behavior.
+   *
+   * The router is working even if a corresponding page file
+   * has not yet been created/discovered.
+   *
+   * This diagnostic page tells us exactly which route failed
+   * to resolve rather than silently pretending that the page
+   * is connected.
+   */
+
+  return (
+    <MissingPageDiagnostic
+      title={title}
+      path={path}
+    />
+  );
+}
+
+/* =========================================================
+   MISSING PAGE DIAGNOSTIC
+   ========================================================= */
+
+function MissingPageDiagnostic({
+  title,
+  path,
+}) {
+  return (
+    <section className="fm-section">
+      <div className="fm-container">
+        <div
+          className="fm-card"
+          style={{
+            padding:
+              "clamp(30px, 7vw, 70px)",
+            textAlign: "center",
+          }}
+        >
+          <div
+            className="fm-eyebrow"
+            style={{
+              marginBottom: 18,
+            }}
+          >
+            FlyMatrix
+          </div>
+
+          <h1 className="fm-section-title">
+            {title}
+          </h1>
+
+          <p
+            className="fm-section-subtitle"
+            style={{
+              marginInline: "auto",
+            }}
+          >
+            The navigation route is active, but no
+            matching page component was found in
+            <strong> src/pages/</strong>.
+          </p>
+
+          <div
+            style={{
+              marginTop: 20,
+              padding: 14,
+              borderRadius: 10,
+              background:
+                "var(--fm-surface-soft)",
+              fontFamily:
+                "monospace",
+              wordBreak: "break-word",
+            }}
+          >
+            {path}
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: 10,
+              marginTop: 24,
+            }}
+          >
+            <button
+              type="button"
+              className="fm-btn fm-btn-primary"
+              onClick={() =>
+                navigate("/")
+              }
+            >
+              Back to FlyMatrix
+            </button>
+
+            <button
+              type="button"
+              className="fm-btn fm-btn-secondary"
+              onClick={() =>
+                navigate("/search")
+              }
+            >
+              Search Flights
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -331,7 +868,9 @@ function Header({
         <button
           type="button"
           className="fm-brand"
-          onClick={() => navigate("/")}
+          onClick={() =>
+            navigate("/")
+          }
           aria-label="Go to FlyMatrix home"
         >
           <span
@@ -966,7 +1505,7 @@ function ServiceCard({ service }) {
 }
 
 /* =========================================================
-   PLACEHOLDER PAGE
+   PLACEHOLDER / 404 PAGE
    ========================================================= */
 
 function PlaceholderPage({
@@ -974,80 +1513,74 @@ function PlaceholderPage({
   notFound = false,
 }) {
   return (
-    <>
-      <section className="fm-section">
-        <div className="fm-container">
+    <section className="fm-section">
+      <div className="fm-container">
+        <div
+          className="fm-card"
+          style={{
+            padding:
+              "clamp(30px, 7vw, 70px)",
+            textAlign: "center",
+          }}
+        >
           <div
-            className="fm-card"
+            className="fm-eyebrow"
             style={{
-              padding:
-                "clamp(30px, 7vw, 70px)",
-              textAlign: "center",
+              marginBottom: 18,
             }}
           >
-            <div
-              className="fm-eyebrow"
-              style={{
-                marginBottom: 18,
-              }}
+            {notFound
+              ? "FlyMatrix"
+              : "FlyMatrix"}
+          </div>
+
+          <h1 className="fm-section-title">
+            {title}
+          </h1>
+
+          <p
+            className="fm-section-subtitle"
+            style={{
+              marginInline: "auto",
+            }}
+          >
+            This FlyMatrix route could not be
+            resolved.
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent:
+                "center",
+              gap: 10,
+              marginTop: 24,
+            }}
+          >
+            <button
+              type="button"
+              className="fm-btn fm-btn-primary"
+              onClick={() =>
+                navigate("/")
+              }
             >
-              {notFound
-                ? "FlyMatrix"
-                : "FlyMatrix"}
-            </div>
+              Back to FlyMatrix
+            </button>
 
-            <h1 className="fm-section-title">
-              {title}
-            </h1>
-
-            <p
-              className="fm-section-subtitle"
-              style={{
-                marginInline:
-                  "auto",
-              }}
+            <button
+              type="button"
+              className="fm-btn fm-btn-secondary"
+              onClick={() =>
+                navigate("/search")
+              }
             >
-              This dedicated page is part of the
-              FlyMatrix application and will be
-              connected to its complete data and
-              affiliate engine in the next repository
-              files.
-            </p>
-
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                justifyContent:
-                  "center",
-                gap: 10,
-                marginTop: 24,
-              }}
-            >
-              <button
-                type="button"
-                className="fm-btn fm-btn-primary"
-                onClick={() =>
-                  navigate("/")
-                }
-              >
-                Back to FlyMatrix
-              </button>
-
-              <button
-                type="button"
-                className="fm-btn fm-btn-secondary"
-                onClick={() =>
-                  navigate("/search")
-                }
-              >
-                Search Flights
-              </button>
-            </div>
+              Search Flights
+            </button>
           </div>
         </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 }
 
@@ -1118,22 +1651,10 @@ function Footer() {
           <FooterColumn
             title="Travel"
             links={[
-              [
-                "Flights",
-                "/search",
-              ],
-              [
-                "Hotels",
-                "/hotels",
-              ],
-              [
-                "Activities",
-                "/activities",
-              ],
-              [
-                "Transfers",
-                "/transfers",
-              ],
+              ["Flights", "/search"],
+              ["Hotels", "/hotels"],
+              ["Activities", "/activities"],
+              ["Transfers", "/transfers"],
             ]}
           />
 
@@ -1162,14 +1683,8 @@ function Footer() {
           <FooterColumn
             title="Services"
             links={[
-              [
-                "eSIM",
-                "/esim",
-              ],
-              [
-                "Luggage",
-                "/luggage",
-              ],
+              ["eSIM", "/esim"],
+              ["Luggage", "/luggage"],
               [
                 "Assistance",
                 "/assistance",
@@ -1310,14 +1825,17 @@ function isPathActive(
   currentPath,
   targetPath
 ) {
+  const current =
+    String(currentPath || "/").split("?")[0];
+
   if (targetPath === "/") {
-    return currentPath === "/";
+    return current === "/";
   }
 
   return (
-    currentPath === targetPath ||
-    currentPath.startsWith(
+    current === targetPath ||
+    current.startsWith(
       `${targetPath}/`
     )
   );
-  }
+}
