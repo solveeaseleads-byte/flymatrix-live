@@ -1,4 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState
+} from "react";
 
 const FALLBACK_AIRPORTS = [
   {
@@ -108,7 +112,9 @@ const FALLBACK_AIRPORTS = [
 ];
 
 function normalizeAirport(item) {
-  if (!item) return null;
+  if (!item) {
+    return null;
+  }
 
   return {
     code:
@@ -139,47 +145,151 @@ function normalizeAirport(item) {
   };
 }
 
-function airportSearchText(airport) {
-  return [
-    airport.code,
-    airport.name,
-    airport.city,
-    airport.country,
-  ]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
+function normalizeSearchValue(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
 }
 
-function scoreAirport(airport, query) {
-  const q = query.trim().toLowerCase();
+/*
+ * A search becomes active only after three characters.
+ *
+ * This prevents very broad one- and two-character
+ * searches from producing unrelated results.
+ */
+const MIN_SEARCH_LENGTH = 3;
 
-  if (!q) return 0;
+/*
+ * Strict prefix matching.
+ *
+ * A result is valid when the beginning of its:
+ * - IATA code
+ * - city name
+ * - airport name
+ *
+ * matches the beginning of the user's query.
+ *
+ * We intentionally do NOT use String.includes()
+ * here because that can produce unrelated results.
+ */
+function isPrefixMatch(airport, query) {
+  const q =
+    normalizeSearchValue(query);
 
-  const code = airport.code.toLowerCase();
-  const city = airport.city.toLowerCase();
-  const name = airport.name.toLowerCase();
-  const country =
-    airport.country.toLowerCase();
+  if (
+    q.length <
+    MIN_SEARCH_LENGTH
+  ) {
+    return false;
+  }
 
-  if (code === q) return 1000;
-  if (city === q) return 900;
-  if (name === q) return 800;
-  if (country === q) return 500;
+  const code =
+    normalizeSearchValue(
+      airport.code
+    );
 
-  if (code.startsWith(q)) return 700;
-  if (city.startsWith(q)) return 650;
-  if (name.startsWith(q)) return 600;
+  const city =
+    normalizeSearchValue(
+      airport.city
+    );
 
-  if (city.includes(q)) return 450;
-  if (name.includes(q)) return 400;
-  if (country.includes(q)) return 300;
+  const name =
+    normalizeSearchValue(
+      airport.name
+    );
+
+  return (
+    code.startsWith(q) ||
+    city.startsWith(q) ||
+    name.startsWith(q)
+  );
+}
+
+function scoreAirport(
+  airport,
+  query
+) {
+  const q =
+    normalizeSearchValue(query);
+
+  if (
+    q.length <
+    MIN_SEARCH_LENGTH
+  ) {
+    return 0;
+  }
+
+  const code =
+    normalizeSearchValue(
+      airport.code
+    );
+
+  const city =
+    normalizeSearchValue(
+      airport.city
+    );
+
+  const name =
+    normalizeSearchValue(
+      airport.name
+    );
+
+  /*
+   * Exact IATA code is the strongest match.
+   */
+  if (code === q) {
+    return 1000;
+  }
+
+  /*
+   * Exact city match comes next.
+   */
+  if (city === q) {
+    return 900;
+  }
+
+  /*
+   * Exact airport name.
+   */
+  if (name === q) {
+    return 800;
+  }
+
+  /*
+   * City prefix is preferred because the
+   * user is primarily searching for a
+   * city or airport destination.
+   */
+  if (city.startsWith(q)) {
+    return 700;
+  }
+
+  /*
+   * Airport name prefix.
+   */
+  if (name.startsWith(q)) {
+    return 600;
+  }
+
+  /*
+   * IATA prefix.
+   */
+  if (code.startsWith(q)) {
+    return 500;
+  }
 
   return 0;
 }
 
-function rankAirports(items, query) {
-  return [...items]
+function rankAirports(
+  items,
+  query
+) {
+  const normalized =
+    deduplicateAirports(items);
+
+  return normalized
     .map((airport) => ({
       airport,
       score: scoreAirport(
@@ -187,74 +297,98 @@ function rankAirports(items, query) {
         query
       ),
     }))
-    .filter((item) => item.score > 0)
+    .filter(
+      (item) =>
+        item.score > 0 &&
+        isPrefixMatch(
+          item.airport,
+          query
+        )
+    )
     .sort((a, b) => {
-      if (b.score !== a.score) {
-        return b.score - a.score;
+      if (
+        b.score !==
+        a.score
+      ) {
+        return (
+          b.score -
+          a.score
+        );
       }
 
-      return a.airport.city.localeCompare(
-        b.airport.city
+      const cityCompare =
+        a.airport.city.localeCompare(
+          b.airport.city
+        );
+
+      if (
+        cityCompare !== 0
+      ) {
+        return cityCompare;
+      }
+
+      return a.airport.name.localeCompare(
+        b.airport.name
       );
     })
-    .map((item) => item.airport);
+    .map(
+      (item) =>
+        item.airport
+    );
 }
 
-function deduplicateAirports(items) {
+function deduplicateAirports(
+  items
+) {
   const map = new Map();
 
   items.forEach((item) => {
-    const airport = normalizeAirport(item);
+    const airport =
+      normalizeAirport(item);
 
-    if (!airport.code) return;
+    if (
+      !airport ||
+      !airport.code
+    ) {
+      return;
+    }
 
-    const key = airport.code.toUpperCase();
+    const key =
+      airport.code
+        .trim()
+        .toUpperCase();
 
     if (!map.has(key)) {
-      map.set(key, airport);
+      map.set(
+        key,
+        airport
+      );
     }
   });
 
-  return Array.from(map.values());
+  return Array.from(
+    map.values()
+  );
 }
 
-function getNearbyOrLocalResults(
+function getLocalResults(
   airports,
   query
 ) {
-  const q = query.trim().toLowerCase();
+  const q =
+    normalizeSearchValue(query);
 
-  if (!q) {
-    return airports.slice(0, 10);
+  if (
+    q.length <
+    MIN_SEARCH_LENGTH
+  ) {
+    return [];
   }
 
-  /*
-   * A city may have several airports.
-   * Keep all matching airports so a user searching
-   * "London" can see LHR, LGW, STN, LTN, etc.
-   */
-  const exactCityMatches = airports.filter(
-    (airport) =>
-      airport.city.toLowerCase() === q
-  );
-
-  const cityMatches = airports.filter(
-    (airport) =>
-      airport.city
-        .toLowerCase()
-        .startsWith(q)
-  );
-
-  const ranked = rankAirports(
+  return rankAirports(
     airports,
-    query
-  );
-
-  return deduplicateAirports([
-    ...exactCityMatches,
-    ...cityMatches,
-    ...ranked,
-  ]).slice(0, 12);
+    q
+  ).slice(0, 12);
 }
 
 export default function AirportSearch({
@@ -265,11 +399,22 @@ export default function AirportSearch({
   ariaLabel,
   disabled = false,
 }) {
-  const containerRef = useRef(null);
-  const inputRef = useRef(null);
-  const requestRef = useRef(0);
+  const containerRef =
+    useRef(null);
 
-  const [query, setQuery] = useState(
+  const inputRef =
+    useRef(null);
+
+  const requestRef =
+    useRef(0);
+
+  const timerRef =
+    useRef(null);
+
+  const [
+    query,
+    setQuery
+  ] = useState(
     value
       ? `${value.city || ""}${
           value.code
@@ -279,17 +424,25 @@ export default function AirportSearch({
       : ""
   );
 
-  const [results, setResults] =
-    useState([]);
+  const [
+    results,
+    setResults
+  ] = useState([]);
 
-  const [loading, setLoading] =
-    useState(false);
+  const [
+    loading,
+    setLoading
+  ] = useState(false);
 
-  const [isOpen, setIsOpen] =
-    useState(false);
+  const [
+    isOpen,
+    setIsOpen
+  ] = useState(false);
 
-  const [error, setError] =
-    useState("");
+  const [
+    error,
+    setError
+  ] = useState("");
 
   useEffect(() => {
     if (!value) {
@@ -309,7 +462,9 @@ export default function AirportSearch({
   }, [value]);
 
   useEffect(() => {
-    function handleOutsideClick(event) {
+    function handleOutsideClick(
+      event
+    ) {
       if (
         containerRef.current &&
         !containerRef.current.contains(
@@ -333,14 +488,41 @@ export default function AirportSearch({
     };
   }, []);
 
-  async function searchAirports(searchTerm) {
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(
+          timerRef.current
+        );
+      }
+
+      requestRef.current += 1;
+    };
+  }, []);
+
+  async function searchAirports(
+    searchTerm
+  ) {
     const term =
       searchTerm.trim();
 
-    if (!term) {
-      setResults(
-        FALLBACK_AIRPORTS.slice(0, 8)
+    const normalizedTerm =
+      normalizeSearchValue(
+        term
       );
+
+    /*
+     * Do not perform an airport search
+     * until at least three characters
+     * have been entered.
+     */
+    if (
+      normalizedTerm.length <
+      MIN_SEARCH_LENGTH
+    ) {
+      setLoading(false);
+      setError("");
+      setResults([]);
       return;
     }
 
@@ -351,24 +533,18 @@ export default function AirportSearch({
     setError("");
 
     try {
-      /*
-       * Primary source:
-       * backend global airport search.
-       *
-       * This keeps the frontend independent from
-       * a small hard-coded airport list.
-       */
-      const response = await fetch(
-        `/api/destinations?search=${encodeURIComponent(
-          term
-        )}`,
-        {
-          headers: {
-            Accept:
-              "application/json",
-          },
-        }
-      );
+      const response =
+        await fetch(
+          `/api/destinations?search=${encodeURIComponent(
+            term
+          )}`,
+          {
+            headers: {
+              Accept:
+                "application/json",
+            },
+          }
+        );
 
       if (!response.ok) {
         throw new Error(
@@ -389,11 +565,17 @@ export default function AirportSearch({
       const apiItems =
         Array.isArray(data)
           ? data
-          : Array.isArray(data.results)
+          : Array.isArray(
+              data.results
+            )
           ? data.results
-          : Array.isArray(data.destinations)
+          : Array.isArray(
+              data.destinations
+            )
           ? data.destinations
-          : Array.isArray(data.airports)
+          : Array.isArray(
+              data.airports
+            )
           ? data.airports
           : [];
 
@@ -403,32 +585,46 @@ export default function AirportSearch({
         );
 
       /*
-       * Include fallback results as a safety net,
-       * but only when the backend does not return
-       * enough useful results.
+       * The backend response is NEVER trusted
+       * blindly. Filter it using the same strict
+       * prefix rule as the fallback data.
+       */
+      const apiMatches =
+        getLocalResults(
+          normalized,
+          normalizedTerm
+        );
+
+      /*
+       * Fallback data is also filtered strictly.
+       * Therefore Kano cannot leak into "Lag"
+       * or "Los" simply because it exists in the
+       * fallback list.
+       */
+      const fallbackMatches =
+        getLocalResults(
+          FALLBACK_AIRPORTS,
+          normalizedTerm
+        );
+
+      /*
+       * API results take priority, while fallback
+       * records fill gaps where appropriate.
        */
       const combined =
         deduplicateAirports([
-          ...normalized,
-          ...getNearbyOrLocalResults(
-            FALLBACK_AIRPORTS,
-            term
-          ),
+          ...apiMatches,
+          ...fallbackMatches,
         ]);
 
       const ranked =
         rankAirports(
           combined,
-          term
+          normalizedTerm
         );
 
       setResults(
-        ranked.length
-          ? ranked.slice(0, 12)
-          : getNearbyOrLocalResults(
-              combined,
-              term
-            )
+        ranked.slice(0, 12)
       );
     } catch (requestError) {
       if (
@@ -443,19 +639,26 @@ export default function AirportSearch({
         requestError
       );
 
+      /*
+       * If the backend is unavailable,
+       * use the same strict prefix matching
+       * against the local fallback dataset.
+       */
       const fallback =
-        getNearbyOrLocalResults(
+        getLocalResults(
           FALLBACK_AIRPORTS,
-          term
+          normalizedTerm
         );
 
-      setResults(fallback);
+      setResults(
+        fallback
+      );
 
-      if (!fallback.length) {
-        setError(
-          "Airport search is temporarily unavailable."
-        );
-      }
+      setError(
+        fallback.length
+          ? ""
+          : "Airport search is temporarily unavailable."
+      );
     } finally {
       if (
         requestId ===
@@ -469,59 +672,88 @@ export default function AirportSearch({
   function handleFocus() {
     setIsOpen(true);
 
-    if (!query.trim()) {
-      setResults(
-        FALLBACK_AIRPORTS.slice(0, 8)
+    const normalizedQuery =
+      normalizeSearchValue(
+        query
       );
+
+    /*
+     * We intentionally do not display a broad
+     * airport list on focus. The user must type
+     * at least three characters.
+     */
+    if (
+      normalizedQuery.length <
+      MIN_SEARCH_LENGTH
+    ) {
+      setResults([]);
+      setError("");
     }
   }
 
-  function handleInputChange(event) {
+  function handleInputChange(
+    event
+  ) {
     const nextValue =
       event.target.value;
 
     setQuery(nextValue);
     setIsOpen(true);
+    setError("");
 
     /*
-     * Clearing the input also clears the selected
-     * normalized airport object.
+     * Typing replaces the previous selection.
      */
-    if (!nextValue.trim()) {
-      onChange?.(null);
-      setResults(
-        FALLBACK_AIRPORTS.slice(0, 8)
+    onChange?.(null);
+
+    const normalizedValue =
+      normalizeSearchValue(
+        nextValue
       );
+
+    if (
+      timerRef.current
+    ) {
+      clearTimeout(
+        timerRef.current
+      );
+    }
+
+    /*
+     * Clear results for fewer than
+     * three characters.
+     */
+    if (
+      normalizedValue.length <
+      MIN_SEARCH_LENGTH
+    ) {
+      setResults([]);
+      setLoading(false);
       return;
     }
 
     /*
-     * Debounce backend requests so typing "London"
-     * does not create six immediate requests.
+     * Debounce backend searches.
      */
-    if (
-      inputRef.current
-        ?.airportSearchTimer
-    ) {
-      clearTimeout(
-        inputRef.current
-          .airportSearchTimer
-      );
-    }
-
-    const timer = setTimeout(() => {
-      searchAirports(nextValue);
-    }, 250);
-
-    if (inputRef.current) {
-      inputRef.current.airportSearchTimer =
-        timer;
-    }
+    timerRef.current =
+      setTimeout(() => {
+        searchAirports(
+          nextValue
+        );
+      }, 250);
   }
 
-  function handleSelect(airport) {
+  function handleSelect(
+    airport
+  ) {
     const normalized =
-      normalizeAirport(airport);
+      normalizeAirport(
+        airport
+      );
+
+    if (!normalized) {
+      return;
+    }
 
     setQuery(
       normalized.city
@@ -536,25 +768,44 @@ export default function AirportSearch({
     setIsOpen(false);
     setError("");
 
-    onChange?.(normalized);
+    onChange?.(
+      normalized
+    );
   }
 
-  function handleKeyDown(event) {
+  function handleKeyDown(
+    event
+  ) {
     if (
-      event.key === "Escape"
+      event.key ===
+      "Escape"
     ) {
       setIsOpen(false);
       return;
     }
 
     if (
-      event.key === "Enter" &&
+      event.key ===
+        "Enter" &&
       results.length
     ) {
       event.preventDefault();
-      handleSelect(results[0]);
+
+      handleSelect(
+        results[0]
+      );
     }
   }
+
+  const normalizedQuery =
+    normalizeSearchValue(
+      query
+    );
+
+  const needsMoreCharacters =
+    normalizedQuery.length > 0 &&
+    normalizedQuery.length <
+      MIN_SEARCH_LENGTH;
 
   return (
     <div
@@ -578,14 +829,23 @@ export default function AirportSearch({
           autoComplete="off"
           placeholder={placeholder}
           aria-label={
-            ariaLabel || placeholder
+            ariaLabel ||
+            placeholder
           }
-          aria-expanded={isOpen}
+          aria-expanded={
+            isOpen
+          }
           aria-autocomplete="list"
           role="combobox"
-          onFocus={handleFocus}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
+          onFocus={
+            handleFocus
+          }
+          onChange={
+            handleInputChange
+          }
+          onKeyDown={
+            handleKeyDown
+          }
         />
 
         {loading && (
@@ -597,22 +857,40 @@ export default function AirportSearch({
           </span>
         )}
 
-        {query && !loading && (
-          <button
-            type="button"
-            className="airport-clear"
-            aria-label="Clear airport"
-            onClick={() => {
-              setQuery("");
-              setResults([]);
-              setIsOpen(true);
-              onChange?.(null);
-              inputRef.current?.focus();
-            }}
-          >
-            ×
-          </button>
-        )}
+        {query &&
+          !loading && (
+            <button
+              type="button"
+              className="airport-clear"
+              aria-label="Clear airport"
+              onClick={() => {
+                if (
+                  timerRef.current
+                ) {
+                  clearTimeout(
+                    timerRef.current
+                  );
+                }
+
+                requestRef.current +=
+                  1;
+
+                setQuery("");
+                setResults([]);
+                setError("");
+                setLoading(false);
+                setIsOpen(true);
+
+                onChange?.(
+                  null
+                );
+
+                inputRef.current?.focus();
+              }}
+            >
+              ×
+            </button>
+          )}
       </div>
 
       {isOpen && (
@@ -620,14 +898,23 @@ export default function AirportSearch({
           className="airport-dropdown"
           role="listbox"
         >
-          {loading && (
+          {needsMoreCharacters && (
             <div className="airport-status">
-              Searching airports…
+              Type at least 3 letters to search.
             </div>
           )}
 
-          {!loading &&
-            results.length > 0 && (
+          {!needsMoreCharacters &&
+            loading && (
+              <div className="airport-status">
+                Searching airports…
+              </div>
+            )}
+
+          {!needsMoreCharacters &&
+            !loading &&
+            results.length >
+              0 && (
               <>
                 {results.map(
                   (airport) => (
@@ -636,7 +923,9 @@ export default function AirportSearch({
                       key={`${airport.code}-${airport.name}`}
                       className="airport-option"
                       role="option"
-                      onMouseDown={(event) =>
+                      onMouseDown={(
+                        event
+                      ) =>
                         event.preventDefault()
                       }
                       onClick={() =>
@@ -646,7 +935,9 @@ export default function AirportSearch({
                       }
                     >
                       <span className="airport-code">
-                        {airport.code}
+                        {
+                          airport.code
+                        }
                       </span>
 
                       <span className="airport-option-main">
@@ -656,7 +947,9 @@ export default function AirportSearch({
                         </strong>
 
                         <span>
-                          {airport.name}
+                          {
+                            airport.name
+                          }
                         </span>
 
                         {airport.country && (
@@ -673,7 +966,8 @@ export default function AirportSearch({
               </>
             )}
 
-          {!loading &&
+          {!needsMoreCharacters &&
+            !loading &&
             !results.length &&
             !error && (
               <div className="airport-status">
@@ -681,14 +975,16 @@ export default function AirportSearch({
               </div>
             )}
 
-          {!loading && error && (
-            <div
-              className="airport-status airport-error"
-              role="alert"
-            >
-              {error}
-            </div>
-          )}
+          {!needsMoreCharacters &&
+            !loading &&
+            error && (
+              <div
+                className="airport-status airport-error"
+                role="alert"
+              >
+                {error}
+              </div>
+            )}
         </div>
       )}
     </div>
