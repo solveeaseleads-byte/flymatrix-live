@@ -4,165 +4,91 @@ import React, {
   useState
 } from "react";
 
-import AirportSearch
-  from "./AirportSearch.jsx";
-
-import PassengerSelector
-  from "./PassengerSelector.jsx";
-
-import {
-  navigate
-} from "../../router/AppRouter.jsx";
+import AirportSearch from "./AirportSearch.jsx";
+import PassengerSelector from "./PassengerSelector.jsx";
+import { navigate } from "../../router/AppRouter.jsx";
 
 const DEFAULT_SEARCH = {
-  tripType:
-    "roundtrip",
-
-  origin:
-    null,
-
-  destination:
-    null,
-
-  departureDate:
-    "",
-
-  returnDate:
-    "",
-
-  adults:
-    1,
-
-  children:
-    0,
-
-  infants:
-    0,
-
-  cabin:
-    "economy",
-
-  stops:
-    "any"
+  tripType: "roundtrip",
+  origin: null,
+  destination: null,
+  departureDate: "",
+  returnDate: "",
+  adults: 1,
+  children: 0,
+  infants: 0,
+  cabin: "economy",
+  stops: "any"
 };
 
 const CABIN_OPTIONS = [
   {
-    value:
-      "economy",
-    label:
-      "Economy"
+    value: "economy",
+    label: "Economy"
   },
-
   {
-    value:
-      "premium_economy",
-    label:
-      "Premium Economy"
+    value: "premium_economy",
+    label: "Premium Economy"
   },
-
   {
-    value:
-      "business",
-    label:
-      "Business"
+    value: "business",
+    label: "Business"
   },
-
   {
-    value:
-      "first",
-    label:
-      "First Class"
+    value: "first",
+    label: "First Class"
   }
 ];
 
 const STOP_OPTIONS = [
   {
-    value:
-      "any",
-    label:
-      "Any stops"
+    value: "any",
+    label: "Any stops"
   },
-
   {
-    value:
-      "0",
-    label:
-      "Nonstop"
+    value: "0",
+    label: "Nonstop"
   },
-
   {
-    value:
-      "1",
-    label:
-      "Up to 1 stop"
+    value: "1",
+    label: "Up to 1 stop"
   },
-
   {
-    value:
-      "2",
-    label:
-      "Up to 2 stops"
+    value: "2",
+    label: "Up to 2 stops"
   }
 ];
 
-function formatDateForDisplay(
-  value
-) {
+function formatDateForDisplay(value) {
   if (!value) {
     return "";
   }
 
-  const date =
-    new Date(
-      `${value}T00:00:00`
-    );
+  const date = new Date(`${value}T00:00:00`);
 
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
+  if (Number.isNaN(date.getTime())) {
     return value;
   }
 
-  return new Intl.DateTimeFormat(
-    "en",
-    {
-      day:
-        "numeric",
-
-      month:
-        "short",
-
-      year:
-        "numeric"
-    }
-  ).format(date);
+  return new Intl.DateTimeFormat("en", {
+    day: "numeric",
+    month: "short",
+    year: "numeric"
+  }).format(date);
 }
 
 function getToday() {
-  const now =
-    new Date();
+  const now = new Date();
 
-  const year =
-    now.getFullYear();
+  const year = now.getFullYear();
 
-  const month =
-    String(
-      now.getMonth() + 1
-    ).padStart(
-      2,
-      "0"
-    );
+  const month = String(
+    now.getMonth() + 1
+  ).padStart(2, "0");
 
-  const day =
-    String(
-      now.getDate()
-    ).padStart(
-      2,
-      "0"
-    );
+  const day = String(
+    now.getDate()
+  ).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 }
@@ -176,82 +102,49 @@ function createSearchId() {
   );
 }
 
-function normalizeAirport(
-  value
-) {
+function normalizeAirport(value) {
   if (!value) {
     return null;
   }
 
   return {
-    code:
-      value.code ||
-      value.iata ||
-      "",
-
-    name:
-      value.name ||
-      "",
-
-    city:
-      value.city ||
-      "",
-
-    country:
-      value.country ||
-      "",
-
-    countryCode:
-      value.countryCode ||
-      "",
-
-    type:
-      value.type ||
-      "airport"
+    code: value.code || value.iata || "",
+    name: value.name || "",
+    city: value.city || "",
+    country: value.country || "",
+    countryCode: value.countryCode || "",
+    type: value.type || "airport"
   };
 }
 
-function buildSearchPayload(
-  search
-) {
+function buildSearchPayload(search) {
   const adults =
-    Number(
-      search.adults
-    ) || 1;
+    Number(search.adults) || 1;
 
   const children =
-    Number(
-      search.children
-    ) || 0;
+    Number(search.children) || 0;
 
   const infants =
-    Number(
-      search.infants
-    ) || 0;
+    Number(search.infants) || 0;
 
   return {
-    searchId:
-      createSearchId(),
+    searchId: createSearchId(),
 
-    tripType:
-      search.tripType,
+    tripType: search.tripType,
 
-    origin:
-      normalizeAirport(
-        search.origin
-      ),
+    origin: normalizeAirport(
+      search.origin
+    ),
 
-    destination:
-      normalizeAirport(
-        search.destination
-      ),
+    destination: normalizeAirport(
+      search.destination
+    ),
 
     departureDate:
       search.departureDate,
 
     returnDate:
-      search.tripType ===
-      "roundtrip"
+      search.tripType === "roundtrip"
         ? search.returnDate
         : "",
 
@@ -265,52 +158,34 @@ function buildSearchPayload(
         infants
     },
 
-    cabin:
-      search.cabin,
+    cabin: search.cabin,
 
-    stops:
-      search.stops,
+    stops: search.stops,
 
     createdAt:
       new Date().toISOString()
   };
 }
 
-function buildSearchQuery(
-  search
-) {
+function buildSearchQuery(search) {
   const params =
     new URLSearchParams();
 
-  if (
-    search.origin?.code
-  ) {
+  if (search.origin?.code) {
     params.set(
       "origin",
       search.origin.code
     );
   }
 
-  if (
-    search.destination?.code
-  ) {
+  if (search.destination?.code) {
     params.set(
       "destination",
       search.destination.code
     );
   }
 
-  /*
-   * Keep departureDate as the canonical
-   * parameter because the backend
-   * search service uses departureDate.
-   *
-   * departure is retained for
-   * compatibility with older links.
-   */
-  if (
-    search.departureDate
-  ) {
+  if (search.departureDate) {
     params.set(
       "departureDate",
       search.departureDate
@@ -323,8 +198,7 @@ function buildSearchQuery(
   }
 
   if (
-    search.tripType ===
-      "roundtrip" &&
+    search.tripType === "roundtrip" &&
     search.returnDate
   ) {
     params.set(
@@ -351,38 +225,28 @@ function buildSearchQuery(
   params.set(
     "adults",
     String(
-      Number(
-        search.adults
-      ) || 1
+      Number(search.adults) || 1
     )
   );
 
   if (
-    Number(
-      search.children
-    ) > 0
+    Number(search.children) > 0
   ) {
     params.set(
       "children",
       String(
-        Number(
-          search.children
-        )
+        Number(search.children)
       )
     );
   }
 
   if (
-    Number(
-      search.infants
-    ) > 0
+    Number(search.infants) > 0
   ) {
     params.set(
       "infants",
       String(
-        Number(
-          search.infants
-        )
+        Number(search.infants)
       )
     );
   }
@@ -392,10 +256,7 @@ function buildSearchQuery(
     search.cabin
   );
 
-  if (
-    search.stops !==
-    "any"
-  ) {
+  if (search.stops !== "any") {
     params.set(
       "stops",
       search.stops
@@ -405,21 +266,15 @@ function buildSearchQuery(
   return params;
 }
 
-function validateSearch(
-  search
-) {
+function validateSearch(search) {
   const errors = {};
 
-  if (
-    !search.origin?.code
-  ) {
+  if (!search.origin?.code) {
     errors.origin =
       "Select a departure airport.";
   }
 
-  if (
-    !search.destination?.code
-  ) {
+  if (!search.destination?.code) {
     errors.destination =
       "Select a destination airport.";
   }
@@ -434,16 +289,13 @@ function validateSearch(
       "Departure and destination cannot be the same.";
   }
 
-  if (
-    !search.departureDate
-  ) {
+  if (!search.departureDate) {
     errors.departureDate =
       "Select a departure date.";
   }
 
   if (
-    search.tripType ===
-      "roundtrip" &&
+    search.tripType === "roundtrip" &&
     !search.returnDate
   ) {
     errors.returnDate =
@@ -451,8 +303,7 @@ function validateSearch(
   }
 
   if (
-    search.tripType ===
-      "roundtrip" &&
+    search.tripType === "roundtrip" &&
     search.departureDate &&
     search.returnDate &&
     search.returnDate <
@@ -464,9 +315,7 @@ function validateSearch(
 
   if (
     !search.adults ||
-    Number(
-      search.adults
-    ) < 1
+    Number(search.adults) < 1
   ) {
     errors.passengers =
       "At least one adult passenger is required.";
@@ -492,6 +341,43 @@ function ErrorMessage({
   );
 }
 
+function AirportDisplay({
+  value,
+  fallback,
+  label
+}) {
+  const airport =
+    normalizeAirport(value);
+
+  return (
+    <div className="airport-display">
+      <span className="airport-display-label">
+        {label}
+      </span>
+
+      <div className="airport-display-main">
+        <strong className="airport-display-code">
+          {airport?.code ||
+            "---"}
+        </strong>
+
+        <div className="airport-display-location">
+          <span className="airport-display-city">
+            {airport?.city ||
+              fallback}
+          </span>
+
+          {airport?.name && (
+            <span className="airport-display-name">
+              {airport.name}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FlightSearchForm({
   initialSearch = null,
   compact = false,
@@ -500,12 +386,10 @@ export default function FlightSearchForm({
   const [
     search,
     setSearch
-  ] = useState(
-    () => ({
-      ...DEFAULT_SEARCH,
-      ...(initialSearch || {})
-    })
-  );
+  ] = useState(() => ({
+    ...DEFAULT_SEARCH,
+    ...(initialSearch || {})
+  }));
 
   const [
     errors,
@@ -515,22 +399,17 @@ export default function FlightSearchForm({
   const [
     isSubmitting,
     setIsSubmitting
-  ] = useState(
-    false
-  );
+  ] = useState(false);
 
   const [
     showAdvanced,
     setShowAdvanced
-  ] = useState(
-    false
-  );
+  ] = useState(false);
 
-  const today =
-    useMemo(
-      () => getToday(),
-      []
-    );
+  const today = useMemo(
+    () => getToday(),
+    []
+  );
 
   useEffect(() => {
     if (!initialSearch) {
@@ -543,9 +422,7 @@ export default function FlightSearchForm({
         ...initialSearch
       })
     );
-  }, [
-    initialSearch
-  ]);
+  }, [initialSearch]);
 
   function updateField(
     field,
@@ -554,8 +431,7 @@ export default function FlightSearchForm({
     setSearch(
       (current) => ({
         ...current,
-        [field]:
-          value
+        [field]: value
       })
     );
 
@@ -583,12 +459,10 @@ export default function FlightSearchForm({
       (current) => ({
         ...current,
 
-        tripType:
-          type,
+        tripType: type,
 
         returnDate:
-          type ===
-          "roundtrip"
+          type === "roundtrip"
             ? current.returnDate
             : ""
       })
@@ -652,8 +526,7 @@ export default function FlightSearchForm({
           value &&
           returnDate < value
         ) {
-          returnDate =
-            "";
+          returnDate = "";
         }
 
         return {
@@ -674,7 +547,6 @@ export default function FlightSearchForm({
         };
 
         delete next.departureDate;
-
         delete next.returnDate;
 
         return next;
@@ -691,15 +563,40 @@ export default function FlightSearchForm({
     );
   }
 
+  function swapAirports() {
+    setSearch(
+      (current) => ({
+        ...current,
+
+        origin:
+          current.destination,
+
+        destination:
+          current.origin
+      })
+    );
+
+    setErrors(
+      (current) => {
+        const next = {
+          ...current
+        };
+
+        delete next.origin;
+        delete next.destination;
+
+        return next;
+      }
+    );
+  }
+
   async function handleSubmit(
     event
   ) {
     event.preventDefault();
 
     const validationErrors =
-      validateSearch(
-        search
-      );
+      validateSearch(search);
 
     if (
       Object.keys(
@@ -713,9 +610,7 @@ export default function FlightSearchForm({
       return;
     }
 
-    setIsSubmitting(
-      true
-    );
+    setIsSubmitting(true);
 
     try {
       const payload =
@@ -723,38 +618,21 @@ export default function FlightSearchForm({
           search
         );
 
-      /*
-       * Persist the complete search.
-       */
       sessionStorage.setItem(
         "flymatrix:lastSearch",
-        JSON.stringify(
-          payload
-        )
+        JSON.stringify(payload)
       );
 
       const query =
-        buildSearchQuery(
-          search
-        );
+        buildSearchQuery(search);
 
-      /*
-       * If the parent supplies an
-       * onSearch handler, let it run.
-       */
       if (
         typeof onSearch ===
         "function"
       ) {
-        await onSearch(
-          payload
-        );
+        await onSearch(payload);
       }
 
-      /*
-       * Navigate only after the
-       * search state has been saved.
-       */
       navigate(
         `/search?${query.toString()}`
       );
@@ -769,34 +647,35 @@ export default function FlightSearchForm({
           "The search could not be started. Please try again."
       });
     } finally {
-      setIsSubmitting(
-        false
-      );
+      setIsSubmitting(false);
     }
   }
 
   return (
     <form
-      className={
-        `flight-search-form ${
-          compact
-            ? "flight-search-form-compact"
-            : ""
-        }`
-      }
-      onSubmit={
-        handleSubmit
-      }
+      className={[
+        "fm-flight-search-form",
+        compact
+          ? "fm-flight-search-form-compact"
+          : ""
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      onSubmit={handleSubmit}
       noValidate
     >
-      <div className="trip-type-tabs">
+      {/* =================================================
+          TRIP TYPE
+          ================================================= */}
+
+      <div className="fm-trip-switch">
         <button
           type="button"
           className={
             search.tripType ===
             "roundtrip"
-              ? "trip-tab active"
-              : "trip-tab"
+              ? "fm-trip-option active"
+              : "fm-trip-option"
           }
           onClick={() =>
             handleTripTypeChange(
@@ -812,8 +691,8 @@ export default function FlightSearchForm({
           className={
             search.tripType ===
             "oneway"
-              ? "trip-tab active"
-              : "trip-tab"
+              ? "fm-trip-option active"
+              : "fm-trip-option"
           }
           onClick={() =>
             handleTripTypeChange(
@@ -825,22 +704,24 @@ export default function FlightSearchForm({
         </button>
       </div>
 
-      <div className="flight-search-grid">
-        <div className="form-field airport-field">
-          <label htmlFor="flight-origin">
-            From
-          </label>
+      {/* =================================================
+          ROUTE AREA
+          ================================================= */}
+
+      <div className="fm-route-panel">
+        <div className="fm-route-field">
+          <AirportDisplay
+            value={search.origin}
+            fallback="Choose departure"
+            label="From"
+          />
 
           <AirportSearch
             id="flight-origin"
-            value={
-              search.origin
-            }
-            placeholder="City or airport"
+            value={search.origin}
+            placeholder="Search city or airport"
             ariaLabel="Departure airport"
-            onChange={(
-              airport
-            ) =>
+            onChange={(airport) =>
               updateField(
                 "origin",
                 normalizeAirport(
@@ -851,50 +732,38 @@ export default function FlightSearchForm({
           />
 
           <ErrorMessage>
-            {
-              errors.origin
-            }
+            {errors.origin}
           </ErrorMessage>
         </div>
 
-        <div className="route-swap">
+        <div className="fm-route-swap">
           <button
             type="button"
+            onClick={swapAirports}
             title="Swap airports"
             aria-label="Swap departure and destination airports"
-            onClick={() => {
-              setSearch(
-                (current) => ({
-                  ...current,
-
-                  origin:
-                    current.destination,
-
-                  destination:
-                    current.origin
-                })
-              );
-            }}
           >
             ⇄
           </button>
         </div>
 
-        <div className="form-field airport-field">
-          <label htmlFor="flight-destination">
-            To
-          </label>
+        <div className="fm-route-field">
+          <AirportDisplay
+            value={
+              search.destination
+            }
+            fallback="Choose destination"
+            label="To"
+          />
 
           <AirportSearch
             id="flight-destination"
             value={
               search.destination
             }
-            placeholder="City or airport"
+            placeholder="Search city or airport"
             ariaLabel="Destination airport"
-            onChange={(
-              airport
-            ) =>
+            onChange={(airport) =>
               updateField(
                 "destination",
                 normalizeAirport(
@@ -905,18 +774,20 @@ export default function FlightSearchForm({
           />
 
           <ErrorMessage>
-            {
-              errors.destination
-            }
+            {errors.destination}
           </ErrorMessage>
         </div>
       </div>
 
-      <div className="flight-search-grid flight-date-grid">
-        <div className="form-field">
-          <label htmlFor="departure-date">
+      {/* =================================================
+          DATE + PASSENGER CONTROLS
+          ================================================= */}
+
+      <div className="fm-search-controls">
+        <div className="fm-control-card">
+          <span className="fm-control-label">
             Departure
-          </label>
+          </span>
 
           <input
             id="departure-date"
@@ -935,13 +806,13 @@ export default function FlightSearchForm({
             }
           />
 
-          {search.departureDate && (
-            <small className="date-preview">
-              {formatDateForDisplay(
-                search.departureDate
-              )}
-            </small>
-          )}
+          <span className="fm-control-value">
+            {search.departureDate
+              ? formatDateForDisplay(
+                  search.departureDate
+                )
+              : "Select date"}
+          </span>
 
           <ErrorMessage>
             {
@@ -950,10 +821,10 @@ export default function FlightSearchForm({
           </ErrorMessage>
         </div>
 
-        <div className="form-field">
-          <label htmlFor="return-date">
+        <div className="fm-control-card">
+          <span className="fm-control-label">
             Return
-          </label>
+          </span>
 
           <input
             id="return-date"
@@ -979,41 +850,29 @@ export default function FlightSearchForm({
             }
           />
 
-          {search.returnDate &&
-            search.tripType ===
-              "roundtrip" && (
-              <small className="date-preview">
-                {formatDateForDisplay(
-                  search.returnDate
-                )}
-              </small>
-            )}
-
-          {search.tripType !==
-            "roundtrip" && (
-            <small className="field-hint">
-              One-way trip
-            </small>
-          )}
+          <span className="fm-control-value">
+            {search.tripType !==
+            "roundtrip"
+              ? "One-way"
+              : search.returnDate
+                ? formatDateForDisplay(
+                    search.returnDate
+                  )
+                : "Select date"}
+          </span>
 
           <ErrorMessage>
-            {
-              errors.returnDate
-            }
+            {errors.returnDate}
           </ErrorMessage>
         </div>
-      </div>
 
-      <div className="flight-search-grid">
-        <div className="form-field">
-          <label>
-            Passengers
-          </label>
+        <div className="fm-control-card">
+          <span className="fm-control-label">
+            Travelers
+          </span>
 
           <PassengerSelector
-            adults={
-              search.adults
-            }
+            adults={search.adults}
             children={
               search.children
             }
@@ -1025,26 +884,47 @@ export default function FlightSearchForm({
             }
           />
 
+          <span className="fm-control-value">
+            {Number(
+              search.adults
+            ) +
+              Number(
+                search.children
+              ) +
+              Number(
+                search.infants
+              )}{" "}
+            traveler
+            {Number(
+              search.adults
+            ) +
+              Number(
+                search.children
+              ) +
+              Number(
+                search.infants
+              ) !== 1
+              ? "s"
+              : ""}
+          </span>
+
           <ErrorMessage>
-            {
-              errors.passengers
-            }
+            {errors.passengers}
           </ErrorMessage>
         </div>
 
-        <div className="form-field">
-          <label htmlFor="cabin-class">
-            Cabin class
+        <div className="fm-control-card">
+          <label
+            className="fm-control-label"
+            htmlFor="cabin-class"
+          >
+            Cabin
           </label>
 
           <select
             id="cabin-class"
-            value={
-              search.cabin
-            }
-            onChange={(
-              event
-            ) =>
+            value={search.cabin}
+            onChange={(event) =>
               updateField(
                 "cabin",
                 event.target.value
@@ -1061,20 +941,32 @@ export default function FlightSearchForm({
                     option.value
                   }
                 >
-                  {
-                    option.label
-                  }
+                  {option.label}
                 </option>
               )
             )}
           </select>
+
+          <span className="fm-control-value">
+            {
+              CABIN_OPTIONS.find(
+                (item) =>
+                  item.value ===
+                  search.cabin
+              )?.label
+            }
+          </span>
         </div>
       </div>
 
-      <div className="advanced-search">
+      {/* =================================================
+          ADVANCED OPTIONS
+          ================================================= */}
+
+      <div className="fm-advanced-area">
         <button
           type="button"
-          className="advanced-toggle"
+          className="fm-advanced-toggle"
           onClick={() =>
             setShowAdvanced(
               (current) =>
@@ -1091,7 +983,7 @@ export default function FlightSearchForm({
               : "More search options"}
           </span>
 
-          <span>
+          <span className="fm-advanced-icon">
             {showAdvanced
               ? "−"
               : "+"}
@@ -1099,20 +991,19 @@ export default function FlightSearchForm({
         </button>
 
         {showAdvanced && (
-          <div className="advanced-search-panel">
-            <div className="form-field">
-              <label htmlFor="stops">
+          <div className="fm-advanced-panel">
+            <div className="fm-control-card">
+              <label
+                className="fm-control-label"
+                htmlFor="stops"
+              >
                 Stops
               </label>
 
               <select
                 id="stops"
-                value={
-                  search.stops
-                }
-                onChange={(
-                  event
-                ) =>
+                value={search.stops}
+                onChange={(event) =>
                   updateField(
                     "stops",
                     event.target.value
@@ -1129,50 +1020,71 @@ export default function FlightSearchForm({
                         option.value
                       }
                     >
-                      {
-                        option.label
-                      }
+                      {option.label}
                     </option>
                   )
                 )}
               </select>
+
+              <span className="fm-control-value">
+                {
+                  STOP_OPTIONS.find(
+                    (item) =>
+                      item.value ===
+                      search.stops
+                  )?.label
+                }
+              </span>
             </div>
           </div>
         )}
       </div>
 
+      {/* =================================================
+          FORM ERROR
+          ================================================= */}
+
       {errors.form && (
         <div
-          className="form-error-banner"
+          className="fm-form-error"
           role="alert"
         >
-          {
-            errors.form
-          }
+          {errors.form}
         </div>
       )}
 
-      <div className="search-submit-row">
+      {/* =================================================
+          PRIMARY SEARCH ACTION
+          ================================================= */}
+
+      <div className="fm-search-action">
         <button
           type="submit"
-          className="btn btn-primary search-submit-button"
+          className="fm-search-primary"
           disabled={
             isSubmitting
           }
         >
-          {isSubmitting
-            ? "Starting search..."
-            : "Search flights"}
+          <span className="fm-search-primary-icon">
+            {isSubmitting
+              ? "…"
+              : "→"}
+          </span>
+
+          <span>
+            {isSubmitting
+              ? "Starting search..."
+              : "Search flights"}
+          </span>
         </button>
       </div>
 
-      <p className="search-disclaimer">
-        Flight availability, prices and
-        final booking terms are provided
-        by the relevant travel provider.
-        Review the provider's final terms
+      <p className="fm-search-note">
+        Prices and availability are
+        provided by the relevant travel
+        provider. Final terms are confirmed
         before booking.
       </p>
     </form>
   );
-        }
+      }
