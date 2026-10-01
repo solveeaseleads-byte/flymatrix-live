@@ -1,7 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-} from "react";
+import React, { useEffect, useState } from "react";
 
 import HomePage from "../pages/HomePage.jsx";
 import SearchPage from "../pages/SearchPage.jsx";
@@ -26,14 +23,10 @@ import AlertsPage from "../pages/AlertsPage.jsx";
 
 /* =========================================================
    PATH UTILITIES
-========================================================= */
+   ========================================================= */
 
-function normalizePath(pathname) {
-  if (!pathname) {
-    return "/";
-  }
-
-  let path = pathname;
+export function normalizePath(pathname = "/") {
+  let path = String(pathname || "/");
 
   if (!path.startsWith("/")) {
     path = `/${path}`;
@@ -43,7 +36,7 @@ function normalizePath(pathname) {
     path = path.slice(0, -1);
   }
 
-  return path;
+  return path || "/";
 }
 
 export function getCurrentPath() {
@@ -51,9 +44,7 @@ export function getCurrentPath() {
     return "/";
   }
 
-  return normalizePath(
-    window.location.pathname
-  );
+  return normalizePath(window.location.pathname);
 }
 
 export function getCurrentSearchParams() {
@@ -61,22 +52,15 @@ export function getCurrentSearchParams() {
     return new URLSearchParams();
   }
 
-  return new URLSearchParams(
-    window.location.search
-  );
+  return new URLSearchParams(window.location.search);
 }
 
 /* =========================================================
    NAVIGATION
-========================================================= */
+   ========================================================= */
 
-export function navigate(
-  path = "/",
-  options = {}
-) {
-  if (
-    typeof window === "undefined"
-  ) {
+export function navigate(path = "/", options = {}) {
+  if (typeof window === "undefined") {
     return;
   }
 
@@ -114,8 +98,8 @@ export function navigate(
 }
 
 /* =========================================================
-   ROUTE STATE HOOK
-========================================================= */
+   ROUTER STATE
+   ========================================================= */
 
 export function usePath() {
   const [location, setLocation] =
@@ -151,15 +135,12 @@ export function usePath() {
     };
   }, []);
 
-  return {
-    pathname: location.pathname,
-    search: location.search,
-  };
+  return location;
 }
 
 /* =========================================================
    INTERNAL LINK HANDLING
-========================================================= */
+   ========================================================= */
 
 function isInternalLink(href) {
   if (!href) {
@@ -177,9 +158,65 @@ function isInternalLink(href) {
   return true;
 }
 
+function useInternalLinkNavigation() {
+  useEffect(() => {
+    function handleClick(event) {
+      if (
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey
+      ) {
+        return;
+      }
+
+      const target =
+        event.target instanceof Element
+          ? event.target.closest("a")
+          : null;
+
+      if (!target) {
+        return;
+      }
+
+      const href =
+        target.getAttribute("href");
+
+      if (!isInternalLink(href)) {
+        return;
+      }
+
+      if (
+        target.hasAttribute("download") ||
+        target.target === "_blank"
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+
+      navigate(href);
+    }
+
+    document.addEventListener(
+      "click",
+      handleClick
+    );
+
+    return () => {
+      document.removeEventListener(
+        "click",
+        handleClick
+      );
+    };
+  }, []);
+}
+
 /* =========================================================
    NOT FOUND
-========================================================= */
+   ========================================================= */
 
 function NotFoundPage() {
   return (
@@ -227,24 +264,24 @@ function NotFoundPage() {
 }
 
 /* =========================================================
-   ROUTE RENDERER
-========================================================= */
+   ROUTE TABLE
+   ========================================================= */
 
 export function RouteRenderer({
   path,
   searchParams,
 }) {
   switch (path) {
-    /* -----------------------------------------
+    /* -------------------------
        HOME
-    ----------------------------------------- */
+       ------------------------- */
 
     case "/":
       return <HomePage />;
 
-    /* -----------------------------------------
+    /* -------------------------
        FLIGHTS
-    ----------------------------------------- */
+       ------------------------- */
 
     case "/search":
       return (
@@ -260,9 +297,9 @@ export function RouteRenderer({
         />
       );
 
-    /* -----------------------------------------
+    /* -------------------------
        LEISURE TOURISM
-    ----------------------------------------- */
+       ------------------------- */
 
     case "/tourism/leisure":
       return (
@@ -276,9 +313,9 @@ export function RouteRenderer({
         />
       );
 
-    /* -----------------------------------------
+    /* -------------------------
        EDUCATION TOURISM
-    ----------------------------------------- */
+       ------------------------- */
 
     case "/tourism/education":
       return (
@@ -292,12 +329,16 @@ export function RouteRenderer({
         />
       );
 
-    /* -----------------------------------------
-       TRAVEL PLANNING
-    ----------------------------------------- */
+    /* -------------------------
+       PLANNER
+       ------------------------- */
 
     case "/planner":
       return <PlannerPage />;
+
+    /* -------------------------
+       TRAVEL TOOLS
+       ------------------------- */
 
     case "/visa":
       return <VisaPage />;
@@ -310,10 +351,6 @@ export function RouteRenderer({
 
     case "/essentials":
       return <EssentialsPage />;
-
-    /* -----------------------------------------
-       TRAVEL SERVICES
-    ----------------------------------------- */
 
     case "/esim":
       return <EsimPage />;
@@ -330,9 +367,9 @@ export function RouteRenderer({
     case "/alerts":
       return <AlertsPage />;
 
-    /* -----------------------------------------
-       UNKNOWN
-    ----------------------------------------- */
+    /* -------------------------
+       UNKNOWN ROUTE
+       ------------------------- */
 
     default:
       return <NotFoundPage />;
@@ -340,80 +377,8 @@ export function RouteRenderer({
 }
 
 /* =========================================================
-   GLOBAL INTERNAL-LINK INTERCEPTION
-========================================================= */
-
-function useInternalLinkNavigation() {
-  useEffect(() => {
-    function handleLinkClick(event) {
-      /*
-       * Only handle normal primary-button clicks.
-       * Modified clicks such as Ctrl/Cmd-click,
-       * middle-click and Shift-click retain normal
-       * browser behavior.
-       */
-      if (
-        event.defaultPrevented ||
-        event.button !== 0 ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.altKey
-      ) {
-        return;
-      }
-
-      const target =
-        event.target instanceof Element
-          ? event.target.closest("a")
-          : null;
-
-      if (!target) {
-        return;
-      }
-
-      const href =
-        target.getAttribute("href");
-
-      if (
-        !isInternalLink(href)
-      ) {
-        return;
-      }
-
-      /*
-       * Allow explicit downloads and new-tab
-       * navigation to behave normally.
-       */
-      if (
-        target.hasAttribute("download") ||
-        target.target === "_blank"
-      ) {
-        return;
-      }
-
-      event.preventDefault();
-
-      navigate(href);
-    }
-
-    document.addEventListener(
-      "click",
-      handleLinkClick
-    );
-
-    return () => {
-      document.removeEventListener(
-        "click",
-        handleLinkClick
-      );
-    };
-  }, []);
-}
-
-/* =========================================================
-   DEFAULT ROUTER COMPONENT
-========================================================= */
+   MAIN ROUTER
+   ========================================================= */
 
 export default function AppRouter() {
   const {
@@ -432,4 +397,4 @@ export default function AppRouter() {
       searchParams={searchParams}
     />
   );
-            }
+}
