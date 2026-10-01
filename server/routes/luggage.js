@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import {
   searchLuggage,
-} from "../services/luggage.js";
+} from "../../src/Services/luggage.js";
 
 const router = Router();
 
