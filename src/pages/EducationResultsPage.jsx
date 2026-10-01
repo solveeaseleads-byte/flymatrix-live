@@ -450,13 +450,7 @@ export default function EducationResultsPage() {
       });
     }
 
-    if (sortOrder === "name") {
-      result.sort((a, b) =>
-        getTitle(a).localeCompare(
-          getTitle(b)
-        )
-      );
-    } else if (sortOrder === "price-desc") {
+    if (sortOrder === "price-desc") {
       result.sort((a, b) => {
         const aPrice = Number(
           getPrice(a).amount
@@ -533,6 +527,7 @@ export default function EducationResultsPage() {
     if (field) query.set("field", field);
     if (budget) query.set("budget", budget);
     if (duration) query.set("duration", duration);
+
     if (studyMode) {
       query.set("studyMode", studyMode);
     }
@@ -692,10 +687,6 @@ export default function EducationResultsPage() {
 
             <option value="price-desc">
               Highest price
-            </option>
-
-            <option value="name">
-              Name
             </option>
           </select>
         </div>
@@ -870,4 +861,4 @@ export default function EducationResultsPage() {
       )}
     </main>
   );
-}
+      }
