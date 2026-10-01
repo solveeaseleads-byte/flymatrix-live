@@ -4,8 +4,8 @@
  * This is intentionally a fallback dataset, not the
  * complete global airport database. The AirportSearch
  * component should query the backend/global airport
- * source first and use this file when that source is
- * unavailable.
+ * source first and use this file when that source
+ * is unavailable.
  */
 
 export const AIRPORTS = [
@@ -147,6 +147,16 @@ export const AIRPORTS = [
     code: "DKA",
     name: "Katsina Airport",
     city: "Katsina",
+    country: "Nigeria",
+    countryCode: "NG",
+    region: "West Africa",
+    type: "domestic",
+  },
+
+  {
+    code: "JOS",
+    name: "Yakubu Gowon Airport",
+    city: "Jos",
     country: "Nigeria",
     countryCode: "NG",
     region: "West Africa",
@@ -879,6 +889,10 @@ export const AIRPORTS = [
 export const CITY_GROUPS = {
   Lagos: [
     "LOS",
+  ],
+
+  Jos: [
+    "JOS",
   ],
 
   London: [
