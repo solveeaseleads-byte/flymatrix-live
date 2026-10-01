@@ -1,33 +1,21 @@
-import React, {
-  useEffect,
-  useState,
-} from "react";
+import React, { useEffect, useState } from "react";
 
 import AppRouter, {
   usePath,
 } from "./router/AppRouter.jsx";
 
-import Header from "./components/Header.jsx";
-import Footer from "./components/Footer.jsx";
-import MobileNavigation from "./components/MobileNavigation.jsx";
-
-/* =========================================================
-   DARK MODE
-========================================================= */
+import Header from "./components/layout/header.jsx";
 
 function useDarkMode() {
   const [dark, setDark] = useState(() => {
-    if (
-      typeof window === "undefined"
-    ) {
+    if (typeof window === "undefined") {
       return false;
     }
 
     try {
-      const stored =
-        window.localStorage.getItem(
-          "flymatrix-dark-mode"
-        );
+      const stored = window.localStorage.getItem(
+        "flymatrix-dark-mode"
+      );
 
       if (stored === "true") {
         return true;
@@ -37,7 +25,7 @@ function useDarkMode() {
         return false;
       }
     } catch {
-      // localStorage may be unavailable.
+      // Ignore localStorage errors.
     }
 
     return (
@@ -59,25 +47,17 @@ function useDarkMode() {
         String(dark)
       );
     } catch {
-      // Ignore unavailable localStorage.
+      // Ignore localStorage errors.
     }
   }, [dark]);
 
   return [dark, setDark];
 }
 
-/* =========================================================
-   APP
-========================================================= */
-
 export default function App() {
-  const {
-    pathname,
-    search,
-  } = usePath();
+  const { pathname } = usePath();
 
-  const [dark, setDark] =
-    useDarkMode();
+  const [dark, setDark] = useDarkMode();
 
   return (
     <div className="fm-app">
@@ -85,21 +65,13 @@ export default function App() {
         pathname={pathname}
         dark={dark}
         onToggleDark={() =>
-          setDark(
-            (current) => !current
-          )
+          setDark((current) => !current)
         }
       />
 
       <main>
         <AppRouter />
       </main>
-
-      <Footer />
-
-      <MobileNavigation
-        pathname={pathname}
-      />
     </div>
   );
 }
