@@ -7,6 +7,11 @@ const HOTEL_CATEGORY = "hotels";
 const ACTIVITIES_CATEGORY = "activities";
 const VISA_CATEGORY = "visa";
 
+
+/* =========================================
+   BASIC HELPERS
+========================================= */
+
 function clean(value) {
   return String(value ?? "").trim();
 }
@@ -32,6 +37,11 @@ function normalizeNumber(
   );
 }
 
+
+/* =========================================
+   EDUCATION SEARCH NORMALIZATION
+========================================= */
+
 function normalizeEducationSearch(
   query = {}
 ) {
@@ -52,6 +62,12 @@ function normalizeEducationSearch(
       query.country ||
       ""
     ),
+
+    /*
+     * Travel dates remain optional.
+     * Education searches do not require
+     * arrival/departure dates.
+     */
 
     startDate: clean(
       query.startDate ||
@@ -116,10 +132,27 @@ function normalizeEducationSearch(
       ""
     ),
 
+    studyMode: clean(
+      query.studyMode ||
+      query.study_mode ||
+      query.mode ||
+      ""
+    ),
+
+    facilities: clean(
+      query.facilities ||
+      ""
+    ),
+
     visaRequired:
       query.visaRequired !== false,
   };
 }
+
+
+/* =========================================
+   TRAVEL PROVIDER URLS
+========================================= */
 
 function buildHotelUrl(
   search
@@ -190,6 +223,11 @@ function buildVisaUrl(
   );
 }
 
+
+/* =========================================
+   EDUCATION PLAN
+========================================= */
+
 function createEducationPlan(
   search
 ) {
@@ -217,6 +255,15 @@ function createEducationPlan(
 
     duration:
       search.duration,
+
+    budget:
+      search.budget,
+
+    studyMode:
+      search.studyMode,
+
+    facilities:
+      search.facilities,
 
     students:
       search.students,
@@ -267,26 +314,29 @@ function createEducationPlan(
   };
 }
 
+
+/* =========================================
+   EDUCATION SEARCH VALIDATION
+========================================= */
+
 export function validateEducationSearch(
   search
 ) {
+  /*
+   * Destination is the only mandatory
+   * location requirement.
+   */
+
   if (!search.destination) {
     throw new Error(
       "Education tourism destination is required."
     );
   }
 
-  if (!search.startDate) {
-    throw new Error(
-      "Education tourism start date is required."
-    );
-  }
-
-  if (!search.endDate) {
-    throw new Error(
-      "Education tourism end date is required."
-    );
-  }
+  /*
+   * Travel dates are deliberately NOT
+   * required for education searches.
+   */
 
   if (search.students < 1) {
     throw new Error(
@@ -302,6 +352,11 @@ export function validateEducationSearch(
 
   return true;
 }
+
+
+/* =========================================
+   EDUCATION RESULT NORMALIZATION
+========================================= */
 
 export function normalizeEducationResult(
   item = {},
@@ -350,11 +405,13 @@ export function normalizeEducationResult(
 
     studyLevel:
       item.studyLevel ||
+      item.level ||
       search.studyLevel ||
       null,
 
     subject:
       item.subject ||
+      item.field ||
       search.subject ||
       null,
 
@@ -363,13 +420,26 @@ export function normalizeEducationResult(
       search.duration ||
       null,
 
+    studyMode:
+      item.studyMode ||
+      item.mode ||
+      search.studyMode ||
+      null,
+
+    budget:
+      item.budget ||
+      search.budget ||
+      null,
+
     description:
       item.description ||
+      item.summary ||
       "",
 
     tuition:
       item.tuition ??
       item.tuitionFee ??
+      item.price ??
       null,
 
     currency:
@@ -383,6 +453,7 @@ export function normalizeEducationResult(
     url:
       item.url ||
       item.link ||
+      item.website ||
       null,
 
     source:
@@ -399,6 +470,11 @@ export function normalizeEducationResult(
       item.estimated === true,
   };
 }
+
+
+/* =========================================
+   CREATE EDUCATION RESPONSE
+========================================= */
 
 export function createEducationResult(
   search
@@ -421,9 +497,18 @@ export function createEducationResult(
   return {
     success: true,
 
-    mode: "education",
+    mode:
+      "education",
 
     search,
+
+    /*
+     * No education inventory provider is
+     * currently connected.
+     *
+     * Therefore we do not fabricate schools,
+     * courses, tuition or availability.
+     */
 
     live: false,
 
@@ -493,6 +578,11 @@ export function createEducationResult(
   };
 }
 
+
+/* =========================================
+   MAIN EDUCATION SEARCH
+========================================= */
+
 export async function searchEducationTourism(
   query = {}
 ) {
@@ -510,9 +600,19 @@ export async function searchEducationTourism(
   );
 }
 
+
+/* =========================================
+   NAMED EXPORTS
+========================================= */
+
 export {
   normalizeEducationSearch,
 };
+
+
+/* =========================================
+   DEFAULT EXPORT
+========================================= */
 
 export default {
   searchEducationTourism,
