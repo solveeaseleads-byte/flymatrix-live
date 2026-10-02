@@ -1,6 +1,7 @@
 /* =========================================================
    FLYMATRIX — GLOBAL DESIGN SYSTEM
-   Production replacement for src/globals.css
+   Production responsive replacement
+   Desktop + tablet + iPhone/mobile
    ========================================================= */
 
 :root {
@@ -20,10 +21,6 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  /* =======================================================
-     CORE TOKENS
-     ======================================================= */
 
   --fm-bg: #f8fafc;
   --fm-surface: #ffffff;
@@ -116,6 +113,7 @@ html.dark {
 html {
   scroll-behavior: smooth;
   background: var(--fm-bg);
+  -webkit-text-size-adjust: 100%;
 }
 
 *,
@@ -127,6 +125,7 @@ html {
 html,
 body,
 #root {
+  width: 100%;
   min-width: 320px;
   min-height: 100%;
 }
@@ -139,6 +138,8 @@ body {
   color: var(--fm-text);
 
   overflow-x: hidden;
+
+  -webkit-tap-highlight-color: transparent;
 }
 
 body,
@@ -159,6 +160,8 @@ textarea {
 button {
   border: 0;
   cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 button:disabled {
@@ -169,6 +172,8 @@ input,
 select,
 textarea {
   color: inherit;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 input::placeholder,
@@ -362,7 +367,6 @@ p {
   );
 
   font-weight: 900;
-
   letter-spacing: -0.045em;
 }
 
@@ -897,13 +901,13 @@ p {
 .flight-search-form select {
   width: 100%;
 
-  min-height: 48px;
+  min-height: 50px;
 
   padding: 11px 13px;
 
   border: 1px solid var(--fm-border);
 
-  border-radius: 12px;
+  border-radius: 13px;
 
   background: var(--fm-surface);
 
@@ -1099,7 +1103,6 @@ p {
 
 .passenger-selector {
   position: relative;
-
   width: 100%;
 }
 
@@ -1107,7 +1110,7 @@ p {
 .passenger-selector-trigger {
   width: 100%;
 
-  min-height: 48px;
+  min-height: 50px;
 
   display: flex;
   align-items: center;
@@ -1119,7 +1122,7 @@ p {
 
   border: 1px solid var(--fm-border);
 
-  border-radius: 12px;
+  border-radius: 13px;
 
   background: var(--fm-surface);
 
@@ -1136,7 +1139,6 @@ p {
 .passenger-selector > button:hover,
 .passenger-selector-trigger:hover {
   border-color: var(--fm-border-strong);
-
   background: var(--fm-surface-soft);
 }
 
@@ -1183,8 +1185,8 @@ p {
 }
 
 .passenger-controls button {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
 
   display: grid;
   place-items: center;
@@ -1317,12 +1319,11 @@ p {
 
   gap: 12px;
 
-  margin-top: 16px;
+  margin-top: 17px;
 }
 
 .search-submit-button {
   min-width: 190px;
-
   min-height: 52px;
 
   display: inline-flex;
@@ -1383,7 +1384,7 @@ p {
 }
 
 /* =========================================================
-   DIGITAL DISPLAY / FLIGHT INFO
+   DIGITAL DISPLAY
    ========================================================= */
 
 .fm-digital-display {
@@ -1405,6 +1406,8 @@ p {
     );
 
   box-shadow: var(--fm-shadow-md);
+
+  isolation: isolate;
 }
 
 .fm-digital-display::before {
@@ -1426,6 +1429,9 @@ p {
 }
 
 .fm-digital-label {
+  position: relative;
+  z-index: 1;
+
   margin-bottom: 7px;
 
   color: var(--fm-text-muted);
@@ -1439,6 +1445,9 @@ p {
 }
 
 .fm-digital-value {
+  position: relative;
+  z-index: 1;
+
   color: var(--fm-text);
 
   font-size: clamp(
@@ -1452,6 +1461,8 @@ p {
   letter-spacing: -0.04em;
 
   font-variant-numeric: tabular-nums;
+
+  -webkit-font-smoothing: antialiased;
 }
 
 .fm-digital-code {
@@ -1898,9 +1909,10 @@ p {
 }
 
 .fm-flight-airport {
-  margin-top: 3px
-     margin-top: 3px;
+  margin-top: 3px;
+
   color: var(--fm-text-muted);
+
   font-size: 0.82rem;
 }
 
@@ -1908,8 +1920,11 @@ p {
   display: flex;
   flex-direction: column;
   align-items: center;
+
   gap: 4px;
+
   color: var(--fm-text-muted);
+
   font-size: 0.78rem;
   font-weight: 750;
 }
@@ -1917,51 +1932,70 @@ p {
 .fm-flight-line {
   width: 100%;
   height: 2px;
+
   background: var(--fm-border-strong);
+
   position: relative;
 }
 
 .fm-flight-line::after {
   content: "";
+
   position: absolute;
+
   right: 0;
   top: 50%;
+
   transform: translateY(-50%);
+
   width: 6px;
   height: 6px;
+
   border-radius: 50%;
+
   background: var(--fm-primary);
 }
 
 .fm-flight-price-col {
   display: flex;
   flex-direction: column;
+
   align-items: flex-end;
+
   gap: 6px;
+
   text-align: right;
 }
 
 .fm-flight-airline {
   display: inline-flex;
   align-items: center;
+
   gap: 6px;
+
   color: var(--fm-text-soft);
+
   font-size: 0.82rem;
   font-weight: 750;
 }
 
 /* =========================================================
-   BADGES & STATUS
+   BADGES
    ========================================================= */
 
 .fm-badge {
   display: inline-flex;
   align-items: center;
+
   gap: 5px;
+
   padding: 4px 10px;
+
   border-radius: 999px;
+
   font-size: 0.75rem;
   font-weight: 800;
+
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
@@ -1992,24 +2026,37 @@ p {
 
 .fm-footer {
   border-top: 1px solid var(--fm-border);
+
   background: var(--fm-surface);
+
   padding: 60px 0 30px;
+
   margin-top: auto;
 }
 
 .fm-footer-grid {
   display: grid;
-  grid-template-columns: 2fr repeat(3, 1fr);
+
+  grid-template-columns:
+    2fr
+    repeat(3, 1fr);
+
   gap: 40px;
+
   margin-bottom: 40px;
 }
 
 .fm-footer-col h4 {
   font-size: 0.9rem;
+
   font-weight: 850;
+
   text-transform: uppercase;
+
   letter-spacing: 0.05em;
+
   margin-bottom: 16px;
+
   color: var(--fm-text);
 }
 
@@ -2020,8 +2067,11 @@ p {
 
 .fm-footer-links a {
   color: var(--fm-text-soft);
+
   font-size: 0.88rem;
-  transition: color var(--fm-transition-fast);
+
+  transition:
+    color var(--fm-transition-fast);
 }
 
 .fm-footer-links a:hover {
@@ -2030,33 +2080,576 @@ p {
 
 .fm-footer-bottom {
   display: flex;
+
   align-items: center;
   justify-content: space-between;
+
   padding-top: 24px;
+
   border-top: 1px solid var(--fm-border);
+
   color: var(--fm-text-muted);
+
   font-size: 0.84rem;
 }
 
 /* =========================================================
-   RESPONSIVE MEDIA QUERIES
+   TABLET
    ========================================================= */
 
 @media (max-width: 1024px) {
+
+  .fm-nav {
+    display: none;
+  }
+
   .fm-footer-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns:
+      1fr
+      1fr;
+
     gap: 30px;
+  }
+
+  .fm-grid-4 {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .fm-grid-3 {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .fm-tourism-dashboard {
+    grid-template-columns:
+      1fr;
+  }
+
+  .fm-tourism-sidebar {
+    position: static;
+  }
+
+  .fm-flight-main {
+    grid-template-columns:
+      minmax(90px, 1fr)
+      60px
+      minmax(90px, 1fr)
+      minmax(120px, auto);
   }
 }
 
+/* =========================================================
+   MOBILE — 768px
+   ========================================================= */
+
 @media (max-width: 768px) {
-  .fm-footer-grid {
+
+  .fm-container,
+  .fm-content {
+    width: min(
+      calc(100% - 24px),
+      var(--fm-max-width)
+    );
+  }
+
+  .fm-section {
+    padding: 54px 0;
+  }
+
+  .fm-section-sm {
+    padding: 34px 0;
+  }
+
+  .fm-section-lg {
+    padding: 64px 0;
+  }
+
+  .fm-header-inner {
+    width: calc(100% - 24px);
+
+    min-height: 64px;
+
+    gap: 10px;
+  }
+
+  .fm-brand-mark {
+    width: 36px;
+    height: 36px;
+
+    border-radius: 11px;
+  }
+
+  .fm-brand-text {
+    font-size: 0.98rem;
+  }
+
+  .fm-header-actions {
+    gap: 6px;
+  }
+
+  .fm-header-actions .fm-btn {
+    min-height: 40px;
+    padding: 8px 11px;
+
+    font-size: 0.78rem;
+  }
+
+  .fm-hero {
+    padding: 58px 0 62px;
+  }
+
+  .fm-hero-title {
+    font-size: clamp(
+      2.35rem,
+      12vw,
+      3.65rem
+    );
+
+    letter-spacing: -0.055em;
+  }
+
+  .fm-hero-description {
+    font-size: 0.98rem;
+  }
+
+  .fm-hero-actions {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 8px;
+  }
+
+  .fm-hero-actions .fm-btn {
+    width: 100%;
+  }
+
+  .fm-search-panel {
+    margin-top: -20px;
+    padding-bottom: 22px;
+  }
+
+  .fm-search-card {
+    padding: 16px;
+
+    border-radius: 20px;
+
+    box-shadow:
+      0 18px 45px rgba(15, 23, 42, 0.11);
+  }
+
+  .trip-type-tabs {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 7px;
+
+    margin-bottom: 16px;
+  }
+
+  .trip-tab {
+    width: 100%;
+
+    min-height: 44px;
+  }
+
+  .flight-search-grid {
+    grid-template-columns:
+      1fr;
+
+    gap: 11px;
+
+    margin-bottom: 12px;
+  }
+
+  .flight-date-grid {
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 9px;
+  }
+
+  .route-swap {
+    position: absolute;
+
+    width: 100%;
+
+    height: 0;
+
+    z-index: 20;
+
+    pointer-events: none;
+
+    padding: 0;
+
+    transform: translateY(
+      -2px
+    );
+  }
+
+  .route-swap button {
+    width: 40px;
+    height: 40px;
+
+    pointer-events: auto;
+
+    box-shadow:
+      0 6px 18px rgba(15, 23, 42, 0.13);
+  }
+
+  .form-field > label {
+    font-size: 0.7rem;
+  }
+
+  .form-field input,
+  .form-field select,
+  .flight-search-form input,
+  .flight-search-form select,
+  .passenger-selector > button,
+  .passenger-selector-trigger {
+    min-height: 50px;
+
+    border-radius: 13px;
+
+    font-size: 16px;
+  }
+
+  .advanced-search {
+    margin-top: 4px;
+  }
+
+  .advanced-search-panel {
     grid-template-columns: 1fr;
   }
-  
+
+  .search-submit-row {
+    display: block;
+
+    margin-top: 14px;
+  }
+
+  .search-submit-button {
+    width: 100%;
+
+    min-height: 54px;
+
+    border-radius: 15px;
+
+    font-size: 0.98rem;
+  }
+
+  .search-disclaimer {
+    font-size: 0.72rem;
+
+    text-align: center;
+  }
+
+  .fm-digital-display {
+    padding: 18px;
+
+    border-radius: 16px;
+  }
+
+  .fm-digital-value {
+    font-size: clamp(
+      1.35rem,
+      8vw,
+      2rem
+    );
+  }
+
+  .fm-grid-2,
+  .fm-grid-3,
+  .fm-grid-4 {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-budget-summary {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .fm-tourism-card {
+    grid-template-columns:
+      96px
+      minmax(0, 1fr);
+
+    gap: 13px;
+
+    padding: 14px;
+  }
+
+  .fm-tourism-card-image {
+    width: 96px;
+    height: 96px;
+  }
+
+  .fm-tourism-card > :last-child {
+    grid-column: 1 / -1;
+  }
+
+  .fm-flight-card {
+    padding: 15px;
+  }
+
+  .fm-flight-main {
+    grid-template-columns:
+      minmax(0, 1fr)
+      48px
+      minmax(0, 1fr);
+    
+    gap: 9px;
+  }
+
+  .fm-flight-price-col {
+    grid-column: 1 / -1;
+
+    flex-direction: row;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding-top: 11px;
+
+    border-top: 1px solid var(--fm-border);
+
+    text-align: left;
+  }
+
+  .fm-flight-time {
+    font-size: 1.05rem;
+  }
+
+  .fm-flight-airport {
+    font-size: 0.76rem;
+  }
+
+  .fm-flight-duration {
+    font-size: 0.7rem;
+  }
+
+  .fm-footer {
+    padding: 44px 0 24px;
+  }
+
+  .fm-footer-grid {
+    grid-template-columns: 1fr;
+
+    gap: 24px;
+
+    margin-bottom: 28px;
+  }
+
   .fm-footer-bottom {
     flex-direction: column;
-    gap: 12px;
+
+    gap: 10px;
+
     text-align: center;
+  }
+}
+
+/* =========================================================
+   SMALL iPHONE / ANDROID — 480px
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+  .fm-container,
+  .fm-content {
+    width: calc(100% - 20px);
+  }
+
+  .fm-header-inner {
+    width: calc(100% - 20px);
+  }
+
+  .fm-brand {
+    gap: 7px;
+  }
+
+  .fm-brand-mark {
+    width: 34px;
+    height: 34px;
+  }
+
+  .fm-brand-text {
+    font-size: 0.91rem;
+  }
+
+  .fm-header-actions .fm-btn {
+    padding: 8px 9px;
+
+    font-size: 0.73rem;
+  }
+
+  .fm-hero {
+    padding: 48px 0 55px;
+  }
+
+  .fm-eyebrow {
+    margin-bottom: 14px;
+
+    font-size: 0.68rem;
+  }
+
+  .fm-hero-title {
+    font-size: 2.35rem;
+  }
+
+  .fm-hero-description {
+    font-size: 0.91rem;
+
+    line-height: 1.6;
+  }
+
+  .fm-hero-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-search-panel {
+    margin-top: -16px;
+  }
+
+  .fm-search-card {
+    padding: 13px;
+
+    border-radius: 18px;
+  }
+
+  .flight-date-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .route-swap {
+    transform: translateY(-1px);
+  }
+
+  .route-swap button {
+    width: 38px;
+    height: 38px;
+
+    font-size: 1rem;
+  }
+
+  .search-submit-button {
+    min-height: 52px;
+  }
+
+  .fm-budget-summary {
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 8px;
+  }
+
+  .fm-budget-item {
+    padding: 12px;
+  }
+
+  .fm-budget-value {
+    font-size: 1.05rem;
+  }
+
+  .fm-tourism-card {
+    grid-template-columns:
+      82px
+      minmax(0, 1fr);
+
+    padding: 12px;
+  }
+
+  .fm-tourism-card-image {
+    width: 82px;
+    height: 82px;
+  }
+
+  .fm-flight-main {
+    grid-template-columns:
+      minmax(0, 1fr)
+      42px
+      minmax(0, 1fr);
+  }
+
+  .fm-flight-card {
+    padding: 13px;
+  }
+
+  .fm-flight-price-col {
+    flex-wrap: wrap;
+  }
+
+  .fm-footer-bottom {
+    font-size: 0.76rem;
+  }
+}
+
+/* =========================================================
+   VERY SMALL PHONES — 360px
+   ========================================================= */
+
+@media (max-width: 360px) {
+
+  .fm-container,
+  .fm-content {
+    width: calc(100% - 16px);
+  }
+
+  .fm-header-inner {
+    width: calc(100% - 16px);
+  }
+
+  .fm-brand-text {
+    font-size: 0.84rem;
+  }
+
+  .fm-header-actions .fm-btn {
+    padding-inline: 7px;
+
+    font-size: 0.69rem;
+  }
+
+  .fm-search-card {
+    padding: 11px;
+  }
+
+  .trip-tab {
+    padding-inline: 8px;
+
+    font-size: 0.8rem;
+  }
+
+  .fm-hero-title {
+    font-size: 2.15rem;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
