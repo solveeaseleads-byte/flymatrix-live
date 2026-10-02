@@ -1,198 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
 
-const DEFAULTS = {
-  adults: 1,
-  children: 0,
-  infants: 0,
-};
-
-function clamp(value, min, max) {
-  return Math.min(
-    Math.max(Number(value) || 0, min),
-    max
-  );
-}
-
-function getTotal(adults, children, infants) {
-  return (
-    Number(adults) +
-    Number(children) +
-    Number(infants)
-  );
-}
-
-function passengerLabel(adults, children, infants) {
-  const total = getTotal(
-    adults,
-    children,
-    infants
-  );
-
-  const parts = [
-    `${total} ${
-      total === 1
-        ? "passenger"
-        : "passengers"
-    }`,
-  ];
-
-  if (Number(adults) > 0) {
-    parts.push(
-      `${adults} ${
-        Number(adults) === 1
-          ? "adult"
-          : "adults"
-      }`
-    );
-  }
-
-  if (Number(children) > 0) {
-    parts.push(
-      `${children} ${
-        Number(children) === 1
-          ? "child"
-          : "children"
-      }`
-    );
-  }
-
-  if (Number(infants) > 0) {
-    parts.push(
-      `${infants} ${
-        Number(infants) === 1
-          ? "infant"
-          : "infants"
-      }`
-    );
-  }
-
-  return parts.join(" · ");
-}
-
-function CounterRow({
-  label,
-  description,
-  value,
-  min,
-  max,
-  onChange,
-}) {
-  const decreaseDisabled =
-    Number(value) <= min;
-
-  const increaseDisabled =
-    Number(value) >= max;
-
-  return (
-    <div className="passenger-row">
-      <div className="passenger-row-info">
-        <strong>{label}</strong>
-
-        <span>{description}</span>
-      </div>
-
-      <div className="passenger-counter">
-        <button
-          type="button"
-          className="passenger-counter-button"
-          disabled={decreaseDisabled}
-          aria-label={`Decrease ${label}`}
-          onClick={() =>
-            onChange(
-              clamp(
-                Number(value) - 1,
-                min,
-                max
-              )
-            )
-          }
-        >
-          −
-        </button>
-
-        <span
-          className="passenger-count"
-          aria-live="polite"
-        >
-          {value}
-        </span>
-
-        <button
-          type="button"
-          className="passenger-counter-button"
-          disabled={increaseDisabled}
-          aria-label={`Increase ${label}`}
-          onClick={() =>
-            onChange(
-              clamp(
-                Number(value) + 1,
-                min,
-                max
-              )
-            )
-          }
-        >
-          +
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export default function PassengerSelector({
-  adults = DEFAULTS.adults,
-  children = DEFAULTS.children,
-  infants = DEFAULTS.infants,
-  onChange,
-  maxPassengers = 9,
+  adults = 1,
+  children = 0,
+  infants = 0,
+  onChange
 }) {
-  const containerRef = useRef(null);
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef(null);
 
-  const [isOpen, setIsOpen] =
-    useState(false);
-
-  const [passengers, setPassengers] =
-    useState({
-      adults: Math.max(
-        1,
-        Number(adults) || 1
-      ),
-      children: Math.max(
-        0,
-        Number(children) || 0
-      ),
-      infants: Math.max(
-        0,
-        Number(infants) || 0
-      ),
-    });
-
-  useEffect(() => {
-    setPassengers({
-      adults: Math.max(
-        1,
-        Number(adults) || 1
-      ),
-      children: Math.max(
-        0,
-        Number(children) || 0
-      ),
-      infants: Math.max(
-        0,
-        Number(infants) || 0
-      ),
-    });
-  }, [adults, children, infants]);
+  const passengerTotal =
+    Number(adults || 0) +
+    Number(children || 0) +
+    Number(infants || 0);
 
   useEffect(() => {
     function handleOutsideClick(event) {
       if (
-        containerRef.current &&
-        !containerRef.current.contains(
-          event.target
-        )
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target)
       ) {
-        setIsOpen(false);
+        setOpen(false);
       }
     }
 
@@ -209,210 +37,170 @@ export default function PassengerSelector({
     };
   }, []);
 
-  function updatePassenger(
-    type,
-    nextValue
-  ) {
-    setPassengers((current) => {
-      const next = {
-        ...current,
-        [type]: nextValue,
-      };
+  function updatePassenger(type, amount) {
+    const current = {
+      adults: Number(adults) || 1,
+      children: Number(children) || 0,
+      infants: Number(infants) || 0
+    };
 
-      /*
-       * Total passenger count is kept within
-       * the configured maximum.
-       */
-      const total = getTotal(
-        next.adults,
-        next.children,
-        next.infants
+    const next = {
+      ...current
+    };
+
+    next[type] =
+      Math.max(
+        type === "adults" ? 1 : 0,
+        current[type] + amount
       );
 
-      if (total > maxPassengers) {
-        return current;
-      }
-
-      /*
-       * Infants cannot exceed the number
-       * of adults.
-       */
-      if (
-        type === "infants" &&
-        next.infants > next.adults
-      ) {
-        return current;
-      }
-
-      onChange?.(next);
-
-      return next;
-    });
-  }
-
-  function handleKeyDown(event) {
-    if (event.key === "Escape") {
-      setIsOpen(false);
+    /*
+     * Optional safety rule:
+     * infants cannot exceed adults.
+     */
+    if (type === "adults") {
+      next.infants = Math.min(
+        next.infants,
+        next.adults
+      );
     }
 
     if (
-      event.key === "Enter" ||
-      event.key === " "
+      typeof onChange === "function"
     ) {
-      if (
-        event.target ===
-        event.currentTarget
-      ) {
-        event.preventDefault();
-        setIsOpen(
-          (current) => !current
-        );
-      }
+      onChange(next);
     }
   }
 
-  const total = getTotal(
-    passengers.adults,
-    passengers.children,
-    passengers.infants
-  );
+  function getSummary() {
+    const parts = [];
+
+    if (adults > 0) {
+      parts.push(
+        `${adults} adult${adults !== 1 ? "s" : ""}`
+      );
+    }
+
+    if (children > 0) {
+      parts.push(
+        `${children} child${children !== 1 ? "ren" : ""}`
+      );
+    }
+
+    if (infants > 0) {
+      parts.push(
+        `${infants} infant${infants !== 1 ? "s" : ""}`
+      );
+    }
+
+    return parts.join(", ");
+  }
 
   return (
     <div
-      ref={containerRef}
       className="passenger-selector"
+      ref={wrapperRef}
     >
       <button
         type="button"
         className="passenger-selector-trigger"
-        aria-haspopup="dialog"
-        aria-expanded={isOpen}
         onClick={() =>
-          setIsOpen(
-            (current) => !current
-          )
+          setOpen((current) => !current)
         }
-        onKeyDown={handleKeyDown}
+        aria-expanded={open}
+        aria-haspopup="dialog"
       >
-        <span className="passenger-selector-icon">
-          👤
-        </span>
-
-        <span className="passenger-selector-value">
-          {passengerLabel(
-            passengers.adults,
-            passengers.children,
-            passengers.infants
-          )}
+        <span>
+          {getSummary()}
         </span>
 
         <span
-          className="passenger-selector-chevron"
           aria-hidden="true"
+          className={`passenger-chevron ${
+            open ? "is-open" : ""
+          }`}
         >
-          {isOpen ? "⌃" : "⌄"}
+          ▾
         </span>
       </button>
 
-      {isOpen && (
+      {open && (
         <div
-          className="passenger-selector-panel"
+          className="passenger-selector-menu"
           role="dialog"
           aria-label="Passenger selection"
         >
-          <div className="passenger-panel-header">
-            <div>
-              <strong>
-                Passengers
-              </strong>
-
-              <span>
-                Maximum {maxPassengers} passengers
-              </span>
-            </div>
-
-            <button
-              type="button"
-              className="passenger-close"
-              aria-label="Close passenger selector"
-              onClick={() =>
-                setIsOpen(false)
-              }
-            >
-              ×
-            </button>
-          </div>
-
-          <CounterRow
+          <PassengerRow
             label="Adults"
             description="Age 12+"
-            value={passengers.adults}
+            value={adults}
             min={1}
-            max={maxPassengers}
-            onChange={(value) =>
+            onDecrease={() =>
               updatePassenger(
                 "adults",
-                value
+                -1
+              )
+            }
+            onIncrease={() =>
+              updatePassenger(
+                "adults",
+                1
               )
             }
           />
 
-          <CounterRow
+          <PassengerRow
             label="Children"
             description="Age 2–11"
-            value={passengers.children}
+            value={children}
             min={0}
-            max={
-              Math.max(
-                0,
-                maxPassengers -
-                  passengers.adults -
-                  passengers.infants
-              )
-            }
-            onChange={(value) =>
+            onDecrease={() =>
               updatePassenger(
                 "children",
-                value
+                -1
+              )
+            }
+            onIncrease={() =>
+              updatePassenger(
+                "children",
+                1
               )
             }
           />
 
-          <CounterRow
+          <PassengerRow
             label="Infants"
             description="Under 2"
-            value={passengers.infants}
+            value={infants}
             min={0}
-            max={Math.min(
-              passengers.adults,
-              Math.max(
-                0,
-                maxPassengers -
-                  passengers.adults -
-                  passengers.children
-              )
-            )}
-            onChange={(value) =>
+            max={adults}
+            onDecrease={() =>
               updatePassenger(
                 "infants",
-                value
+                -1
+              )
+            }
+            onIncrease={() =>
+              updatePassenger(
+                "infants",
+                1
               )
             }
           />
 
-          <div className="passenger-panel-footer">
+          <div className="passenger-selector-footer">
             <span>
-              {total}{" "}
-              {total === 1
-                ? "passenger"
-                : "passengers"}
+              {passengerTotal} passenger
+              {passengerTotal !== 1
+                ? "s"
+                : ""}
             </span>
 
             <button
               type="button"
-              className="btn btn-primary passenger-done"
+              className="passenger-done-button"
               onClick={() =>
-                setIsOpen(false)
+                setOpen(false)
               }
             >
               Done
@@ -422,4 +210,63 @@ export default function PassengerSelector({
       )}
     </div>
   );
-      }
+}
+
+function PassengerRow({
+  label,
+  description,
+  value,
+  min = 0,
+  max = 99,
+  onDecrease,
+  onIncrease
+}) {
+  const decreaseDisabled =
+    value <= min;
+
+  const increaseDisabled =
+    value >= max;
+
+  return (
+    <div className="passenger-row">
+      <div className="passenger-info">
+        <strong>
+          {label}
+        </strong>
+
+        <span>
+          {description}
+        </span>
+      </div>
+
+      <div className="passenger-controls">
+        <button
+          type="button"
+          className="passenger-control-button"
+          onClick={onDecrease}
+          disabled={decreaseDisabled}
+          aria-label={`Decrease ${label}`}
+        >
+          −
+        </button>
+
+        <span
+          className="passenger-count"
+          aria-live="polite"
+        >
+          {value}
+        </span>
+
+        <button
+          type="button"
+          className="passenger-control-button"
+          onClick={onIncrease}
+          disabled={increaseDisabled}
+          aria-label={`Increase ${label}`}
+        >
+          +
+        </button>
+      </div>
+    </div>
+  );
+}
