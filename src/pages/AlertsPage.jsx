@@ -18,8 +18,7 @@ const DEFAULT_ALERT = {
 
 function loadAlert() {
   try {
-    const saved =
-      localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(STORAGE_KEY);
 
     if (!saved) {
       return DEFAULT_ALERT;
@@ -35,20 +34,11 @@ function loadAlert() {
 }
 
 export default function AlertsPage() {
-  const [alert, setAlert] =
-    useState(loadAlert);
-
-  const [saved, setSaved] =
-    useState(false);
-
-  const [message, setMessage] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
+  const [alert, setAlert] = useState(loadAlert);
+  const [saved, setSaved] = useState(false);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     try {
@@ -57,8 +47,7 @@ export default function AlertsPage() {
         JSON.stringify(alert)
       );
     } catch {
-      // Storage may be unavailable in
-      // some browser configurations.
+      // Storage may be unavailable in some browser configurations.
     }
   }, [alert]);
 
@@ -112,9 +101,7 @@ export default function AlertsPage() {
     if (
       alert.maxPrice !== "" &&
       (
-        Number.isNaN(
-          Number(alert.maxPrice)
-        ) ||
+        Number.isNaN(Number(alert.maxPrice)) ||
         Number(alert.maxPrice) <= 0
       )
     ) {
@@ -143,8 +130,7 @@ export default function AlertsPage() {
     setMessage("");
     setError("");
 
-    const validationError =
-      validate();
+    const validationError = validate();
 
     if (validationError) {
       setError(validationError);
@@ -154,11 +140,6 @@ export default function AlertsPage() {
     setLoading(true);
 
     try {
-      /*
-       * The alert is persisted locally immediately.
-       * If a backend alert endpoint is available,
-       * FlyMatrix also attempts to register it there.
-       */
       localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify(alert)
@@ -172,41 +153,27 @@ export default function AlertsPage() {
           {
             method: "POST",
             headers: {
-              "Content-Type":
-                "application/json",
-              Accept:
-                "application/json",
+              "Content-Type": "application/json",
+              Accept: "application/json",
             },
             body: JSON.stringify({
-              origin:
-                alert.origin.trim(),
-              destination:
-                alert.destination.trim(),
-              departureDate:
-                alert.departureDate,
+              origin: alert.origin.trim(),
+              destination: alert.destination.trim(),
+              departureDate: alert.departureDate,
               returnDate:
-                alert.tripType ===
-                "roundtrip"
+                alert.tripType === "roundtrip"
                   ? alert.returnDate
                   : null,
-              tripType:
-                alert.tripType,
-              adults:
-                Number(alert.adults),
-              cabin:
-                alert.cabin,
+              tripType: alert.tripType,
+              adults: Number(alert.adults),
+              cabin: alert.cabin,
               maxPrice:
                 alert.maxPrice === ""
                   ? null
-                  : Number(
-                      alert.maxPrice
-                    ),
-              currency:
-                alert.currency,
-              email:
-                alert.email.trim(),
-              enabled:
-                alert.enabled,
+                  : Number(alert.maxPrice),
+              currency: alert.currency,
+              email: alert.email.trim(),
+              enabled: alert.enabled,
             }),
           }
         );
@@ -258,9 +225,7 @@ export default function AlertsPage() {
 
   function clearAlert() {
     try {
-      localStorage.removeItem(
-        STORAGE_KEY
-      );
+      localStorage.removeItem(STORAGE_KEY);
     } catch {
       // Ignore storage errors.
     }
@@ -274,8 +239,7 @@ export default function AlertsPage() {
   }
 
   function openSearch() {
-    const params =
-      new URLSearchParams();
+    const params = new URLSearchParams();
 
     if (alert.origin.trim()) {
       params.set(
@@ -328,11 +292,11 @@ export default function AlertsPage() {
   }
 
   return (
-    <main className="fm-page">
-      <section className="fm-section">
+    <main className="fm-page fm-alerts-page">
+      <section className="fm-section fm-alerts-section">
         <div className="fm-container">
 
-          <header className="fm-page-header">
+          <header className="fm-page-header fm-alerts-header">
             <span className="fm-eyebrow">
               FARE ALERTS
             </span>
@@ -349,10 +313,28 @@ export default function AlertsPage() {
           </header>
 
           <form
-            className="fm-card fm-search-panel"
+            className="fm-card fm-search-panel fm-alerts-search-card"
             onSubmit={saveAlert}
           >
-            <div className="fm-search-grid">
+            <div className="fm-alerts-search-heading">
+              <div>
+                <span className="fm-eyebrow">
+                  ALERT SETUP
+                </span>
+
+                <h2>
+                  Define the fare you want to monitor
+                </h2>
+
+                <p>
+                  Set your route, travel dates,
+                  passenger details and optional
+                  target price.
+                </p>
+              </div>
+            </div>
+
+            <div className="fm-search-grid fm-alerts-form-grid">
 
               <div className="fm-field">
                 <label htmlFor="alert-origin">
@@ -437,8 +419,7 @@ export default function AlertsPage() {
                 />
               </div>
 
-              {alert.tripType ===
-                "roundtrip" && (
+              {alert.tripType === "roundtrip" && (
                 <div className="fm-field">
                   <label htmlFor="alert-return">
                     Return
@@ -470,16 +451,13 @@ export default function AlertsPage() {
                   onChange={(event) =>
                     update(
                       "adults",
-                      Number(
-                        event.target.value
-                      )
+                      Number(event.target.value)
                     )
                   }
                 >
                   {Array.from(
                     { length: 9 },
-                    (_, index) =>
-                      index + 1
+                    (_, index) => index + 1
                   ).map((number) => (
                     <option
                       key={number}
@@ -611,7 +589,7 @@ export default function AlertsPage() {
 
             </div>
 
-            <div className="fm-actions">
+            <div className="fm-actions fm-alerts-actions">
 
               <button
                 type="submit"
@@ -636,15 +614,17 @@ export default function AlertsPage() {
 
           {saved && (
             <section
-              className="fm-card"
+              className="fm-card fm-alerts-message-card"
               aria-live="polite"
             >
               <span className="fm-badge">
-                Alert saved
+                {alert.enabled
+                  ? "Alert saved"
+                  : "Alert disabled"}
               </span>
 
               <h2>
-                Your fare-alert preference is saved
+                Your fare-alert preference
               </h2>
 
               <p>
@@ -655,7 +635,7 @@ export default function AlertsPage() {
 
           {!saved && message && (
             <section
-              className="fm-card"
+              className="fm-card fm-alerts-message-card"
               aria-live="polite"
             >
               <p>{message}</p>
@@ -664,7 +644,7 @@ export default function AlertsPage() {
 
           {error && (
             <section
-              className="fm-card"
+              className="fm-card fm-alerts-error-card"
               role="alert"
             >
               <span className="fm-badge">
@@ -675,9 +655,9 @@ export default function AlertsPage() {
             </section>
           )}
 
-          <section className="fm-section-inner">
+          <section className="fm-section-inner fm-alerts-status-section">
 
-            <div className="fm-section-heading">
+            <div className="fm-section-heading fm-alerts-section-heading">
               <div>
                 <span className="fm-eyebrow">
                   ALERT STATUS
@@ -688,104 +668,103 @@ export default function AlertsPage() {
                 </h2>
               </div>
 
-              <span className="fm-meta">
+              <span
+                className={
+                  alert.enabled
+                    ? "fm-alert-status fm-alert-status-active"
+                    : "fm-alert-status fm-alert-status-disabled"
+                }
+              >
                 {alert.enabled
                   ? "Enabled"
                   : "Disabled"}
               </span>
             </div>
 
-            <div className="fm-card">
+            <div className="fm-card fm-alerts-status-card">
 
-              <div className="fm-grid">
+              <div className="fm-grid fm-alerts-status-grid">
 
                 <div>
-                  <strong>
+                  <span className="fm-alerts-detail-label">
                     Route
-                  </strong>
+                  </span>
 
-                  <p>
-                    {alert.origin ||
-                      "Not set"}{" "}
+                  <strong>
+                    {alert.origin || "Not set"}{" "}
                     →{" "}
-                    {alert.destination ||
-                      "Not set"}
-                  </p>
+                    {alert.destination || "Not set"}
+                  </strong>
                 </div>
 
                 <div>
-                  <strong>
+                  <span className="fm-alerts-detail-label">
                     Dates
-                  </strong>
+                  </span>
 
-                  <p>
-                    {alert.departureDate ||
-                      "Not set"}
+                  <strong>
+                    {alert.departureDate || "Not set"}
 
-                    {alert.tripType ===
-                      "roundtrip" &&
+                    {alert.tripType === "roundtrip" &&
                       ` → ${
-                        alert.returnDate ||
-                        "Not set"
+                        alert.returnDate || "Not set"
                       }`}
-                  </p>
+                  </strong>
                 </div>
 
                 <div>
-                  <strong>
+                  <span className="fm-alerts-detail-label">
                     Passengers
-                  </strong>
+                  </span>
 
-                  <p>
-                    {alert.adults} adult
-                    {Number(alert.adults) ===
-                    1
-                      ? ""
-                      : "s"}
-                  </p>
+                  <strong>
+                    {alert.adults}{" "}
+                    {Number(alert.adults) === 1
+                      ? "adult"
+                      : "adults"}
+                  </strong>
                 </div>
 
                 <div>
-                  <strong>
+                  <span className="fm-alerts-detail-label">
                     Cabin
-                  </strong>
+                  </span>
 
-                  <p>
+                  <strong>
                     {alert.cabin.replace(
                       "_",
                       " "
                     )}
-                  </p>
+                  </strong>
                 </div>
 
                 <div>
-                  <strong>
+                  <span className="fm-alerts-detail-label">
                     Target
-                  </strong>
+                  </span>
 
-                  <p>
+                  <strong>
                     {alert.maxPrice
                       ? `${alert.currency} ${Number(
                           alert.maxPrice
                         ).toLocaleString()}`
                       : "No maximum price"}
-                  </p>
+                  </strong>
                 </div>
 
                 <div>
-                  <strong>
+                  <span className="fm-alerts-detail-label">
                     Email
-                  </strong>
+                  </span>
 
-                  <p>
-                    {alert.email ||
-                      "Not set"}
-                  </p>
+                  <strong>
+                    {alert.email || "Not set"}
+                  </strong>
                 </div>
 
               </div>
 
-              <div className="fm-actions">
+              <div className="fm-actions fm-alerts-status-actions">
 
                 <button
                   type="button"
@@ -807,12 +786,11 @@ export default function AlertsPage() {
               </div>
 
             </div>
-
           </section>
 
-          <section className="fm-section-inner">
+          <section className="fm-section-inner fm-alerts-workflow-section">
 
-            <div className="fm-section-heading">
+            <div className="fm-section-heading fm-alerts-section-heading">
               <div>
                 <span className="fm-eyebrow">
                   HOW IT WORKS
@@ -821,13 +799,18 @@ export default function AlertsPage() {
                 <h2>
                   Fare monitoring workflow
                 </h2>
+
+                <p>
+                  Configure the conditions that matter
+                  to you before monitoring begins.
+                </p>
               </div>
             </div>
 
-            <div className="fm-grid">
+            <div className="fm-grid fm-alerts-workflow-grid">
 
-              <article className="fm-card">
-                <span className="fm-badge">
+              <article className="fm-card fm-alerts-workflow-card">
+                <span className="fm-alert-step">
                   01
                 </span>
 
@@ -842,8 +825,8 @@ export default function AlertsPage() {
                 </p>
               </article>
 
-              <article className="fm-card">
-                <span className="fm-badge">
+              <article className="fm-card fm-alerts-workflow-card">
+                <span className="fm-alert-step">
                   02
                 </span>
 
@@ -858,8 +841,8 @@ export default function AlertsPage() {
                 </p>
               </article>
 
-              <article className="fm-card">
-                <span className="fm-badge">
+              <article className="fm-card fm-alerts-workflow-card">
+                <span className="fm-alert-step">
                   03
                 </span>
 
@@ -878,7 +861,7 @@ export default function AlertsPage() {
             </div>
           </section>
 
-          <section className="fm-card fm-section-inner">
+          <section className="fm-card fm-section-inner fm-alerts-important-card">
 
             <span className="fm-eyebrow">
               IMPORTANT
@@ -922,7 +905,7 @@ export default function AlertsPage() {
 
           </section>
 
-          <section className="fm-card fm-disclaimer">
+          <section className="fm-card fm-disclaimer fm-alerts-disclaimer">
 
             <strong>
               Alert-service information
@@ -951,4 +934,4 @@ export default function AlertsPage() {
       </section>
     </main>
   );
-                  }
+}
