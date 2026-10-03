@@ -145,22 +145,17 @@ export default function LeisureTourismPage() {
   function updateCountry(value) {
     setCountry(value);
 
-    const destination =
-      DESTINATIONS.find(
-        (item) => item.code === value
-      );
-
-    setCity(
-      destination?.cities?.[0] || ""
+    const destination = DESTINATIONS.find(
+      (item) => item.code === value
     );
+
+    setCity(destination?.cities?.[0] || "");
   }
 
   function toggleFacility(value) {
     setSelectedFacilities((current) =>
       current.includes(value)
-        ? current.filter(
-            (item) => item !== value
-          )
+        ? current.filter((item) => item !== value)
         : [...current, value]
     );
   }
@@ -172,8 +167,7 @@ export default function LeisureTourismPage() {
       budget,
       days,
       lifestyle,
-      facilities:
-        selectedFacilities.join(","),
+      facilities: selectedFacilities.join(","),
     });
 
     navigate(
@@ -184,8 +178,8 @@ export default function LeisureTourismPage() {
   }
 
   return (
-    <main className="page-container">
-      <section className="tourism-hero">
+    <main className="page-container fm-leisure-page">
+      <section className="tourism-hero fm-leisure-hero">
         <div className="tourism-hero-content">
           <span className="fm-badge">
             Leisure Tourism
@@ -205,8 +199,8 @@ export default function LeisureTourismPage() {
         </div>
       </section>
 
-      <section className="tourism-dashboard">
-        <div className="tourism-dashboard-header">
+      <section className="tourism-dashboard fm-leisure-dashboard">
+        <div className="tourism-dashboard-header fm-leisure-dashboard-header">
           <div>
             <span className="section-kicker">
               Tourism Intelligence
@@ -226,7 +220,7 @@ export default function LeisureTourismPage() {
           </div>
         </div>
 
-        <div className="tourism-form-grid">
+        <div className="tourism-form-grid fm-leisure-form-grid">
           <div className="form-field">
             <label htmlFor="leisure-country">
               Destination country
@@ -236,25 +230,21 @@ export default function LeisureTourismPage() {
               id="leisure-country"
               value={country}
               onChange={(event) =>
-                updateCountry(
-                  event.target.value
-                )
+                updateCountry(event.target.value)
               }
             >
               <option value="">
                 Select a country
               </option>
 
-              {DESTINATIONS.map(
-                (destination) => (
-                  <option
-                    key={destination.code}
-                    value={destination.code}
-                  >
-                    {destination.country}
-                  </option>
-                )
-              )}
+              {DESTINATIONS.map((destination) => (
+                <option
+                  key={destination.code}
+                  value={destination.code}
+                >
+                  {destination.country}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -335,9 +325,7 @@ export default function LeisureTourismPage() {
               id="leisure-budget"
               value={budget}
               onChange={(event) =>
-                setBudget(
-                  event.target.value
-                )
+                setBudget(event.target.value)
               }
             >
               <option value="">
@@ -375,9 +363,7 @@ export default function LeisureTourismPage() {
               id="leisure-lifestyle"
               value={lifestyle}
               onChange={(event) =>
-                setLifestyle(
-                  event.target.value
-                )
+                setLifestyle(event.target.value)
               }
             >
               {LIFESTYLES.map((item) => (
@@ -392,7 +378,7 @@ export default function LeisureTourismPage() {
           </div>
         </div>
 
-        <div className="tourism-facilities">
+        <div className="tourism-facilities fm-leisure-facilities">
           <div>
             <h3>
               Services and facilities
@@ -415,18 +401,14 @@ export default function LeisureTourismPage() {
                 <label
                   key={facility}
                   className={`facility-option ${
-                    selected
-                      ? "selected"
-                      : ""
+                    selected ? "selected" : ""
                   }`}
                 >
                   <input
                     type="checkbox"
                     checked={selected}
                     onChange={() =>
-                      toggleFacility(
-                        facility
-                      )
+                      toggleFacility(facility)
                     }
                   />
 
@@ -439,7 +421,7 @@ export default function LeisureTourismPage() {
           </div>
         </div>
 
-        <div className="tourism-dashboard-actions">
+        <div className="tourism-dashboard-actions fm-leisure-actions">
           <button
             type="button"
             className="btn btn-primary"
@@ -451,16 +433,14 @@ export default function LeisureTourismPage() {
           <button
             type="button"
             className="btn btn-secondary"
-            onClick={() =>
-              navigate("/planner")
-            }
+            onClick={() => navigate("/planner")}
           >
             Open trip planner
           </button>
         </div>
       </section>
 
-      <section className="tourism-track-grid">
+      <section className="tourism-track-grid fm-leisure-track-grid">
         <article className="tourism-track-card">
           <span className="fm-badge">
             Compare
@@ -510,7 +490,7 @@ export default function LeisureTourismPage() {
         </article>
       </section>
 
-      <section className="tourism-disclaimer">
+      <section className="tourism-disclaimer fm-leisure-disclaimer">
         <strong>
           Provider pricing notice
         </strong>
