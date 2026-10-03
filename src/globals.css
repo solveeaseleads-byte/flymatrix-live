@@ -4093,3 +4093,129 @@ p {
     padding: 16px;
   }
 }
+/* =========================================================
+   LEISURE TOURISM PAGE
+========================================================= */
+
+.fm-leisure-page {
+  width: 100%;
+}
+
+.fm-leisure-hero {
+  max-width: 1180px;
+  margin: 0 auto 28px;
+}
+
+.fm-leisure-hero h1 {
+  margin: 10px 0 8px;
+}
+
+.fm-leisure-hero p {
+  max-width: 760px;
+  margin: 0;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.fm-leisure-dashboard {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.fm-leisure-dashboard-header {
+  margin-bottom: 22px;
+}
+
+.fm-leisure-dashboard-header h2 {
+  margin: 7px 0 8px;
+}
+
+.fm-leisure-dashboard-header p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.fm-leisure-form-grid {
+  margin-top: 20px;
+}
+
+.fm-leisure-facilities {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid var(--border);
+}
+
+.fm-leisure-facilities h3 {
+  margin: 0 0 6px;
+}
+
+.fm-leisure-facilities p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.fm-leisure-actions {
+  margin-top: 26px;
+}
+
+.fm-leisure-track-grid {
+  max-width: 1180px;
+  margin: 32px auto 0;
+}
+
+.fm-leisure-track-grid .tourism-track-card {
+  min-height: 190px;
+}
+
+.fm-leisure-track-grid .tourism-track-card h2 {
+  margin: 12px 0 8px;
+}
+
+.fm-leisure-track-grid .tourism-track-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.fm-leisure-disclaimer {
+  max-width: 1180px;
+  margin: 28px auto 0;
+}
+
+.fm-leisure-disclaimer strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.fm-leisure-disclaimer p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+  .fm-leisure-hero,
+  .fm-leisure-dashboard,
+  .fm-leisure-track-grid,
+  .fm-leisure-disclaimer {
+    width: 100%;
+  }
+
+  .fm-leisure-track-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-leisure-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fm-leisure-actions .btn {
+    width: 100%;
+  }
+}
