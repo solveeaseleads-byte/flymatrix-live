@@ -309,11 +309,11 @@ export default function TransfersPage() {
   }
 
   return (
-    <main className="fm-page">
-      <section className="fm-section">
+    <main className="fm-page fm-transfers-page">
+      <section className="fm-section fm-transfers-section">
         <div className="fm-container">
 
-          <header className="fm-page-header">
+          <header className="fm-page-header fm-transfers-header">
             <span className="fm-eyebrow">
               TRANSFERS
             </span>
@@ -331,10 +331,28 @@ export default function TransfersPage() {
           </header>
 
           <form
-            className="fm-card fm-search-panel"
+            className="fm-card fm-search-panel fm-transfers-search-card"
             onSubmit={searchTransfers}
           >
-            <div className="fm-search-grid">
+            <div className="fm-transfers-search-heading">
+              <div>
+                <span className="fm-eyebrow">
+                  SEARCH TRANSFERS
+                </span>
+
+                <h2>
+                  Find ground transportation
+                </h2>
+
+                <p>
+                  Enter your route, travel date and
+                  passenger count to check the
+                  configured transfer source.
+                </p>
+              </div>
+            </div>
+
+            <div className="fm-search-grid fm-transfers-form-grid">
 
               <div className="fm-field">
                 <label htmlFor="transfer-destination">
@@ -490,7 +508,7 @@ export default function TransfersPage() {
 
             </div>
 
-            <div className="fm-actions">
+            <div className="fm-actions fm-transfers-actions">
 
               <button
                 type="submit"
@@ -515,10 +533,14 @@ export default function TransfersPage() {
 
           {loading && (
             <section
-              className="fm-card"
+              className="fm-card fm-transfers-status-card"
               aria-live="polite"
               aria-busy="true"
             >
+              <span className="fm-eyebrow">
+                SEARCHING
+              </span>
+
               <h2>
                 Checking transfer options
               </h2>
@@ -531,7 +553,7 @@ export default function TransfersPage() {
           )}
 
           {!loading && error && (
-            <section className="fm-card">
+            <section className="fm-card fm-transfers-status-card fm-transfers-error-card">
 
               <span className="fm-badge">
                 Search unavailable
@@ -560,7 +582,7 @@ export default function TransfersPage() {
             searched &&
             !error &&
             transfers.length === 0 && (
-              <section className="fm-card">
+              <section className="fm-card fm-transfers-status-card">
 
                 <span className="fm-badge">
                   No live results returned
@@ -591,9 +613,9 @@ export default function TransfersPage() {
 
           {!loading &&
             transfers.length > 0 && (
-              <section className="fm-section-inner">
+              <section className="fm-section-inner fm-transfers-results-section">
 
-                <div className="fm-section-heading">
+                <div className="fm-section-heading fm-transfers-results-heading">
                   <div>
                     <span className="fm-eyebrow">
                       PROVIDER OPTIONS
@@ -612,7 +634,7 @@ export default function TransfersPage() {
                   </span>
                 </div>
 
-                <div className="fm-grid">
+                <div className="fm-grid fm-transfers-results-grid">
 
                   {transfers.map(
                     (item, index) => {
@@ -634,7 +656,7 @@ export default function TransfersPage() {
 
                       return (
                         <article
-                          className="fm-card"
+                          className="fm-card fm-transfer-result-card"
                           key={
                             item?.id ||
                             item?.transferId ||
@@ -694,9 +716,9 @@ export default function TransfersPage() {
               </section>
             )}
 
-          <section className="fm-section-inner">
+          <section className="fm-section-inner fm-transfers-planning-section">
 
-            <div className="fm-section-heading">
+            <div className="fm-section-heading fm-transfers-section-heading">
               <div>
                 <span className="fm-eyebrow">
                   TRANSFER PLANNING
@@ -708,9 +730,13 @@ export default function TransfersPage() {
               </div>
             </div>
 
-            <div className="fm-grid">
+            <div className="fm-grid fm-transfers-type-grid">
 
-              <article className="fm-card">
+              <article className="fm-card fm-transfer-type-card">
+                <div className="fm-transfer-type-icon">
+                  ✈
+                </div>
+
                 <h3>
                   Airport arrival
                 </h3>
@@ -734,7 +760,11 @@ export default function TransfersPage() {
                 </button>
               </article>
 
-              <article className="fm-card">
+              <article className="fm-card fm-transfer-type-card">
+                <div className="fm-transfer-type-icon">
+                  🚘
+                </div>
+
                 <h3>
                   Private transfer
                 </h3>
@@ -758,7 +788,11 @@ export default function TransfersPage() {
                 </button>
               </article>
 
-              <article className="fm-card">
+              <article className="fm-card fm-transfer-type-card">
+                <div className="fm-transfer-type-icon">
+                  👥
+                </div>
+
                 <h3>
                   Shared transfer
                 </h3>
@@ -785,7 +819,7 @@ export default function TransfersPage() {
             </div>
           </section>
 
-          <section className="fm-card fm-section-inner">
+          <section className="fm-card fm-section-inner fm-transfers-planner-card">
 
             <span className="fm-eyebrow">
               TRIP PLANNER
@@ -826,7 +860,7 @@ export default function TransfersPage() {
             </div>
           </section>
 
-          <section className="fm-card fm-disclaimer">
+          <section className="fm-card fm-disclaimer fm-transfers-disclaimer">
 
             <strong>
               Provider information
@@ -866,4 +900,4 @@ export default function TransfersPage() {
       </section>
     </main>
   );
-                }
+      }
