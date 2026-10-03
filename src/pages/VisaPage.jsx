@@ -231,9 +231,9 @@ export default function VisaPage() {
     : null;
 
   return (
-    <main className="page-container">
-      <section className="visa-hero">
-        <div>
+    <main className="page-container fm-visa-page">
+      <section className="visa-hero fm-visa-hero">
+        <div className="fm-visa-hero-content">
           <span className="fm-badge">
             Visa Guidance
           </span>
@@ -251,9 +251,9 @@ export default function VisaPage() {
         </div>
       </section>
 
-      <section className="visa-layout">
-        <div className="visa-form-card">
-          <div className="planner-card-heading">
+      <section className="visa-layout fm-visa-layout">
+        <div className="visa-form-card fm-visa-form-card">
+          <div className="planner-card-heading fm-visa-card-heading">
             <div>
               <span className="section-kicker">
                 Visa checker
@@ -271,7 +271,7 @@ export default function VisaPage() {
             </div>
           </div>
 
-          <div className="tourism-form-grid">
+          <div className="tourism-form-grid fm-visa-form-grid">
             <div className="form-field">
               <label htmlFor="visa-nationality">
                 Passport nationality
@@ -393,7 +393,7 @@ export default function VisaPage() {
 
           {error && (
             <div
-              className="visa-error"
+              className="visa-error fm-visa-error"
               role="alert"
             >
               <strong>
@@ -410,7 +410,7 @@ export default function VisaPage() {
             </div>
           )}
 
-          <div className="planner-actions">
+          <div className="planner-actions fm-visa-actions">
             <button
               type="button"
               className="btn btn-primary"
@@ -435,7 +435,7 @@ export default function VisaPage() {
           </div>
         </div>
 
-        <aside className="visa-summary-card">
+        <aside className="visa-summary-card fm-visa-summary-card">
           <span className="section-kicker">
             Selected trip
           </span>
@@ -445,7 +445,7 @@ export default function VisaPage() {
               "Destination not selected"}
           </h2>
 
-          <div className="visa-summary-list">
+          <div className="visa-summary-list fm-visa-summary-list">
             <div>
               <span>
                 Nationality
@@ -491,8 +491,8 @@ export default function VisaPage() {
       </section>
 
       {normalizedResult && (
-        <section className="visa-result-card">
-          <div className="planner-card-heading">
+        <section className="visa-result-card fm-visa-result-card">
+          <div className="planner-card-heading fm-visa-result-heading">
             <div>
               <span className="section-kicker">
                 Result
@@ -514,7 +514,7 @@ export default function VisaPage() {
             </span>
           </div>
 
-          <div className="visa-result-grid">
+          <div className="visa-result-grid fm-visa-result-grid">
             <div>
               <span>
                 Passport nationality
@@ -563,7 +563,7 @@ export default function VisaPage() {
           {(normalizedResult.summary ||
             normalizedResult.description ||
             normalizedResult.message) && (
-            <div className="visa-result-description">
+            <div className="visa-result-description fm-visa-result-description">
               <h3>
                 Information
               </h3>
@@ -581,7 +581,7 @@ export default function VisaPage() {
           ) &&
             normalizedResult.requirements
               .length > 0 && (
-              <div className="visa-requirements">
+              <div className="visa-requirements fm-visa-requirements">
                 <h3>
                   Requirements
                 </h3>
@@ -609,7 +609,7 @@ export default function VisaPage() {
               </div>
             )}
 
-          <div className="planner-actions">
+          <div className="planner-actions fm-visa-result-actions">
             <button
               type="button"
               className="btn btn-primary"
@@ -629,7 +629,7 @@ export default function VisaPage() {
         </section>
       )}
 
-      <section className="visa-guidance-grid">
+      <section className="visa-guidance-grid fm-visa-guidance-grid">
         <article className="service-card">
           <div className="service-card-icon">
             ✓
@@ -683,7 +683,7 @@ export default function VisaPage() {
         </article>
       </section>
 
-      <section className="planner-notice">
+      <section className="planner-notice fm-visa-notice">
         <strong>
           Important travel-document notice
         </strong>
@@ -699,4 +699,4 @@ export default function VisaPage() {
       </section>
     </main>
   );
-          }
+}
