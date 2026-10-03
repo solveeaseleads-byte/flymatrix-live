@@ -3901,3 +3901,195 @@ p {
     width: 100%;
   }
 }
+/* =========================================================
+   FLYMATRIX — PLANNER PAGE
+   ========================================================= */
+
+.fm-planner-page {
+  width: 100%;
+}
+
+.fm-planner-hero {
+  max-width: 1180px;
+  margin: 0 auto 28px;
+}
+
+.fm-planner-hero h1 {
+  margin: 10px 0 8px;
+}
+
+.fm-planner-hero p {
+  max-width: 720px;
+  margin: 0;
+  color: #64748b;
+  line-height: 1.65;
+}
+
+.fm-planner-layout {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: 24px;
+  align-items: start;
+}
+
+.fm-planner-form-card,
+.fm-planner-summary-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #fff;
+}
+
+.fm-planner-form-card {
+  padding: 26px;
+}
+
+.fm-planner-summary-card {
+  position: sticky;
+  top: 18px;
+  padding: 24px;
+}
+
+.fm-planner-form-card .planner-card-heading {
+  margin-bottom: 22px;
+}
+
+.fm-planner-form-card .planner-card-heading h2,
+.fm-planner-services .planner-card-heading h2 {
+  margin: 6px 0 0;
+}
+
+.fm-planner-summary-card h2 {
+  margin: 8px 0 20px;
+  font-size: 23px;
+  color: #0f172a;
+}
+
+.fm-planner-summary-list {
+  display: grid;
+  gap: 0;
+}
+
+.fm-planner-summary-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.fm-planner-summary-list span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.fm-planner-summary-list strong {
+  color: #1e293b;
+  font-size: 13px;
+  text-align: right;
+}
+
+.fm-planner-summary-notes {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.fm-planner-summary-notes > span {
+  display: block;
+  margin-bottom: 7px;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.fm-planner-summary-notes p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.fm-planner-services {
+  max-width: 1180px;
+  margin: 34px auto 0;
+}
+
+.fm-planner-services .planner-card-heading p {
+  max-width: 680px;
+  margin: 8px 0 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.fm-planner-services .service-card-grid {
+  margin-top: 18px;
+}
+
+.fm-planner-services .service-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.fm-planner-services .service-card:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+}
+
+.fm-planner-notice {
+  max-width: 1180px;
+  margin: 28px auto 0;
+  padding: 18px 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.fm-planner-notice strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #334155;
+  font-size: 13px;
+}
+
+.fm-planner-notice p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .fm-planner-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-planner-summary-card {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .fm-planner-form-card,
+  .fm-planner-summary-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .fm-planner-summary-list > div {
+    align-items: flex-start;
+  }
+
+  .fm-planner-services .service-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-planner-notice {
+    padding: 16px;
+  }
+}
