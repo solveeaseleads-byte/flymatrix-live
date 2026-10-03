@@ -295,9 +295,9 @@ export default function EssentialsPage() {
   }
 
   return (
-    <main className="page-container">
-      <section className="essentials-hero">
-        <div>
+    <main className="page-container fm-essentials-page">
+      <section className="essentials-hero fm-essentials-hero">
+        <div className="fm-essentials-hero-content">
           <span className="fm-badge">
             Travel Essentials
           </span>
@@ -316,8 +316,8 @@ export default function EssentialsPage() {
         </div>
       </section>
 
-      <section className="essentials-planner-card">
-        <div className="planner-card-heading">
+      <section className="essentials-planner-card fm-essentials-planner-card">
+        <div className="planner-card-heading fm-essentials-planner-heading">
           <div>
             <span className="section-kicker">
               Personal checklist
@@ -328,7 +328,7 @@ export default function EssentialsPage() {
             </h2>
           </div>
 
-          <div className="essentials-progress">
+          <div className="essentials-progress fm-essentials-progress">
             <strong>
               {completion}%
             </strong>
@@ -340,7 +340,7 @@ export default function EssentialsPage() {
           </div>
         </div>
 
-        <div className="tourism-form-grid">
+        <div className="tourism-form-grid fm-essentials-form-grid">
           <div className="form-field">
             <label htmlFor="essentials-destination">
               Destination
@@ -436,7 +436,7 @@ export default function EssentialsPage() {
           </div>
         </div>
 
-        <div className="essentials-actions">
+        <div className="essentials-actions fm-essentials-actions">
           <button
             type="button"
             className="btn btn-primary"
@@ -463,7 +463,7 @@ export default function EssentialsPage() {
         </div>
       </section>
 
-      <section className="essentials-overview">
+      <section className="essentials-overview fm-essentials-overview">
         <div>
           <span className="section-kicker">
             Trip overview
@@ -495,7 +495,7 @@ export default function EssentialsPage() {
         </div>
       </section>
 
-      <section className="essentials-grid">
+      <section className="essentials-grid fm-essentials-grid">
         {ESSENTIALS.map(
           (category) => {
             const categoryCompleted =
@@ -508,11 +508,11 @@ export default function EssentialsPage() {
 
             return (
               <article
-                className="essentials-card"
+                className="essentials-card fm-essentials-card"
                 key={category.id}
               >
-                <div className="essentials-card-header">
-                  <div className="essentials-icon">
+                <div className="essentials-card-header fm-essentials-card-header">
+                  <div className="essentials-icon fm-essentials-icon">
                     {category.icon}
                   </div>
 
@@ -539,7 +539,7 @@ export default function EssentialsPage() {
                   {category.description}
                 </p>
 
-                <div className="essentials-checklist">
+                <div className="essentials-checklist fm-essentials-checklist">
                   {category.items.map(
                     (item) => {
                       const key = `${category.id}:${item}`;
@@ -584,8 +584,8 @@ export default function EssentialsPage() {
         )}
       </section>
 
-      <section className="essentials-tools">
-        <div className="planner-card-heading">
+      <section className="essentials-tools fm-essentials-tools">
+        <div className="planner-card-heading fm-essentials-tools-heading">
           <div>
             <span className="section-kicker">
               FlyMatrix tools
@@ -603,7 +603,7 @@ export default function EssentialsPage() {
           </div>
         </div>
 
-        <div className="service-card-grid">
+        <div className="service-card-grid fm-essentials-service-grid">
           <article className="service-card">
             <div className="service-card-icon">
               ◉
@@ -698,7 +698,7 @@ export default function EssentialsPage() {
         </div>
       </section>
 
-      <section className="planner-notice">
+      <section className="planner-notice fm-essentials-notice">
         <strong>
           Important
         </strong>
@@ -715,4 +715,4 @@ export default function EssentialsPage() {
       </section>
     </main>
   );
-              }
+}
