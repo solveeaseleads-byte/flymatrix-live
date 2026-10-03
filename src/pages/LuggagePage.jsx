@@ -286,11 +286,11 @@ export default function LuggagePage() {
   }
 
   return (
-    <main className="fm-page">
-      <section className="fm-section">
+    <main className="fm-page fm-luggage-page">
+      <section className="fm-section fm-luggage-section">
         <div className="fm-container">
 
-          <header className="fm-page-header">
+          <header className="fm-page-header fm-luggage-header">
             <span className="fm-eyebrow">
               LUGGAGE STORAGE
             </span>
@@ -308,10 +308,27 @@ export default function LuggagePage() {
           </header>
 
           <form
-            className="fm-card fm-search-panel"
+            className="fm-card fm-search-panel fm-luggage-search-card"
             onSubmit={searchStorage}
           >
-            <div className="fm-search-grid">
+            <div className="fm-luggage-search-heading">
+              <div>
+                <span className="fm-eyebrow">
+                  SEARCH STORAGE
+                </span>
+
+                <h2>
+                  Find a place for your bags
+                </h2>
+
+                <p>
+                  Search by destination, preferred
+                  location and number of bags.
+                </p>
+              </div>
+            </div>
+
+            <div className="fm-search-grid fm-luggage-form-grid">
 
               <div className="fm-field">
                 <label htmlFor="luggage-destination">
@@ -412,7 +429,7 @@ export default function LuggagePage() {
 
             </div>
 
-            <div className="fm-actions">
+            <div className="fm-actions fm-luggage-actions">
 
               <button
                 type="submit"
@@ -437,10 +454,14 @@ export default function LuggagePage() {
 
           {loading && (
             <section
-              className="fm-card"
+              className="fm-card fm-luggage-status-card"
               aria-live="polite"
               aria-busy="true"
             >
+              <span className="fm-eyebrow">
+                SEARCHING
+              </span>
+
               <h2>
                 Checking storage locations
               </h2>
@@ -453,7 +474,7 @@ export default function LuggagePage() {
           )}
 
           {!loading && error && (
-            <section className="fm-card">
+            <section className="fm-card fm-luggage-status-card fm-luggage-error-card">
 
               <span className="fm-badge">
                 Search unavailable
@@ -482,7 +503,7 @@ export default function LuggagePage() {
             searched &&
             !error &&
             locations.length === 0 && (
-              <section className="fm-card">
+              <section className="fm-card fm-luggage-status-card">
 
                 <span className="fm-badge">
                   No live locations returned
@@ -512,9 +533,9 @@ export default function LuggagePage() {
 
           {!loading &&
             locations.length > 0 && (
-              <section className="fm-section-inner">
+              <section className="fm-section-inner fm-luggage-results-section">
 
-                <div className="fm-section-heading">
+                <div className="fm-section-heading fm-luggage-results-heading">
                   <div>
                     <span className="fm-eyebrow">
                       STORAGE OPTIONS
@@ -533,7 +554,7 @@ export default function LuggagePage() {
                   </span>
                 </div>
 
-                <div className="fm-grid">
+                <div className="fm-grid fm-luggage-results-grid">
 
                   {locations.map(
                     (item, index) => {
@@ -564,7 +585,7 @@ export default function LuggagePage() {
 
                       return (
                         <article
-                          className="fm-card"
+                          className="fm-card fm-luggage-result-card"
                           key={
                             item?.id ||
                             item?.locationId ||
@@ -574,70 +595,68 @@ export default function LuggagePage() {
                         >
 
                           {image && (
-                            <img
-                              src={image}
-                              alt=""
-                              loading="lazy"
-                              style={{
-                                width: "100%",
-                                height: "180px",
-                                objectFit:
-                                  "cover",
-                                borderRadius:
-                                  "12px",
-                                marginBottom:
-                                  "16px",
-                              }}
-                            />
-                          )}
-
-                          <span className="fm-badge">
-                            Luggage storage
-                          </span>
-
-                          <h3>
-                            {getName(item)}
-                          </h3>
-
-                          <div className="fm-meta">
-                            {getAddress(item)}
-                          </div>
-
-                          <div className="fm-meta">
-                            Provider:{" "}
-                            {provider}
-                          </div>
-
-                          {rating !== null &&
-                            rating !==
-                              undefined && (
-                              <div className="fm-meta">
-                                Rating:{" "}
-                                {rating}
-                              </div>
-                            )}
-
-                          {distance && (
-                            <div className="fm-meta">
-                              Distance:{" "}
-                              {distance}
+                            <div className="fm-luggage-image-wrapper">
+                              <img
+                                src={image}
+                                alt=""
+                                loading="lazy"
+                              />
                             </div>
                           )}
 
-                          <div className="fm-price">
-                            {price === null
-                              ? "Price from provider"
-                              : `${currency} ${price.toLocaleString()}`}
-                          </div>
+                          <div className="fm-luggage-result-body">
 
-                          <a
-                            className="fm-btn fm-primary"
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            View / book
-                          </a>
+                            <span className="fm-badge">
+                              Luggage storage
+                            </span>
+
+                            <h3>
+                              {getName(item)}
+                            </h3>
+
+                            <div className="fm-meta">
+                              {getAddress(item)}
+                            </div>
+
+                            <div className="fm-meta">
+                              Provider:{" "}
+                              {provider}
+                            </div>
+
+                            {rating !== null &&
+                              rating !==
+                                undefined && (
+                                <div className="fm-meta">
+                                  Rating:{" "}
+                                  {rating}
+                                </div>
+                              )}
+
+                            {distance && (
+                              <div className="fm-meta">
+                                Distance:{" "}
+                                {distance}
+                              </div>
+                            )}
+
+                            <div className="fm-luggage-result-footer">
+                              <div className="fm-price">
+                                {price === null
+                                  ? "Price from provider"
+                                  : `${currency} ${price.toLocaleString()}`}
+                              </div>
+
+                              <a
+                                className="fm-btn fm-primary"
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                View / book
+                              </a>
+                            </div>
+
+                          </div>
 
                         </article>
                       );
@@ -648,9 +667,9 @@ export default function LuggagePage() {
               </section>
             )}
 
-          <section className="fm-section-inner">
+          <section className="fm-section-inner fm-luggage-use-section">
 
-            <div className="fm-section-heading">
+            <div className="fm-section-heading fm-luggage-section-heading">
               <div>
                 <span className="fm-eyebrow">
                   WHEN STORAGE HELPS
@@ -662,9 +681,13 @@ export default function LuggagePage() {
               </div>
             </div>
 
-            <div className="fm-grid">
+            <div className="fm-grid fm-luggage-use-grid">
 
-              <article className="fm-card">
+              <article className="fm-card fm-luggage-use-card">
+                <div className="fm-luggage-use-icon">
+                  🧳
+                </div>
+
                 <h3>
                   Early arrival
                 </h3>
@@ -676,7 +699,11 @@ export default function LuggagePage() {
                 </p>
               </article>
 
-              <article className="fm-card">
+              <article className="fm-card fm-luggage-use-card">
+                <div className="fm-luggage-use-icon">
+                  🕐
+                </div>
+
                 <h3>
                   Late departure
                 </h3>
@@ -688,7 +715,11 @@ export default function LuggagePage() {
                 </p>
               </article>
 
-              <article className="fm-card">
+              <article className="fm-card fm-luggage-use-card">
+                <div className="fm-luggage-use-icon">
+                  🚆
+                </div>
+
                 <h3>
                   Long connections
                 </h3>
@@ -703,7 +734,7 @@ export default function LuggagePage() {
             </div>
           </section>
 
-          <section className="fm-card fm-section-inner">
+          <section className="fm-card fm-section-inner fm-luggage-planner-card">
 
             <span className="fm-eyebrow">
               TRIP PLANNER
@@ -744,7 +775,7 @@ export default function LuggagePage() {
             </div>
           </section>
 
-          <section className="fm-card fm-disclaimer">
+          <section className="fm-card fm-disclaimer fm-luggage-disclaimer">
 
             <strong>
               Provider information
