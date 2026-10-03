@@ -84,10 +84,9 @@ const DESTINATIONS = [
 
 function loadPlan() {
   try {
-    const saved =
-      sessionStorage.getItem(
-        "flymatrix:tripPlan"
-      );
+    const saved = sessionStorage.getItem(
+      "flymatrix:tripPlan"
+    );
 
     if (!saved) {
       return DEFAULT_PLAN;
@@ -126,9 +125,7 @@ function calculateTripDays(startDate, endDate) {
     end.getTime() - start.getTime();
 
   return Math.max(
-    Math.round(
-      difference / 86400000
-    ),
+    Math.round(difference / 86400000),
     0
   );
 }
@@ -206,10 +203,7 @@ export default function PlannerPage() {
     [plan.startDate, plan.endDate]
   );
 
-  function updateField(
-    field,
-    value
-  ) {
+  function updateField(field, value) {
     setPlan((current) => ({
       ...current,
       [field]: value,
@@ -250,8 +244,8 @@ export default function PlannerPage() {
   }
 
   return (
-    <main className="page-container">
-      <section className="planner-hero">
+    <main className="page-container fm-planner-page">
+      <section className="planner-hero fm-planner-hero">
         <div>
           <span className="fm-badge">
             Trip Planner
@@ -270,8 +264,8 @@ export default function PlannerPage() {
         </div>
       </section>
 
-      <section className="planner-layout">
-        <div className="planner-form-card">
+      <section className="planner-layout fm-planner-layout">
+        <div className="planner-form-card fm-planner-form-card">
           <div className="planner-card-heading">
             <div>
               <span className="section-kicker">
@@ -370,7 +364,10 @@ export default function PlannerPage() {
               <input
                 id="planner-end"
                 type="date"
-                min={plan.startDate || undefined}
+                min={
+                  plan.startDate ||
+                  undefined
+                }
                 value={plan.endDate}
                 onChange={(event) =>
                   updateField(
@@ -525,7 +522,7 @@ export default function PlannerPage() {
           </div>
         </div>
 
-        <aside className="planner-summary-card">
+        <aside className="planner-summary-card fm-planner-summary-card">
           <span className="section-kicker">
             Trip summary
           </span>
@@ -625,7 +622,7 @@ export default function PlannerPage() {
         </aside>
       </section>
 
-      <section className="planner-services">
+      <section className="planner-services fm-planner-services">
         <div className="planner-card-heading">
           <div>
             <span className="section-kicker">
@@ -666,8 +663,7 @@ export default function PlannerPage() {
                 type="button"
                 className="btn btn-secondary"
                 onClick={() =>
-                  service.id ===
-                    "flights" &&
+                  service.id === "flights" &&
                   plan.destination
                     ? navigate(
                         buildFlightSearch(
@@ -686,7 +682,7 @@ export default function PlannerPage() {
         </div>
       </section>
 
-      <section className="planner-notice">
+      <section className="planner-notice fm-planner-notice">
         <strong>
           Planning and pricing notice
         </strong>
