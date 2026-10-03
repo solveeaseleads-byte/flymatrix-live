@@ -1,5 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { navigate, getCurrentSearchParams } from "../router/AppRouter.jsx";
+import {
+  navigate,
+  getCurrentSearchParams,
+} from "../router/AppRouter.jsx";
 
 const AFFILIATES = {
   flights:
@@ -265,10 +268,7 @@ function ProviderStatus({ source }) {
   );
 }
 
-function OptionCard({
-  option,
-  onOpen,
-}) {
+function OptionCard({ option, onOpen }) {
   const price = getOptionPrice(option);
   const category = normalizeCategory(option);
   const bookingUrl = getBookingUrl(
@@ -277,8 +277,8 @@ function OptionCard({
   );
 
   return (
-    <article className="tourism-option-card">
-      <div className="tourism-option-top">
+    <article className="tourism-option-card fm-leisure-option-card">
+      <div className="tourism-option-top fm-leisure-option-top">
         <span className="fm-badge">
           {getCategoryLabel(option)}
         </span>
@@ -325,7 +325,9 @@ function OptionCard({
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() => onOpen(bookingUrl)}
+            onClick={() =>
+              onOpen(bookingUrl)
+            }
           >
             View provider
           </button>
@@ -409,6 +411,7 @@ export default function LeisureResultsPage() {
           normalizeOptions(response);
 
         setOptions(normalized);
+
         setSource(
           response?.source ||
             response?.dataSource ||
@@ -489,11 +492,11 @@ export default function LeisureResultsPage() {
   }
 
   return (
-    <main className="page-container">
-      <section className="tourism-results-header">
+    <main className="page-container fm-leisure-results-page">
+      <section className="tourism-results-header fm-leisure-results-header">
         <button
           type="button"
-          className="btn btn-secondary"
+          className="btn btn-secondary fm-leisure-change-trip"
           onClick={() =>
             navigate("/tourism/leisure")
           }
@@ -501,7 +504,7 @@ export default function LeisureResultsPage() {
           ← Change trip
         </button>
 
-        <div>
+        <div className="fm-leisure-results-title">
           <span className="fm-badge">
             Leisure Tourism
           </span>
@@ -512,13 +515,15 @@ export default function LeisureResultsPage() {
 
           <p>
             {country
-              ? `Travel options for ${city || country}`
+              ? `Travel options for ${
+                  city || country
+                }`
               : "Travel options based on your selected preferences."}
           </p>
         </div>
       </section>
 
-      <section className="tourism-search-summary">
+      <section className="tourism-search-summary fm-leisure-search-summary">
         <div>
           <span>Trip length</span>
           <strong>
@@ -550,8 +555,12 @@ export default function LeisureResultsPage() {
         </div>
       </section>
 
-      <section className="tourism-results-toolbar">
-        <div>
+      <section className="tourism-results-toolbar fm-leisure-results-toolbar">
+        <div className="fm-leisure-results-status">
+          <span className="section-kicker">
+            Search results
+          </span>
+
           <strong>
             {loading
               ? "Loading options..."
@@ -563,7 +572,7 @@ export default function LeisureResultsPage() {
           )}
         </div>
 
-        <div className="tourism-results-controls">
+        <div className="tourism-results-controls fm-leisure-results-controls">
           <label htmlFor="tourism-category">
             Category
           </label>
@@ -619,7 +628,7 @@ export default function LeisureResultsPage() {
       </section>
 
       {loading && (
-        <section className="flight-results-loading">
+        <section className="flight-results-loading fm-leisure-loading">
           {[1, 2, 3].map((item) => (
             <div
               className="loading-card"
@@ -634,13 +643,17 @@ export default function LeisureResultsPage() {
       )}
 
       {!loading && error && (
-        <section className="empty-state">
+        <section className="empty-state fm-leisure-empty-state">
           <div
             className="empty-state-icon"
             aria-hidden="true"
           >
             !
           </div>
+
+          <span className="section-kicker">
+            SEARCH UNAVAILABLE
+          </span>
 
           <h2>
             Live tourism data is unavailable
@@ -671,13 +684,17 @@ export default function LeisureResultsPage() {
       {!loading &&
         !error &&
         !filteredOptions.length && (
-          <section className="empty-state">
+          <section className="empty-state fm-leisure-empty-state">
             <div
               className="empty-state-icon"
               aria-hidden="true"
             >
               🌍
             </div>
+
+            <span className="section-kicker">
+              SEARCH COMPLETE
+            </span>
 
             <h2>
               No matching options found
@@ -706,7 +723,7 @@ export default function LeisureResultsPage() {
       {!loading &&
         !error &&
         filteredOptions.length > 0 && (
-          <section className="tourism-options-grid">
+          <section className="tourism-options-grid fm-leisure-options-grid">
             {filteredOptions.map(
               (option, index) => (
                 <OptionCard
@@ -726,7 +743,7 @@ export default function LeisureResultsPage() {
           </section>
         )}
 
-      <section className="tourism-results-notice">
+      <section className="tourism-results-notice fm-leisure-results-notice">
         <strong>
           Important pricing information
         </strong>
