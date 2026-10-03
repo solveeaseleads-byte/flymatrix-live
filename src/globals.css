@@ -3745,3 +3745,159 @@ p {
     margin-top: 7px;
   }
 }
+/* =========================================================
+   FLYMATRIX — SEARCH PAGE POLISH
+   ========================================================= */
+
+.fm-search-page {
+  width: 100%;
+}
+
+.fm-search-content {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.fm-search-panel {
+  width: 100%;
+  margin-bottom: 28px;
+}
+
+.fm-search-results-layout {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.fm-search-filters {
+  min-width: 0;
+}
+
+.fm-search-filter-panel {
+  position: sticky;
+  top: 18px;
+}
+
+.fm-search-results-column {
+  min-width: 0;
+}
+
+.fm-search-toolbar {
+  margin-bottom: 18px;
+}
+
+.fm-search-footer {
+  margin-top: 28px;
+}
+
+/* Search form visual priority */
+
+.fm-search-panel .fm-flight-search-form {
+  width: 100%;
+}
+
+.fm-search-panel .fm-flight-search-form-compact {
+  width: 100%;
+}
+
+/* Filters */
+
+.fm-search-filter-panel {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
+.fm-search-filter-panel h2,
+.fm-search-filter-panel h3 {
+  color: #0f172a;
+}
+
+/* Results toolbar */
+
+.fm-search-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.fm-search-toolbar > * {
+  min-width: 0;
+}
+
+/* Results area */
+
+.fm-search-results-column .fm-flight-results {
+  width: 100%;
+  max-width: none;
+}
+
+/* Empty / no-search state */
+
+.fm-search-page .empty-state {
+  max-width: 680px;
+  margin: 40px auto;
+}
+
+/* Footer actions */
+
+.fm-search-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Tablet */
+
+@media (max-width: 980px) {
+  .fm-search-results-layout {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .fm-search-filter-panel {
+    position: static;
+  }
+
+  .fm-search-filters {
+    order: 1;
+  }
+
+  .fm-search-results-column {
+    order: 2;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 640px) {
+  .fm-search-content {
+    width: 100%;
+  }
+
+  .fm-search-panel {
+    margin-bottom: 20px;
+  }
+
+  .fm-search-results-layout {
+    gap: 18px;
+  }
+
+  .fm-search-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .fm-search-footer {
+    justify-content: stretch;
+  }
+
+  .fm-search-footer .btn {
+    width: 100%;
+  }
+}
