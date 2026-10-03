@@ -5710,3 +5710,351 @@ p {
     width: 100%;
   }
 }
+/* ==========================================
+   FLYMATRIX ACTIVITIES PAGE VISUAL LAYER
+   ========================================== */
+
+.fm-activities-page {
+  width: 100%;
+}
+
+.fm-activities-hero {
+  max-width: 1180px;
+  margin: 0 auto 28px;
+}
+
+.fm-activities-hero-content {
+  max-width: 820px;
+}
+
+.fm-activities-hero h1 {
+  margin: 10px 0 8px;
+}
+
+.fm-activities-hero p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.fm-activities-search-card {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 26px;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #fff;
+}
+
+.fm-activities-search-heading {
+  margin-bottom: 22px;
+}
+
+.fm-activities-search-heading h2 {
+  margin: 7px 0 0;
+}
+
+.fm-activities-form-grid {
+  margin-top: 20px;
+}
+
+.fm-activities-error {
+  margin-top: 22px;
+}
+
+.fm-activities-actions {
+  margin-top: 26px;
+}
+
+.fm-activities-results-section {
+  max-width: 1180px;
+  margin: 34px auto 0;
+}
+
+.fm-activities-results-header {
+  margin-bottom: 20px;
+}
+
+.fm-activities-results-title {
+  min-width: 0;
+}
+
+.fm-activities-results-title .section-kicker {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.fm-activities-results-title h2 {
+  margin: 0 0 7px;
+}
+
+.fm-activities-results-title p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.fm-activities-sort {
+  flex: 0 0 auto;
+}
+
+.fm-activities-results-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.fm-activity-result-card {
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 17px;
+  background: #fff;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease;
+}
+
+.fm-activity-result-card:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow:
+    0 10px 28px rgba(15, 23, 42, .08);
+}
+
+.fm-activity-image-wrapper {
+  height: 190px;
+  overflow: hidden;
+  background: #f1f5f9;
+}
+
+.fm-activity-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fm-activity-image-placeholder {
+  height: 190px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+}
+
+.fm-activity-image-placeholder span {
+  font-size: 36px;
+}
+
+.fm-activity-result-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 275px;
+  padding: 18px;
+}
+
+.fm-activity-card-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.fm-activity-card-topline .fm-badge {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fm-activity-card-topline .activity-category {
+  flex: 0 0 auto;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.fm-activity-result-body h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.fm-activity-result-body .activity-location {
+  margin: 7px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.fm-activity-result-body .activity-description {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 9px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.fm-activity-result-body .activity-rating {
+  margin-top: 10px;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.fm-activity-result-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid #eef2f7;
+}
+
+.fm-activity-result-footer strong {
+  display: block;
+  color: #0f172a;
+  font-size: 19px;
+  line-height: 1.2;
+}
+
+.fm-activity-result-footer small {
+  display: block;
+  margin-top: 4px;
+  color: #94a3b8;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.fm-activities-empty-state {
+  max-width: 650px;
+  margin: 30px auto;
+  text-align: center;
+}
+
+.fm-activity-detail-card {
+  max-width: 1180px;
+  margin: 28px auto 0;
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.fm-activity-detail-card h2 {
+  margin: 7px 0 0;
+  color: #0f172a;
+}
+
+.fm-activities-info-grid {
+  max-width: 1180px;
+  margin: 34px auto 0;
+}
+
+.fm-activities-info-grid .service-card {
+  height: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.fm-activities-notice {
+  max-width: 1180px;
+  margin: 28px auto 0;
+}
+
+@media (max-width: 980px) {
+  .fm-activities-results-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .fm-activities-hero,
+  .fm-activities-search-card,
+  .fm-activities-results-section,
+  .fm-activities-info-grid,
+  .fm-activities-notice {
+    width: 100%;
+  }
+
+  .fm-activities-search-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .fm-activities-results-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .fm-activities-sort {
+    width: 100%;
+  }
+
+  .fm-activities-sort select {
+    width: 100%;
+  }
+
+  .fm-activities-results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-activities-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fm-activities-actions .btn {
+    width: 100%;
+  }
+
+  .fm-activity-detail-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fm-activity-detail-card .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .fm-activity-image-wrapper,
+  .fm-activity-image-placeholder {
+    height: 170px;
+  }
+
+  .fm-activity-result-body {
+    min-height: 0;
+  }
+
+  .fm-activity-card-topline {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .fm-activity-result-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fm-activity-result-footer .btn {
+    width: 100%;
+  }
+}
