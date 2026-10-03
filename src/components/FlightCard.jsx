@@ -136,25 +136,19 @@ export default function FlightCard({
     useState(false);
 
   const amount = getPrice(offer);
+  const currency = getCurrency(offer);
+  const airline = getAirline(offer);
 
-  const currency =
-    getCurrency(offer);
-
-  const airline =
-    getAirline(offer);
-
-  const origin =
-    getAirportCode(
-      offer?.origin ||
+  const origin = getAirportCode(
+    offer?.origin ||
       offer?.from ||
       offer?.departureAirport ||
       offer?.segments?.[0]?.origin ||
       offer?.segments?.[0]?.departure
-    );
+  );
 
-  const destination =
-    getAirportCode(
-      offer?.destination ||
+  const destination = getAirportCode(
+    offer?.destination ||
       offer?.to ||
       offer?.arrivalAirport ||
       (
@@ -168,16 +162,11 @@ export default function FlightCard({
             ]?.arrival
           : null
       )
-    );
+  );
 
-  const departure =
-    getDeparture(offer);
-
-  const arrival =
-    getArrival(offer);
-
-  const stops =
-    getStops(offer);
+  const departure = getDeparture(offer);
+  const arrival = getArrival(offer);
+  const stops = getStops(offer);
 
   async function openBooking(event) {
     event?.preventDefault();
@@ -193,11 +182,6 @@ export default function FlightCard({
       return;
     }
 
-    /*
-     * If the parent supplied a selection handler,
-     * allow the application to store the selected
-     * flight before opening the booking flow.
-     */
     if (typeof onSelect === "function") {
       onSelect(offer);
     }
@@ -214,52 +198,42 @@ export default function FlightCard({
         offer?.affiliateProgramId ||
         null;
 
-      /*
-       * If the provider already supplied a tracked
-       * URL, use it directly.
-       *
-       * Otherwise ask the backend booking resolver
-       * to generate the correct provider URL.
-       */
       if (!trackingUrl) {
-        const response =
-          await apiPost(
-            "booking/resolve",
-            {
-              category: "flights",
-              market: "GLOBAL",
+        const response = await apiPost(
+          "booking/resolve",
+          {
+            category: "flights",
+            market: "GLOBAL",
 
-              originCountry: "NG",
+            originCountry: "NG",
 
-              destinationCountry:
-                offer?.destinationCountry ||
-                offer?.destination?.countryCode ||
-                offer?.destination?.country_code ||
-                "",
+            destinationCountry:
+              offer?.destinationCountry ||
+              offer?.destination?.countryCode ||
+              offer?.destination?.country_code ||
+              "",
 
-              origin,
-              destination,
+            origin,
+            destination,
 
-              sessionId:
-                sessionId || null,
+            sessionId:
+              sessionId || null,
 
-              offerId:
-                offer?.id ||
-                offer?.offerId ||
-                offer?.offer_id ||
-                null,
+            offerId:
+              offer?.id ||
+              offer?.offerId ||
+              offer?.offer_id ||
+              null,
 
-              provider:
-                offer?.source ||
-                offer?.provider ||
-                null,
+            provider:
+              offer?.source ||
+              offer?.provider ||
+              null,
 
-              price:
-                amount,
-
-              currency,
-            }
-          );
+            price: amount,
+            currency,
+          }
+        );
 
         trackingUrl =
           response?.trackingUrl ||
@@ -277,28 +251,15 @@ export default function FlightCard({
         );
       }
 
-      /*
-       * Record the affiliate click before
-       * redirecting the traveler.
-       *
-       * Tracking failure must not prevent a
-       * valid provider redirect.
-       */
       try {
         await apiPost(
           "affiliate/click",
           {
             affiliateProgramId,
-
             origin,
             destination,
-
-            category:
-              "flights",
-
-            market:
-              "GLOBAL",
-
+            category: "flights",
+            market: "GLOBAL",
             sessionId:
               sessionId || null,
           }
@@ -310,9 +271,6 @@ export default function FlightCard({
         );
       }
 
-      /*
-       * Open the provider in a new tab.
-       */
       window.open(
         trackingUrl,
         "_blank",
@@ -334,48 +292,103 @@ export default function FlightCard({
   }
 
   return (
-    <article className="fm-card fm-offer">
-      <div>
-        <span className="fm-badge">
-          Flight
-        </span>
+    <article
+      className="fm-card fm-offer fm-flight-card"
+      aria-label={`${airline} flight from ${origin || "origin"} to ${
+        destination || "destination"
+      }`}
+    >
+      {/* Airline / route */}
+      <div className="fm-flight-card-main">
+        <div className="fm-flight-card-header">
+          <span className="fm-badge">
+            Flight
+          </span>
 
-        <h3>
-          {airline}
-        </h3>
+          <span className="fm-flight-card-airline">
+            {airline}
+          </span>
+        </div>
 
-        <div className="fm-meta">
-          {origin || "Origin"} →{" "}
-          {destination || "Destination"}
+        <div className="fm-flight-route">
+          <div className="fm-flight-airport">
+            <strong>
+              {origin || "—"}
+            </strong>
+            <span>Departure</span>
+          </div>
+
+          <div className="fm-flight-route-line">
+            <span aria-hidden="true">
+              →
+            </span>
+          </div>
+
+          <div className="fm-flight-airport">
+            <strong>
+              {destination || "—"}
+            </strong>
+            <span>Arrival</span>
+          </div>
         </div>
       </div>
 
-      <div className="fm-meta">
-        <strong>
-          {departure}
-        </strong>
+      {/* Timing */}
+      <div className="fm-flight-card-info">
+        <div className="fm-flight-time-block">
+          <span className="fm-flight-info-label">
+            Departure
+          </span>
 
-        {" → "}
+          <strong>
+            {departure}
+          </strong>
+        </div>
 
-        <strong>
-          {arrival}
-        </strong>
+        <div className="fm-flight-time-block">
+          <span className="fm-flight-info-label">
+            Arrival
+          </span>
 
-        <br />
+          <strong>
+            {arrival}
+          </strong>
+        </div>
 
-        {offer?.duration ||
-          "Duration unavailable"}
+        <div className="fm-flight-time-block">
+          <span className="fm-flight-info-label">
+            Journey
+          </span>
 
-        {" · "}
+          <strong>
+            {offer?.duration ||
+              "Duration unavailable"}
+          </strong>
+        </div>
 
-        {stops}
+        <div className="fm-flight-time-block">
+          <span className="fm-flight-info-label">
+            Stops
+          </span>
 
-        {stops === 1
-          ? " stop"
-          : " stops"}
+          <strong>
+            {stops === 0
+              ? "Direct"
+              : `${stops} ${
+                  stops === 1
+                    ? "stop"
+                    : "stops"
+                }`}
+          </strong>
+        </div>
       </div>
 
-      <div>
+      {/* Price / action */}
+      <div className="fm-flight-card-action">
+        <span className="fm-flight-info-label">
+          From
+        </span>
+
         <div className="fm-price">
           {formatPrice(
             amount,
@@ -385,7 +398,7 @@ export default function FlightCard({
 
         <button
           type="button"
-          className="fm-btn fm-primary"
+          className="fm-btn fm-primary fm-flight-book-button"
           onClick={openBooking}
           disabled={booking}
           aria-busy={booking}
