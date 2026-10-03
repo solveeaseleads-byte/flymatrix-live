@@ -193,11 +193,11 @@ export default function AssistancePage() {
   }
 
   return (
-    <main className="fm-page">
-      <section className="fm-section">
+    <main className="fm-page fm-assistance-page">
+      <section className="fm-section fm-assistance-section">
         <div className="fm-container">
 
-          <header className="fm-page-header">
+          <header className="fm-page-header fm-assistance-header">
             <span className="fm-eyebrow">
               TRAVEL ASSISTANCE
             </span>
@@ -214,9 +214,26 @@ export default function AssistancePage() {
             </p>
           </header>
 
-          <section className="fm-card fm-search-panel">
+          <section className="fm-card fm-search-panel fm-assistance-search-card">
 
-            <div className="fm-search-grid">
+            <div className="fm-assistance-search-heading">
+              <div>
+                <span className="fm-eyebrow">
+                  ASSISTANCE SEARCH
+                </span>
+
+                <h2>
+                  Tell us what happened
+                </h2>
+
+                <p>
+                  Add your flight details and choose
+                  the type of assistance you need.
+                </p>
+              </div>
+            </div>
+
+            <div className="fm-search-grid fm-assistance-form-grid">
 
               <div className="fm-field">
                 <label htmlFor="assistance-departure">
@@ -302,7 +319,7 @@ export default function AssistancePage() {
 
             </div>
 
-            <div className="fm-actions">
+            <div className="fm-actions fm-assistance-actions">
 
               <button
                 type="button"
@@ -324,9 +341,9 @@ export default function AssistancePage() {
 
           </section>
 
-          <section className="fm-section-inner">
+          <section className="fm-section-inner fm-assistance-areas-section">
 
-            <div className="fm-section-heading">
+            <div className="fm-section-heading fm-assistance-section-heading">
               <div>
                 <span className="fm-eyebrow">
                   ASSISTANCE AREAS
@@ -338,12 +355,12 @@ export default function AssistancePage() {
               </div>
             </div>
 
-            <div className="fm-grid">
+            <div className="fm-grid fm-assistance-area-grid">
 
               {SERVICE_AREAS.map(
                 (item) => (
                   <article
-                    className="fm-card"
+                    className="fm-card fm-assistance-area-card"
                     key={item.title}
                   >
                     <span className="fm-badge">
@@ -365,7 +382,8 @@ export default function AssistancePage() {
                         const match =
                           ASSISTANCE_TYPES.find(
                             (type) =>
-                              type.label.toLowerCase()
+                              type.label
+                                .toLowerCase()
                                 .includes(
                                   item.title
                                     .toLowerCase()
@@ -388,9 +406,9 @@ export default function AssistancePage() {
             </div>
           </section>
 
-          <section className="fm-card fm-section-inner">
+          <section className="fm-card fm-section-inner fm-assistance-checklist-card">
 
-            <div className="fm-section-heading">
+            <div className="fm-section-heading fm-assistance-checklist-heading">
               <div>
                 <span className="fm-eyebrow">
                   BEFORE CONTACTING A PROVIDER
@@ -425,9 +443,13 @@ export default function AssistancePage() {
             </button>
 
             {showGuide && (
-              <div className="fm-grid fm-section-inner">
+              <div className="fm-grid fm-assistance-checklist-grid">
 
-                <article className="fm-card">
+                <article className="fm-card fm-assistance-check-card">
+                  <div className="fm-assistance-check-icon">
+                    01
+                  </div>
+
                   <h3>
                     Booking information
                   </h3>
@@ -439,7 +461,11 @@ export default function AssistancePage() {
                   </p>
                 </article>
 
-                <article className="fm-card">
+                <article className="fm-card fm-assistance-check-card">
+                  <div className="fm-assistance-check-icon">
+                    02
+                  </div>
+
                   <h3>
                     Flight information
                   </h3>
@@ -451,7 +477,11 @@ export default function AssistancePage() {
                   </p>
                 </article>
 
-                <article className="fm-card">
+                <article className="fm-card fm-assistance-check-card">
+                  <div className="fm-assistance-check-icon">
+                    03
+                  </div>
+
                   <h3>
                     Disruption details
                   </h3>
@@ -464,7 +494,11 @@ export default function AssistancePage() {
                   </p>
                 </article>
 
-                <article className="fm-card">
+                <article className="fm-card fm-assistance-check-card">
+                  <div className="fm-assistance-check-icon">
+                    04
+                  </div>
+
                   <h3>
                     Receipts and evidence
                   </h3>
@@ -482,7 +516,7 @@ export default function AssistancePage() {
 
           </section>
 
-          <section className="fm-card fm-section-inner">
+          <section className="fm-card fm-section-inner fm-assistance-planner-card">
 
             <span className="fm-eyebrow">
               TRIP PLANNER
@@ -524,7 +558,7 @@ export default function AssistancePage() {
 
           </section>
 
-          <section className="fm-card fm-disclaimer">
+          <section className="fm-card fm-disclaimer fm-assistance-disclaimer">
 
             <strong>
               Assistance provider information
