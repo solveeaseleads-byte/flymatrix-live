@@ -4,27 +4,19 @@ import FlightCard from "../components/FlightCard.jsx";
 
 function readSessionStorage(key) {
   try {
-    const raw =
-      sessionStorage.getItem(key);
-
-    return raw
-      ? JSON.parse(raw)
-      : null;
+    const raw = sessionStorage.getItem(key);
+    return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
   }
 }
 
 function getStoredFlight() {
-  return readSessionStorage(
-    "flymatrix:selectedFlight"
-  );
+  return readSessionStorage("flymatrix:selectedFlight");
 }
 
 function getStoredSearch() {
-  return readSessionStorage(
-    "flymatrix:lastSearch"
-  );
+  return readSessionStorage("flymatrix:lastSearch");
 }
 
 function getPrice(offer) {
@@ -41,14 +33,9 @@ function getPrice(offer) {
     offer?.currency ||
     "USD";
 
-  const numericAmount =
-    Number(amount);
+  const numericAmount = Number(amount);
 
-  if (
-    !Number.isFinite(
-      numericAmount
-    )
-  ) {
+  if (!Number.isFinite(numericAmount)) {
     return {
       amount: null,
       currency,
@@ -62,24 +49,18 @@ function getPrice(offer) {
 }
 
 function formatPrice(offer) {
-  const {
-    amount,
-    currency,
-  } = getPrice(offer);
+  const { amount, currency } = getPrice(offer);
 
   if (amount === null) {
     return "Price unavailable";
   }
 
   try {
-    return new Intl.NumberFormat(
-      "en-US",
-      {
-        style: "currency",
-        currency,
-        maximumFractionDigits: 0,
-      }
-    ).format(amount);
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      maximumFractionDigits: 0,
+    }).format(amount);
   } catch {
     return `${currency} ${amount.toLocaleString()}`;
   }
@@ -90,9 +71,7 @@ function getAirportCode(value) {
     return "—";
   }
 
-  if (
-    typeof value === "string"
-  ) {
+  if (typeof value === "string") {
     return value;
   }
 
@@ -106,10 +85,7 @@ function getAirportCode(value) {
 }
 
 function getAirportName(value) {
-  if (
-    !value ||
-    typeof value === "string"
-  ) {
+  if (!value || typeof value === "string") {
     return "";
   }
 
@@ -122,35 +98,25 @@ function getAirportName(value) {
 }
 
 function getOrigin(offer) {
-  const segments =
-    offer?.segments;
+  const segments = offer?.segments;
 
   return (
     offer?.origin ||
     offer?.from ||
     offer?.departureAirport ||
-    (
-      Array.isArray(segments) &&
-      segments.length > 0
-        ? segments[0]?.origin ||
-          segments[0]?.departure
-        : null
-    )
+    (Array.isArray(segments) && segments.length > 0
+      ? segments[0]?.origin ||
+        segments[0]?.departure
+      : null)
   );
 }
 
 function getDestination(offer) {
-  const segments =
-    offer?.segments;
+  const segments = offer?.segments;
 
-  if (
-    Array.isArray(segments) &&
-    segments.length > 0
-  ) {
+  if (Array.isArray(segments) && segments.length > 0) {
     const finalSegment =
-      segments[
-        segments.length - 1
-      ];
+      segments[segments.length - 1];
 
     return (
       offer?.destination ||
@@ -186,28 +152,19 @@ function getDeparture(offer) {
     offer?.departure?.time ||
     offer?.departureTime ||
     offer?.departure?.datetime ||
-    offer?.segments?.[0]
-      ?.departureTime ||
-    offer?.segments?.[0]
-      ?.departure?.time ||
-    offer?.segments?.[0]
-      ?.departure?.datetime ||
+    offer?.segments?.[0]?.departureTime ||
+    offer?.segments?.[0]?.departure?.time ||
+    offer?.segments?.[0]?.departure?.datetime ||
     "—"
   );
 }
 
 function getArrival(offer) {
-  const segments =
-    offer?.segments;
+  const segments = offer?.segments;
 
-  if (
-    Array.isArray(segments) &&
-    segments.length > 0
-  ) {
+  if (Array.isArray(segments) && segments.length > 0) {
     const finalSegment =
-      segments[
-        segments.length - 1
-      ];
+      segments[segments.length - 1];
 
     return (
       finalSegment?.arrivalTime ||
@@ -229,69 +186,36 @@ function getArrival(offer) {
 }
 
 function formatDateTime(value) {
-  if (
-    !value ||
-    value === "—"
-  ) {
+  if (!value || value === "—") {
     return "—";
   }
 
-  const date =
-    new Date(value);
+  const date = new Date(value);
 
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
+  if (Number.isNaN(date.getTime())) {
     return String(value);
   }
 
-  return new Intl.DateTimeFormat(
-    "en-US",
-    {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }
-  ).format(date);
+  return new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date);
 }
 
 function getStops(offer) {
-  if (
-    typeof offer?.stops ===
-    "number"
-  ) {
-    return Math.max(
-      0,
-      offer.stops
-    );
+  if (typeof offer?.stops === "number") {
+    return Math.max(0, offer.stops);
   }
 
-  if (
-    typeof offer?.stopCount ===
-    "number"
-  ) {
-    return Math.max(
-      0,
-      offer.stopCount
-    );
+  if (typeof offer?.stopCount === "number") {
+    return Math.max(0, offer.stopCount);
   }
 
-  if (
-    typeof offer?.stop_count ===
-    "number"
-  ) {
-    return Math.max(
-      0,
-      offer.stop_count
-    );
+  if (typeof offer?.stop_count === "number") {
+    return Math.max(0, offer.stop_count);
   }
 
-  if (
-    Array.isArray(
-      offer?.segments
-    )
-  ) {
+  if (Array.isArray(offer?.segments)) {
     return Math.max(
       offer.segments.length - 1,
       0
@@ -313,10 +237,7 @@ function getStopsLabel(stops) {
   return `${stops} stops`;
 }
 
-function getCabin(
-  offer,
-  search
-) {
+function getCabin(offer, search) {
   return (
     offer?.cabin ||
     offer?.cabinClass ||
@@ -327,28 +248,19 @@ function getCabin(
 }
 
 function formatCabin(cabin) {
-  const normalized =
-    String(
-      cabin || "economy"
-    ).trim();
+  const normalized = String(
+    cabin || "economy"
+  ).trim();
 
   const labels = {
     economy: "Economy",
-    premium_economy:
-      "Premium Economy",
-    premiumEconomy:
-      "Premium Economy",
-    business:
-      "Business",
-    first:
-      "First Class",
+    premium_economy: "Premium Economy",
+    premiumEconomy: "Premium Economy",
+    business: "Business",
+    first: "First Class",
   };
 
-  return (
-    labels[normalized] ||
-    normalized ||
-    "Economy"
-  );
+  return labels[normalized] || normalized || "Economy";
 }
 
 function getSessionId(search) {
@@ -364,24 +276,16 @@ function getSessionId(search) {
       ""
     );
   } catch {
-    return (
-      search?.sessionId ||
-      ""
-    );
+    return search?.sessionId || "";
   }
 }
 
 function getSearchId(search) {
-  return (
-    search?.searchId ||
-    ""
-  );
+  return search?.searchId || "";
 }
 
 function getSegments(offer) {
-  return Array.isArray(
-    offer?.segments
-  )
+  return Array.isArray(offer?.segments)
     ? offer.segments
     : [];
 }
@@ -398,31 +302,29 @@ export default function FlightDetailsPage() {
   );
 
   const sessionId = useMemo(
-    () =>
-      getSessionId(
-        search
-      ),
+    () => getSessionId(search),
     [search]
   );
 
   const searchId = useMemo(
-    () =>
-      getSearchId(
-        search
-      ),
+    () => getSearchId(search),
     [search]
   );
 
   if (!offer) {
     return (
-      <div className="page-container">
-        <section className="empty-state">
+      <div className="page-container fm-flight-details-page">
+        <section className="empty-state fm-flight-details-empty">
           <div
             className="empty-state-icon"
             aria-hidden="true"
           >
             ✈
           </div>
+
+          <span className="fm-section-kicker">
+            FLIGHT SELECTION
+          </span>
 
           <h1>
             Flight details unavailable
@@ -437,11 +339,7 @@ export default function FlightDetailsPage() {
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() =>
-              navigate(
-                "/search"
-              )
-            }
+            onClick={() => navigate("/search")}
           >
             Search flights again
           </button>
@@ -450,83 +348,52 @@ export default function FlightDetailsPage() {
     );
   }
 
-  const origin =
-    getOrigin(offer);
+  const origin = getOrigin(offer);
+  const destination = getDestination(offer);
 
-  const destination =
-    getDestination(offer);
-
-  const originCode =
-    getAirportCode(
-      origin
-    );
-
+  const originCode = getAirportCode(origin);
   const destinationCode =
-    getAirportCode(
-      destination
-    );
+    getAirportCode(destination);
 
-  const originName =
-    getAirportName(
-      origin
-    );
-
+  const originName = getAirportName(origin);
   const destinationName =
-    getAirportName(
-      destination
-    );
+    getAirportName(destination);
 
-  const airline =
-    getAirline(offer);
+  const airline = getAirline(offer);
+  const departure = getDeparture(offer);
+  const arrival = getArrival(offer);
+  const stops = getStops(offer);
+  const cabin = getCabin(offer, search);
+  const segments = getSegments(offer);
 
-  const departure =
-    getDeparture(offer);
-
-  const arrival =
-    getArrival(offer);
-
-  const stops =
-    getStops(offer);
-
-  const cabin =
-    getCabin(
-      offer,
-      search
-    );
-
-  const segments =
-    getSegments(offer);
-
-  const backToResultsUrl =
-    searchId
-      ? `/search?searchId=${encodeURIComponent(
-          searchId
-        )}`
-      : "/search";
+  const backToResultsUrl = searchId
+    ? `/search?searchId=${encodeURIComponent(
+        searchId
+      )}`
+    : "/search";
 
   return (
-    <div className="page-container">
-      <div className="page-heading">
+    <div className="page-container fm-flight-details-page">
+      <div className="page-heading fm-flight-details-heading">
         <button
           type="button"
-          className="btn btn-secondary"
-          onClick={() =>
-            navigate(
-              backToResultsUrl
-            )
-          }
+          className="btn btn-secondary fm-back-button"
+          onClick={() => navigate(backToResultsUrl)}
         >
           ← Back to results
         </button>
 
-        <div>
+        <div className="fm-flight-details-title">
           <span className="fm-badge">
             Flight details
           </span>
 
+          <span className="fm-section-kicker">
+            SELECTED FLIGHT
+          </span>
+
           <h1>
-            {originCode} →{" "}
-            {destinationCode}
+            {originCode} → {destinationCode}
           </h1>
 
           <p>
@@ -537,110 +404,86 @@ export default function FlightDetailsPage() {
         </div>
       </div>
 
-      <section className="flight-detail-card">
-        <div className="flight-detail-header">
+      <section className="flight-detail-card fm-flight-detail-card">
+        <div className="flight-detail-header fm-flight-detail-header">
           <div>
             <span className="fm-badge">
               {airline}
             </span>
 
             <h2>
-              {originCode} →{" "}
-              {destinationCode}
+              {originCode} → {destinationCode}
             </h2>
+
+            <p className="fm-flight-detail-route-caption">
+              Selected itinerary
+            </p>
           </div>
 
-          <div className="flight-detail-price">
-            {formatPrice(
-              offer
-            )}
+          <div className="flight-detail-price fm-flight-detail-price">
+            {formatPrice(offer)}
           </div>
         </div>
 
-        <div className="flight-detail-route">
-          <div className="flight-detail-point">
+        <div className="flight-detail-route fm-flight-detail-route">
+          <div className="flight-detail-point fm-flight-detail-point">
             <span className="flight-detail-label">
               Departure
             </span>
 
             <strong>
-              {formatDateTime(
-                departure
-              )}
+              {formatDateTime(departure)}
             </strong>
 
-            <span>
-              {originCode}
-            </span>
+            <span>{originCode}</span>
 
             {originName && (
-              <small>
-                {originName}
-              </small>
+              <small>{originName}</small>
             )}
           </div>
 
           <div
-            className="flight-detail-connector"
+            className="flight-detail-connector fm-flight-detail-connector"
             aria-hidden="true"
           >
             ✈
           </div>
 
-          <div className="flight-detail-point">
+          <div className="flight-detail-point fm-flight-detail-point">
             <span className="flight-detail-label">
               Arrival
             </span>
 
             <strong>
-              {formatDateTime(
-                arrival
-              )}
+              {formatDateTime(arrival)}
             </strong>
 
-            <span>
-              {destinationCode}
-            </span>
+            <span>{destinationCode}</span>
 
             {destinationName && (
-              <small>
-                {destinationName}
-              </small>
+              <small>{destinationName}</small>
             )}
           </div>
         </div>
 
-        <div className="flight-detail-meta">
+        <div className="flight-detail-meta fm-flight-detail-meta">
           <div>
-            <span>
-              Stops
-            </span>
-
+            <span>Stops</span>
             <strong>
-              {getStopsLabel(
-                stops
-              )}
+              {getStopsLabel(stops)}
             </strong>
           </div>
 
           <div>
-            <span>
-              Cabin
-            </span>
-
+            <span>Cabin</span>
             <strong>
-              {formatCabin(
-                cabin
-              )}
+              {formatCabin(cabin)}
             </strong>
           </div>
 
           {offer?.duration && (
             <div>
-              <span>
-                Duration
-              </span>
-
+              <span>Duration</span>
               <strong>
                 {offer.duration}
               </strong>
@@ -649,83 +492,89 @@ export default function FlightDetailsPage() {
         </div>
 
         {segments.length > 0 && (
-          <div className="flight-segments">
-            <h3>
-              Journey segments
-            </h3>
+          <div className="flight-segments fm-flight-segments">
+            <div className="fm-flight-section-heading">
+              <div>
+                <span className="fm-section-kicker">
+                  JOURNEY
+                </span>
 
-            {segments.map(
-              (
-                segment,
-                index
-              ) => {
-                const segmentOrigin =
-                  segment?.origin ||
-                  segment?.departure;
+                <h3>
+                  Journey segments
+                </h3>
+              </div>
 
-                const segmentDestination =
-                  segment?.destination ||
-                  segment?.arrival;
+              <span className="fm-flight-segment-count">
+                {segments.length}{" "}
+                {segments.length === 1
+                  ? "segment"
+                  : "segments"}
+              </span>
+            </div>
 
-                const segmentKey =
-                  segment?.id ||
-                  `${index}-${getAirportCode(
-                    segmentOrigin
-                  )}-${getAirportCode(
-                    segmentDestination
-                  )}`;
+            <div className="fm-flight-segment-list">
+              {segments.map(
+                (segment, index) => {
+                  const segmentOrigin =
+                    segment?.origin ||
+                    segment?.departure;
 
-                return (
-                  <div
-                    className="flight-segment"
-                    key={
-                      segmentKey
-                    }
-                  >
-                    <strong>
-                      {getAirportCode(
-                        segmentOrigin
+                  const segmentDestination =
+                    segment?.destination ||
+                    segment?.arrival;
+
+                  const segmentKey =
+                    segment?.id ||
+                    `${index}-${getAirportCode(
+                      segmentOrigin
+                    )}-${getAirportCode(
+                      segmentDestination
+                    )}`;
+
+                  return (
+                    <div
+                      className="flight-segment fm-flight-segment"
+                      key={segmentKey}
+                    >
+                      <div className="fm-flight-segment-route">
+                        <strong>
+                          {getAirportCode(
+                            segmentOrigin
+                          )}
+                          {" → "}
+                          {getAirportCode(
+                            segmentDestination
+                          )}
+                        </strong>
+                      </div>
+
+                      {segment?.duration && (
+                        <span>
+                          {segment.duration}
+                        </span>
                       )}
-                      {" → "}
-                      {getAirportCode(
-                        segmentDestination
+
+                      {(segment?.carrier?.name ||
+                        segment?.airline?.name) && (
+                        <span>
+                          {segment?.carrier?.name ||
+                            segment?.airline?.name}
+                        </span>
                       )}
-                    </strong>
-
-                    {segment?.duration && (
-                      <span>
-                        {
-                          segment.duration
-                        }
-                      </span>
-                    )}
-
-                    {(
-                      segment
-                        ?.carrier
-                        ?.name ||
-                      segment
-                        ?.airline
-                        ?.name
-                    ) && (
-                      <span>
-                        {segment
-                          ?.carrier
-                          ?.name ||
-                          segment
-                            ?.airline
-                            ?.name}
-                      </span>
-                    )}
-                  </div>
-                );
-              }
-            )}
+                    </div>
+                  );
+                }
+              )}
+            </div>
           </div>
         )}
 
-        <div className="flight-detail-booking">
-          <div>
+        <div className="flight-detail-booking fm-flight-detail-booking">
+          <div className="fm-booking-copy">
+            <span className="fm-section-kicker">
+              NEXT STEP
+            </span>
+
             <strong>
               Continue to booking
             </strong>
@@ -740,21 +589,21 @@ export default function FlightDetailsPage() {
 
             {offer?.source && (
               <small>
-                Source:{" "}
-                {offer.source}
+                Source: {offer.source}
               </small>
             )}
           </div>
 
-          <FlightCard
-            offer={offer}
-            sessionId={
-              sessionId ||
-              searchId
-            }
-          />
+          <div className="fm-booking-action">
+            <FlightCard
+              offer={offer}
+              sessionId={
+                sessionId || searchId
+              }
+            />
+          </div>
         </div>
       </section>
     </div>
   );
-            }
+}
