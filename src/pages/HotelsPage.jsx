@@ -388,9 +388,9 @@ export default function HotelsPage() {
   }
 
   return (
-    <main className="page-container">
-      <section className="hotels-hero">
-        <div>
+    <main className="page-container fm-hotels-page">
+      <section className="hotels-hero fm-hotels-hero">
+        <div className="fm-hotels-hero-content">
           <span className="fm-badge">
             Hotels
           </span>
@@ -408,8 +408,8 @@ export default function HotelsPage() {
         </div>
       </section>
 
-      <section className="hotels-search-card">
-        <div className="planner-card-heading">
+      <section className="hotels-search-card fm-hotels-search-card">
+        <div className="planner-card-heading fm-hotels-search-heading">
           <div>
             <span className="section-kicker">
               Accommodation search
@@ -421,7 +421,7 @@ export default function HotelsPage() {
           </div>
         </div>
 
-        <div className="tourism-form-grid">
+        <div className="tourism-form-grid fm-hotels-form-grid">
           <div className="form-field">
             <label htmlFor="hotel-destination">
               Destination
@@ -580,7 +580,7 @@ export default function HotelsPage() {
 
         {error && (
           <div
-            className="visa-error"
+            className="visa-error fm-hotels-error"
             role="alert"
           >
             <strong>
@@ -591,7 +591,7 @@ export default function HotelsPage() {
           </div>
         )}
 
-        <div className="planner-actions">
+        <div className="planner-actions fm-hotels-actions">
           <button
             type="button"
             className="btn btn-primary"
@@ -625,9 +625,9 @@ export default function HotelsPage() {
       </section>
 
       {searched && !loading && (
-        <section className="hotel-results-section">
-          <div className="flight-results-header">
-            <div>
+        <section className="hotel-results-section fm-hotels-results-section">
+          <div className="flight-results-header fm-hotels-results-header">
+            <div className="fm-hotels-results-title">
               <span className="section-kicker">
                 Results
               </span>
@@ -651,7 +651,7 @@ export default function HotelsPage() {
             </div>
 
             {sortedHotels.length > 0 && (
-              <div className="form-field-inline">
+              <div className="form-field-inline fm-hotels-sort">
                 <label htmlFor="hotel-sort">
                   Sort
                 </label>
@@ -681,7 +681,7 @@ export default function HotelsPage() {
           </div>
 
           {sortedHotels.length > 0 ? (
-            <div className="hotel-results-grid">
+            <div className="hotel-results-grid fm-hotels-results-grid">
               {sortedHotels.map(
                 (hotel, index) => {
                   const image =
@@ -699,7 +699,7 @@ export default function HotelsPage() {
 
                   return (
                     <article
-                      className="hotel-result-card"
+                      className="hotel-result-card fm-hotel-result-card"
                       key={
                         hotel?.id ||
                         hotel?.hotelId ||
@@ -709,7 +709,7 @@ export default function HotelsPage() {
                       }
                     >
                       {image ? (
-                        <div className="hotel-image-wrapper">
+                        <div className="hotel-image-wrapper fm-hotel-image-wrapper">
                           <img
                             src={image}
                             alt={getHotelName(
@@ -720,14 +720,14 @@ export default function HotelsPage() {
                           />
                         </div>
                       ) : (
-                        <div className="hotel-image-placeholder">
+                        <div className="hotel-image-placeholder fm-hotel-image-placeholder">
                           <span>
                             🏨
                           </span>
                         </div>
                       )}
 
-                      <div className="hotel-result-body">
+                      <div className="hotel-result-body fm-hotel-result-body">
                         <span className="fm-badge">
                           {getSourceLabel(
                             hotel
@@ -758,7 +758,7 @@ export default function HotelsPage() {
                           </div>
                         )}
 
-                        <div className="hotel-result-footer">
+                        <div className="hotel-result-footer fm-hotel-result-footer">
                           <div>
                             {Number.isFinite(
                               price
@@ -805,7 +805,7 @@ export default function HotelsPage() {
               )}
             </div>
           ) : (
-            <div className="empty-state">
+            <div className="empty-state fm-hotels-empty-state">
               <div
                 className="empty-state-icon"
                 aria-hidden="true"
@@ -835,7 +835,7 @@ export default function HotelsPage() {
         </section>
       )}
 
-      <section className="hotel-info-grid">
+      <section className="hotel-info-grid fm-hotels-info-grid">
         <article className="service-card">
           <div className="service-card-icon">
             ✓
@@ -888,7 +888,7 @@ export default function HotelsPage() {
         </article>
       </section>
 
-      <section className="planner-notice">
+      <section className="planner-notice fm-hotels-notice">
         <strong>
           Hotel pricing notice
         </strong>
@@ -904,4 +904,4 @@ export default function HotelsPage() {
       </section>
     </main>
   );
-}
+              }
