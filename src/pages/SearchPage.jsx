@@ -298,7 +298,6 @@ function mergeSearchData() {
 
   const merged = {
     ...EMPTY_SEARCH,
-
     ...(storedSearch || {}),
     ...(urlSearch || {}),
   };
@@ -566,14 +565,20 @@ export default function SearchPage() {
   const [loading, setLoading] =
     useState(false);
 
-  const [searchError, setSearchError] =
-    useState("");
+  const [
+    searchError,
+    setSearchError,
+  ] = useState("");
 
-  const [hasSearched, setHasSearched] =
-    useState(false);
+  const [
+    hasSearched,
+    setHasSearched,
+  ] = useState(false);
 
-  const [sessionId, setSessionId] =
-    useState("");
+  const [
+    sessionId,
+    setSessionId,
+  ] = useState("");
 
   const [sortBy, setSortBy] =
     useState("recommended");
@@ -790,7 +795,9 @@ export default function SearchPage() {
       }
 
       const flightResults =
-        extractResults(data);
+        extractResults(
+          data
+        );
 
       const backendSessionId =
         data?.sessionId ||
@@ -1085,7 +1092,7 @@ export default function SearchPage() {
     );
 
   return (
-    <main className="search-page">
+    <div className="search-page">
       <section className="page-hero search-page-hero">
         <div className="page-hero-inner">
           <span className="eyebrow">
@@ -1121,7 +1128,9 @@ export default function SearchPage() {
             <>
               <div className="search-summary-wrapper">
                 <SearchSummary
-                  search={search}
+                  search={
+                    search
+                  }
                   onEdit={
                     editSearch
                   }
@@ -1297,7 +1306,9 @@ export default function SearchPage() {
                       </strong>
 
                       <p>
-                        {searchError}
+                        {
+                          searchError
+                        }
                       </p>
 
                       <button
@@ -1398,6 +1409,6 @@ export default function SearchPage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
-    }
+}
