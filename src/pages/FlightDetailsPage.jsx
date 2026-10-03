@@ -334,16 +334,12 @@ function formatCabin(cabin) {
 
   const labels = {
     economy: "Economy",
-
     premium_economy:
       "Premium Economy",
-
     premiumEconomy:
       "Premium Economy",
-
     business:
       "Business",
-
     first:
       "First Class",
   };
@@ -419,7 +415,7 @@ export default function FlightDetailsPage() {
 
   if (!offer) {
     return (
-      <main className="page-container">
+      <div className="page-container">
         <section className="empty-state">
           <div
             className="empty-state-icon"
@@ -450,7 +446,7 @@ export default function FlightDetailsPage() {
             Search flights again
           </button>
         </section>
-      </main>
+      </div>
     );
   }
 
@@ -509,7 +505,7 @@ export default function FlightDetailsPage() {
       : "/search";
 
   return (
-    <main className="page-container">
+    <div className="page-container">
       <div className="page-heading">
         <button
           type="button"
@@ -759,6 +755,6 @@ export default function FlightDetailsPage() {
           />
         </div>
       </section>
-    </main>
+    </div>
   );
-}
+            }
