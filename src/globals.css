@@ -5130,3 +5130,295 @@ p {
     width: 100%;
   }
 }
+/* ==========================================
+   FLYMATRIX VISA PAGE VISUAL LAYER
+   ========================================== */
+
+.fm-visa-page {
+  width: 100%;
+}
+
+.fm-visa-hero {
+  max-width: 1180px;
+  margin: 0 auto 28px;
+}
+
+.fm-visa-hero-content {
+  max-width: 820px;
+}
+
+.fm-visa-hero h1 {
+  margin: 10px 0 8px;
+}
+
+.fm-visa-hero p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.fm-visa-layout {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 310px;
+  gap: 24px;
+  align-items: start;
+}
+
+.fm-visa-form-card,
+.fm-visa-summary-card,
+.fm-visa-result-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #fff;
+}
+
+.fm-visa-form-card {
+  padding: 26px;
+}
+
+.fm-visa-summary-card {
+  position: sticky;
+  top: 18px;
+  padding: 24px;
+}
+
+.fm-visa-card-heading {
+  margin-bottom: 22px;
+}
+
+.fm-visa-card-heading h2 {
+  margin: 7px 0 7px;
+}
+
+.fm-visa-card-heading p {
+  max-width: 650px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.fm-visa-form-grid {
+  margin-top: 20px;
+}
+
+.fm-visa-actions {
+  margin-top: 26px;
+}
+
+.fm-visa-actions .btn {
+  min-width: 180px;
+}
+
+.fm-visa-error {
+  margin-top: 22px;
+  padding: 16px 18px;
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  background: #fff7f7;
+}
+
+.fm-visa-error strong {
+  display: block;
+  color: #991b1b;
+  font-size: 14px;
+}
+
+.fm-visa-error p {
+  margin: 6px 0 0;
+  color: #7f1d1d;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.fm-visa-summary-card h2 {
+  margin: 8px 0 20px;
+  font-size: 23px;
+  color: #0f172a;
+}
+
+.fm-visa-summary-list {
+  display: grid;
+}
+
+.fm-visa-summary-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.fm-visa-summary-list span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.fm-visa-summary-list strong {
+  max-width: 170px;
+  color: #1e293b;
+  font-size: 13px;
+  text-align: right;
+}
+
+.fm-visa-result-card {
+  max-width: 1180px;
+  margin: 28px auto 0;
+  padding: 26px;
+}
+
+.fm-visa-result-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.fm-visa-result-heading h2 {
+  margin: 7px 0 0;
+}
+
+.fm-visa-result-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.fm-visa-result-grid > div {
+  min-width: 0;
+}
+
+.fm-visa-result-grid span {
+  display: block;
+  margin-bottom: 7px;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.fm-visa-result-grid strong {
+  color: #1e293b;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.fm-visa-result-description,
+.fm-visa-requirements {
+  margin-top: 26px;
+  padding-top: 22px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.fm-visa-result-description h3,
+.fm-visa-requirements h3 {
+  margin: 0 0 8px;
+  color: #334155;
+  font-size: 13px;
+}
+
+.fm-visa-result-description p {
+  max-width: 820px;
+  margin: 0;
+  color: #64748b;
+  line-height: 1.65;
+}
+
+.fm-visa-requirements ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #475569;
+}
+
+.fm-visa-requirements li {
+  margin: 7px 0;
+  line-height: 1.5;
+}
+
+.fm-visa-result-actions {
+  margin-top: 26px;
+}
+
+.fm-visa-guidance-grid {
+  max-width: 1180px;
+  margin: 30px auto 0;
+}
+
+.fm-visa-guidance-grid .service-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #fff;
+}
+
+.fm-visa-notice {
+  max-width: 1180px;
+  margin: 28px auto 0;
+}
+
+@media (max-width: 900px) {
+  .fm-visa-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-visa-summary-card {
+    position: static;
+  }
+
+  .fm-visa-result-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .fm-visa-hero,
+  .fm-visa-layout,
+  .fm-visa-result-card,
+  .fm-visa-guidance-grid,
+  .fm-visa-notice {
+    width: 100%;
+  }
+
+  .fm-visa-form-card,
+  .fm-visa-summary-card,
+  .fm-visa-result-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .fm-visa-result-heading {
+    display: block;
+  }
+
+  .fm-visa-result-heading .visa-status {
+    display: inline-block;
+    margin-top: 14px;
+  }
+
+  .fm-visa-result-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-visa-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fm-visa-actions .btn {
+    width: 100%;
+  }
+
+  .fm-visa-summary-list > div {
+    align-items: flex-start;
+  }
+
+  .fm-visa-summary-list strong {
+    max-width: 150px;
+  }
+}
