@@ -4409,3 +4409,109 @@ p {
     margin-top: 24px;
   }
 }
+/* =========================================================
+   EDUCATION TOURISM PAGE
+========================================================= */
+
+.fm-education-page {
+  width: 100%;
+}
+
+.fm-education-hero {
+  max-width: 1180px;
+  margin: 0 auto 28px;
+}
+
+.fm-education-hero h1 {
+  max-width: 820px;
+  margin: 10px 0 8px;
+}
+
+.fm-education-hero p {
+  max-width: 780px;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.fm-education-dashboard {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.fm-education-dashboard-header {
+  margin-bottom: 22px;
+}
+
+.fm-education-dashboard-header h2 {
+  margin: 7px 0 8px;
+}
+
+.fm-education-dashboard-header p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.fm-education-form-grid {
+  margin-top: 20px;
+}
+
+.fm-education-facilities {
+  margin-top: 26px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.fm-education-facilities h3 {
+  margin: 7px 0 6px;
+}
+
+.fm-education-facilities p {
+  max-width: 700px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.fm-education-facility-grid {
+  margin-top: 18px;
+}
+
+.fm-education-form-actions {
+  margin-top: 28px;
+}
+
+.fm-education-form-actions strong {
+  display: block;
+  margin-top: 6px;
+  color: var(--text);
+  font-size: 16px;
+}
+
+.fm-education-form-actions p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .fm-education-hero,
+  .fm-education-dashboard {
+    width: 100%;
+  }
+
+  .fm-education-form-actions {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .fm-education-form-actions .btn {
+    width: 100%;
+  }
+}
