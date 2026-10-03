@@ -210,8 +210,8 @@ export default function EducationTourismPage() {
   }
 
   return (
-    <main className="page-container">
-      <section className="tourism-hero education-tourism-hero">
+    <main className="page-container fm-education-page">
+      <section className="tourism-hero education-tourism-hero fm-education-hero">
         <div className="tourism-hero-content">
           <span className="fm-badge">
             Education Tourism
@@ -233,8 +233,8 @@ export default function EducationTourismPage() {
         </div>
       </section>
 
-      <section className="tourism-dashboard">
-        <div className="tourism-dashboard-header">
+      <section className="tourism-dashboard fm-education-dashboard">
+        <div className="tourism-dashboard-header fm-education-dashboard-header">
           <div>
             <span className="section-kicker">
               Education Tourism Intelligence
@@ -254,7 +254,7 @@ export default function EducationTourismPage() {
           </div>
         </div>
 
-        <div className="tourism-form-grid">
+        <div className="tourism-form-grid fm-education-form-grid">
           <div className="form-field">
             <label htmlFor="education-country">
               Destination country
@@ -462,7 +462,7 @@ export default function EducationTourismPage() {
           </div>
         </div>
 
-        <section className="tourism-facilities">
+        <section className="tourism-facilities fm-education-facilities">
           <div>
             <span className="section-kicker">
               Travel preparation
@@ -479,7 +479,7 @@ export default function EducationTourismPage() {
             </p>
           </div>
 
-          <div className="facility-grid">
+          <div className="facility-grid fm-education-facility-grid">
             {FACILITIES.map((facility) => {
               const selected =
                 selectedFacilities.includes(
@@ -514,7 +514,7 @@ export default function EducationTourismPage() {
           </div>
         </section>
 
-        <section className="tourism-form-actions">
+        <section className="tourism-form-actions fm-education-form-actions">
           <div>
             <span className="section-kicker">
               Ready?
