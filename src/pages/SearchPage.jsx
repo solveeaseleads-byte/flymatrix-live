@@ -590,11 +590,6 @@ export default function SearchPage() {
       airlines: [],
     });
 
-  /*
-   * Perform a search from URL parameters
-   * when the page is opened with a complete
-   * search URL.
-   */
   useEffect(() => {
     const initialSearch =
       createInitialSearch();
@@ -678,14 +673,6 @@ export default function SearchPage() {
     setResults([]);
 
     try {
-      /*
-       * Existing backend endpoint:
-       *
-       * GET /api/flights
-       *
-       * Do not create a separate
-       * flightSearch.js service.
-       */
       const params =
         new URLSearchParams();
 
@@ -812,10 +799,6 @@ export default function SearchPage() {
         backendSessionId
       );
 
-      /*
-       * Preserve the backend session ID
-       * for the booking/affiliate flow.
-       */
       if (backendSessionId) {
         try {
           sessionStorage.setItem(
@@ -835,9 +818,6 @@ export default function SearchPage() {
         }
       }
 
-      /*
-       * Store the complete search.
-       */
       try {
         sessionStorage.setItem(
           "flymatrix:lastSearch",
@@ -952,10 +932,6 @@ export default function SearchPage() {
         nextSearch
       );
 
-    /*
-     * Update the browser URL without
-     * forcing a full-page reload.
-     */
     const query =
       buildSearchQuery(
         normalizedPayload
@@ -1092,7 +1068,7 @@ export default function SearchPage() {
     );
 
   return (
-    <div className="search-page">
+    <div className="search-page fm-search-page">
       <section className="page-hero search-page-hero">
         <div className="page-hero-inner">
           <span className="eyebrow">
@@ -1111,10 +1087,10 @@ export default function SearchPage() {
         </div>
       </section>
 
-      <section className="search-page-content">
+      <section className="search-page-content fm-search-content">
         <div className="section-container">
           {showSearchForm ? (
-            <div className="search-page-panel">
+            <div className="search-page-panel fm-search-panel">
               <FlightSearchForm
                 initialSearch={
                   search
@@ -1137,9 +1113,9 @@ export default function SearchPage() {
                 />
               </div>
 
-              <div className="search-results-layout">
-                <aside className="flight-filters-column">
-                  <div className="filter-panel">
+              <div className="search-results-layout fm-search-results-layout">
+                <aside className="flight-filters-column fm-search-filters">
+                  <div className="filter-panel fm-search-filter-panel">
                     <div className="filter-panel-header">
                       <strong>
                         Filter results
@@ -1238,8 +1214,8 @@ export default function SearchPage() {
                   </div>
                 </aside>
 
-                <section className="flight-results-column">
-                  <div className="results-toolbar">
+                <section className="flight-results-column fm-search-results-column">
+                  <div className="results-toolbar fm-search-toolbar">
                     <div>
                       <strong>
                         {loading
@@ -1384,7 +1360,7 @@ export default function SearchPage() {
             </>
           )}
 
-          <div className="search-page-footer-actions">
+          <div className="search-page-footer-actions fm-search-footer">
             <button
               type="button"
               className="btn btn-secondary"
@@ -1411,4 +1387,4 @@ export default function SearchPage() {
       </section>
     </div>
   );
-}
+      }
