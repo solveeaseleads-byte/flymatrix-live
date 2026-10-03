@@ -3488,3 +3488,260 @@ p {
     width: 100%;
   }
 }
+/* =========================================================
+   FLYMATRIX — FLIGHT DETAILS
+   ========================================================= */
+
+.fm-flight-details-page {
+  width: 100%;
+}
+
+.fm-flight-details-heading {
+  max-width: 1180px;
+  margin: 0 auto 24px;
+}
+
+.fm-back-button {
+  margin-bottom: 18px;
+}
+
+.fm-flight-details-title {
+  max-width: 760px;
+}
+
+.fm-flight-details-title .fm-section-kicker {
+  display: block;
+  margin-top: 14px;
+}
+
+.fm-flight-details-title h1 {
+  margin: 7px 0 8px;
+}
+
+.fm-flight-details-title p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.fm-flight-detail-card {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.fm-flight-detail-header {
+  align-items: flex-start;
+}
+
+.fm-flight-detail-header h2 {
+  margin: 10px 0 4px;
+}
+
+.fm-flight-detail-route-caption {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.fm-flight-detail-price {
+  white-space: nowrap;
+}
+
+.fm-flight-detail-route {
+  margin-top: 24px;
+}
+
+.fm-flight-detail-point {
+  min-width: 0;
+}
+
+.fm-flight-detail-point strong {
+  display: block;
+  margin: 7px 0;
+  line-height: 1.4;
+}
+
+.fm-flight-detail-point small {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+.fm-flight-detail-connector {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fm-flight-detail-meta {
+  margin-top: 24px;
+}
+
+.fm-flight-detail-meta > div {
+  min-width: 0;
+}
+
+.fm-flight-detail-meta span {
+  display: block;
+  margin-bottom: 5px;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.fm-flight-detail-meta strong {
+  color: #1e293b;
+  font-size: 14px;
+}
+
+.fm-flight-segments {
+  margin-top: 28px;
+}
+
+.fm-flight-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.fm-flight-section-heading h3 {
+  margin: 5px 0 0;
+}
+
+.fm-flight-segment-count {
+  flex: 0 0 auto;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.fm-flight-segment-list {
+  display: grid;
+  gap: 8px;
+}
+
+.fm-flight-segment {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(100px, auto) minmax(120px, auto);
+  gap: 16px;
+  align-items: center;
+}
+
+.fm-flight-segment-route {
+  min-width: 0;
+}
+
+.fm-flight-segment > span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.fm-flight-detail-booking {
+  margin-top: 30px;
+  padding-top: 24px;
+}
+
+.fm-booking-copy {
+  max-width: 620px;
+}
+
+.fm-booking-copy .fm-section-kicker {
+  display: block;
+  margin-bottom: 7px;
+}
+
+.fm-booking-copy strong {
+  display: block;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.fm-booking-copy p {
+  margin: 7px 0 5px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.fm-booking-copy small {
+  color: #94a3b8;
+}
+
+.fm-booking-action {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.fm-booking-action .fm-flight-card {
+  width: 100%;
+}
+
+.fm-flight-details-empty {
+  max-width: 620px;
+  margin: 40px auto;
+}
+
+@media (max-width: 760px) {
+  .fm-flight-details-heading {
+    margin-bottom: 18px;
+  }
+
+  .fm-flight-detail-card {
+    border-radius: 16px;
+  }
+
+  .fm-flight-detail-header {
+    gap: 16px;
+  }
+
+  .fm-flight-detail-route {
+    gap: 12px;
+  }
+
+  .fm-flight-section-heading {
+    align-items: flex-start;
+  }
+
+  .fm-flight-segment {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 560px) {
+  .fm-flight-details-title h1 {
+    font-size: 25px;
+  }
+
+  .fm-flight-detail-header {
+    display: block;
+  }
+
+  .fm-flight-detail-price {
+    margin-top: 14px;
+    font-size: 22px;
+  }
+
+  .fm-flight-detail-route {
+    align-items: stretch;
+  }
+
+  .fm-flight-detail-connector {
+    min-height: 30px;
+  }
+
+  .fm-flight-section-heading {
+    display: block;
+  }
+
+  .fm-flight-segment-count {
+    display: block;
+    margin-top: 7px;
+  }
+}
