@@ -257,13 +257,24 @@ function ProviderStatus({ source }) {
     );
   }
 
+  const normalized = String(source).toLowerCase();
+
+  let label = "Provider data";
+
+  if (normalized === "live") {
+    label = "Live provider data";
+  } else if (normalized === "cached") {
+    label = "Cached provider data";
+  } else if (
+    normalized === "estimate" ||
+    normalized === "estimated"
+  ) {
+    label = "Provider estimate";
+  }
+
   return (
     <span className="provider-status">
-      {source === "live"
-        ? "Live provider data"
-        : source === "cached"
-        ? "Cached provider data"
-        : "Provider estimate"}
+      {label}
     </span>
   );
 }
@@ -505,6 +516,10 @@ export default function LeisureResultsPage() {
         </button>
 
         <div className="fm-leisure-results-title">
+          <span className="fm-section-kicker">
+            LEISURE SEARCH
+          </span>
+
           <span className="fm-badge">
             Leisure Tourism
           </span>
@@ -549,7 +564,7 @@ export default function LeisureResultsPage() {
           <span>Services</span>
           <strong>
             {facilities.length
-              ? facilities.length
+              ? `${facilities.length} selected`
               : "None selected"}
           </strong>
         </div>
@@ -557,8 +572,8 @@ export default function LeisureResultsPage() {
 
       <section className="tourism-results-toolbar fm-leisure-results-toolbar">
         <div className="fm-leisure-results-status">
-          <span className="section-kicker">
-            Search results
+          <span className="fm-section-kicker">
+            SEARCH RESULTS
           </span>
 
           <strong>
@@ -629,9 +644,19 @@ export default function LeisureResultsPage() {
 
       {loading && (
         <section className="flight-results-loading fm-leisure-loading">
+          <div className="fm-leisure-loading-heading">
+            <span className="fm-section-kicker">
+              SEARCHING
+            </span>
+
+            <strong>
+              Checking connected tourism providers
+            </strong>
+          </div>
+
           {[1, 2, 3].map((item) => (
             <div
-              className="loading-card"
+              className="loading-card fm-leisure-loading-card"
               key={item}
             >
               <div className="loading-line loading-line-large" />
@@ -643,7 +668,7 @@ export default function LeisureResultsPage() {
       )}
 
       {!loading && error && (
-        <section className="empty-state fm-leisure-empty-state">
+        <section className="empty-state fm-leisure-empty-state fm-leisure-error-state">
           <div
             className="empty-state-icon"
             aria-hidden="true"
@@ -651,7 +676,7 @@ export default function LeisureResultsPage() {
             !
           </div>
 
-          <span className="section-kicker">
+          <span className="fm-section-kicker">
             SEARCH UNAVAILABLE
           </span>
 
@@ -669,15 +694,27 @@ export default function LeisureResultsPage() {
             trip requirements and try again.
           </p>
 
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() =>
-              window.location.reload()
-            }
-          >
-            Try again
-          </button>
+          <div className="fm-leisure-empty-actions">
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() =>
+                window.location.reload()
+              }
+            >
+              Try again
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() =>
+                navigate("/tourism/leisure")
+              }
+            >
+              Change trip
+            </button>
+          </div>
         </section>
       )}
 
@@ -692,7 +729,7 @@ export default function LeisureResultsPage() {
               🌍
             </div>
 
-            <span className="section-kicker">
+            <span className="fm-section-kicker">
               SEARCH COMPLETE
             </span>
 
@@ -744,6 +781,10 @@ export default function LeisureResultsPage() {
         )}
 
       <section className="tourism-results-notice fm-leisure-results-notice">
+        <span className="fm-section-kicker">
+          DATA TRANSPARENCY
+        </span>
+
         <strong>
           Important pricing information
         </strong>
