@@ -131,7 +131,11 @@ function getPrice(item) {
     item?.amount ??
     item?.cost;
 
-  if (value === undefined || value === null || value === "") {
+  if (
+    value === undefined ||
+    value === null ||
+    value === ""
+  ) {
     return null;
   }
 
@@ -255,11 +259,11 @@ export default function EsimPage() {
   }
 
   return (
-    <main className="fm-page">
-      <section className="fm-section">
-        <div className="fm-container">
+    <main className="fm-page fm-esim-page">
+      <section className="fm-section fm-esim-section">
+        <div className="fm-container fm-esim-container">
 
-          <div className="fm-page-header">
+          <div className="fm-page-header fm-esim-page-header">
             <span className="fm-eyebrow">
               CONNECTIVITY
             </span>
@@ -276,10 +280,10 @@ export default function EsimPage() {
           </div>
 
           <form
-            className="fm-card fm-search-panel"
+            className="fm-card fm-search-panel fm-esim-search-panel"
             onSubmit={searchEsimPackages}
           >
-            <div className="fm-search-grid">
+            <div className="fm-search-grid fm-esim-search-grid">
 
               <div className="fm-field">
                 <label htmlFor="esim-destination">
@@ -344,18 +348,23 @@ export default function EsimPage() {
                   <option value="1 GB">
                     1 GB
                   </option>
+
                   <option value="3 GB">
                     3 GB
                   </option>
+
                   <option value="5 GB">
                     5 GB
                   </option>
+
                   <option value="10 GB">
                     10 GB
                   </option>
+
                   <option value="20 GB">
                     20 GB+
                   </option>
+
                   <option value="unlimited">
                     Unlimited / provider options
                   </option>
@@ -377,15 +386,19 @@ export default function EsimPage() {
                   <option value="7 days">
                     7 days
                   </option>
+
                   <option value="15 days">
                     15 days
                   </option>
+
                   <option value="30 days">
                     30 days
                   </option>
+
                   <option value="60 days">
                     60 days
                   </option>
+
                   <option value="90 days">
                     90 days+
                   </option>
@@ -394,7 +407,7 @@ export default function EsimPage() {
 
             </div>
 
-            <div className="fm-actions">
+            <div className="fm-actions fm-esim-actions">
 
               <button
                 type="submit"
@@ -419,9 +432,13 @@ export default function EsimPage() {
 
           {loading && (
             <section
-              className="fm-card"
+              className="fm-card fm-esim-status-card"
               aria-live="polite"
             >
+              <span className="fm-eyebrow">
+                SEARCHING
+              </span>
+
               <h2>
                 Checking available connectivity
               </h2>
@@ -435,7 +452,7 @@ export default function EsimPage() {
           )}
 
           {!loading && error && (
-            <section className="fm-card">
+            <section className="fm-card fm-esim-status-card fm-esim-error-card">
               <div className="fm-badge">
                 Provider search unavailable
               </div>
@@ -464,7 +481,7 @@ export default function EsimPage() {
             searched &&
             !error &&
             packages.length === 0 && (
-              <section className="fm-card">
+              <section className="fm-card fm-esim-status-card">
                 <div className="fm-badge">
                   No live packages returned
                 </div>
@@ -491,9 +508,9 @@ export default function EsimPage() {
             )}
 
           {!loading && packages.length > 0 && (
-            <section className="fm-section-inner">
+            <section className="fm-section-inner fm-esim-results-section">
 
-              <div className="fm-section-heading">
+              <div className="fm-section-heading fm-esim-results-heading">
                 <div>
                   <span className="fm-eyebrow">
                     LIVE / CACHED DATA
@@ -504,7 +521,7 @@ export default function EsimPage() {
                   </h2>
                 </div>
 
-                <span className="fm-meta">
+                <span className="fm-meta fm-esim-result-count">
                   {packages.length}{" "}
                   {packages.length === 1
                     ? "option"
@@ -512,7 +529,7 @@ export default function EsimPage() {
                 </span>
               </div>
 
-              <div className="fm-grid">
+              <div className="fm-grid fm-esim-results-grid">
                 {packages.map(
                   (item, index) => {
                     const price =
@@ -533,7 +550,7 @@ export default function EsimPage() {
 
                     return (
                       <article
-                        className="fm-card"
+                        className="fm-card fm-esim-result-card"
                         key={
                           item?.id ||
                           item?.packageId ||
@@ -584,9 +601,9 @@ export default function EsimPage() {
             </section>
           )}
 
-          <section className="fm-section-inner">
+          <section className="fm-section-inner fm-esim-guide-section">
 
-            <div className="fm-section-heading">
+            <div className="fm-section-heading fm-esim-guide-heading">
               <div>
                 <span className="fm-eyebrow">
                   CONNECTIVITY GUIDE
@@ -598,9 +615,13 @@ export default function EsimPage() {
               </div>
             </div>
 
-            <div className="fm-grid">
+            <div className="fm-grid fm-esim-guide-grid">
 
-              <article className="fm-card">
+              <article className="fm-card fm-esim-guide-card">
+                <div className="fm-esim-guide-number">
+                  01
+                </div>
+
                 <h3>
                   Short city trip
                 </h3>
@@ -623,7 +644,11 @@ export default function EsimPage() {
                 </button>
               </article>
 
-              <article className="fm-card">
+              <article className="fm-card fm-esim-guide-card">
+                <div className="fm-esim-guide-number">
+                  02
+                </div>
+
                 <h3>
                   Two-week holiday
                 </h3>
@@ -646,7 +671,11 @@ export default function EsimPage() {
                 </button>
               </article>
 
-              <article className="fm-card">
+              <article className="fm-card fm-esim-guide-card">
+                <div className="fm-esim-guide-number">
+                  03
+                </div>
+
                 <h3>
                   Heavy connectivity
                 </h3>
@@ -672,7 +701,7 @@ export default function EsimPage() {
             </div>
           </section>
 
-          <section className="fm-card fm-section-inner">
+          <section className="fm-card fm-section-inner fm-esim-planner-card">
 
             <div className="fm-section-heading">
               <div>
@@ -717,7 +746,7 @@ export default function EsimPage() {
             </div>
           </section>
 
-          <section className="fm-card fm-disclaimer">
+          <section className="fm-card fm-disclaimer fm-esim-disclaimer">
 
             <strong>
               Provider information
