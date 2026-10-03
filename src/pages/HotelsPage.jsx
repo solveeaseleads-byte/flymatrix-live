@@ -904,4 +904,4 @@ export default function HotelsPage() {
       </section>
     </main>
   );
-              }
+      }
