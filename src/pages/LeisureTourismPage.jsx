@@ -180,7 +180,11 @@ export default function LeisureTourismPage() {
   return (
     <main className="page-container fm-leisure-page">
       <section className="tourism-hero fm-leisure-hero">
-        <div className="tourism-hero-content">
+        <div className="tourism-hero-content fm-leisure-hero-content">
+          <span className="fm-section-kicker">
+            TOURISM INTELLIGENCE
+          </span>
+
           <span className="fm-badge">
             Leisure Tourism
           </span>
@@ -202,8 +206,8 @@ export default function LeisureTourismPage() {
       <section className="tourism-dashboard fm-leisure-dashboard">
         <div className="tourism-dashboard-header fm-leisure-dashboard-header">
           <div>
-            <span className="section-kicker">
-              Tourism Intelligence
+            <span className="fm-section-kicker">
+              TRIP PROFILE
             </span>
 
             <h2>
@@ -379,7 +383,11 @@ export default function LeisureTourismPage() {
         </div>
 
         <div className="tourism-facilities fm-leisure-facilities">
-          <div>
+          <div className="fm-leisure-facilities-heading">
+            <span className="fm-section-kicker">
+              OPTIONAL SERVICES
+            </span>
+
             <h3>
               Services and facilities
             </h3>
@@ -390,7 +398,7 @@ export default function LeisureTourismPage() {
             </p>
           </div>
 
-          <div className="facility-options">
+          <div className="facility-options fm-leisure-facility-options">
             {FACILITIES.map((facility) => {
               const selected =
                 selectedFacilities.includes(
@@ -422,26 +430,47 @@ export default function LeisureTourismPage() {
         </div>
 
         <div className="tourism-dashboard-actions fm-leisure-actions">
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={handleExplore}
-          >
-            Explore leisure options
-          </button>
+          <div className="fm-leisure-action-copy">
+            <span className="fm-section-kicker">
+              READY TO EXPLORE
+            </span>
 
-          <button
-            type="button"
-            className="btn btn-secondary"
-            onClick={() => navigate("/planner")}
-          >
-            Open trip planner
-          </button>
+            <strong>
+              Search connected leisure options
+            </strong>
+
+            <p>
+              Your selections will be passed to
+              the leisure results page.
+            </p>
+          </div>
+
+          <div className="fm-leisure-action-buttons">
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleExplore}
+            >
+              Explore leisure options
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => navigate("/planner")}
+            >
+              Open trip planner
+            </button>
+          </div>
         </div>
       </section>
 
       <section className="tourism-track-grid fm-leisure-track-grid">
-        <article className="tourism-track-card">
+        <article className="tourism-track-card fm-leisure-track-card">
+          <span className="fm-section-kicker">
+            01
+          </span>
+
           <span className="fm-badge">
             Compare
           </span>
@@ -457,7 +486,11 @@ export default function LeisureTourismPage() {
           </p>
         </article>
 
-        <article className="tourism-track-card">
+        <article className="tourism-track-card fm-leisure-track-card">
+          <span className="fm-section-kicker">
+            02
+          </span>
+
           <span className="fm-badge">
             Prepare
           </span>
@@ -473,7 +506,11 @@ export default function LeisureTourismPage() {
           </p>
         </article>
 
-        <article className="tourism-track-card">
+        <article className="tourism-track-card fm-leisure-track-card">
+          <span className="fm-section-kicker">
+            03
+          </span>
+
           <span className="fm-badge">
             Monitor
           </span>
@@ -491,6 +528,10 @@ export default function LeisureTourismPage() {
       </section>
 
       <section className="tourism-disclaimer fm-leisure-disclaimer">
+        <span className="fm-section-kicker">
+          DATA TRANSPARENCY
+        </span>
+
         <strong>
           Provider pricing notice
         </strong>
