@@ -214,12 +214,11 @@ function OptionCard({ option, onOpen }) {
   const institution = getInstitution(option);
   const category = getCategory(option);
   const source = getSource(option);
-
   const directUrl = getBookingUrl(option);
 
   return (
-    <article className="tourism-option-card">
-      <div className="tourism-option-top">
+    <article className="tourism-option-card fm-education-option-card">
+      <div className="tourism-option-top fm-education-option-top">
         <span className="fm-badge">
           {category}
         </span>
@@ -315,7 +314,7 @@ function TravelServiceCard({
   }
 
   return (
-    <article className="tourism-track-card">
+    <article className="tourism-track-card fm-education-service-card">
       <span className="fm-badge">
         Travel service
       </span>
@@ -545,11 +544,11 @@ export default function EducationResultsPage() {
   }
 
   return (
-    <main className="page-container">
-      <section className="tourism-results-header">
+    <main className="page-container fm-education-results-page">
+      <section className="tourism-results-header fm-education-results-header">
         <button
           type="button"
-          className="btn btn-secondary"
+          className="btn btn-secondary fm-education-back-button"
           onClick={() =>
             navigate(
               "/tourism/education"
@@ -559,7 +558,11 @@ export default function EducationResultsPage() {
           ← Change study plan
         </button>
 
-        <div>
+        <div className="fm-education-results-title">
+          <span className="fm-section-kicker">
+            EDUCATION SEARCH
+          </span>
+
           <span className="fm-badge">
             Education Tourism
           </span>
@@ -578,7 +581,7 @@ export default function EducationResultsPage() {
         </div>
       </section>
 
-      <section className="tourism-search-summary">
+      <section className="tourism-search-summary fm-education-search-summary">
         <div>
           <span>Destination</span>
 
@@ -614,8 +617,12 @@ export default function EducationResultsPage() {
         </div>
       </section>
 
-      <section className="tourism-results-toolbar">
-        <div>
+      <section className="tourism-results-toolbar fm-education-results-toolbar">
+        <div className="fm-education-results-count">
+          <span className="fm-section-kicker">
+            SEARCH RESULTS
+          </span>
+
           <strong>
             {loading
               ? "Loading options..."
@@ -629,7 +636,7 @@ export default function EducationResultsPage() {
           )}
         </div>
 
-        <div className="tourism-results-controls">
+        <div className="tourism-results-controls fm-education-results-controls">
           <label htmlFor="education-category">
             Category
           </label>
@@ -693,8 +700,12 @@ export default function EducationResultsPage() {
       </section>
 
       {error && (
-        <section className="tourism-error">
+        <section className="tourism-error fm-education-error">
           <div>
+            <span className="fm-section-kicker">
+              SEARCH ERROR
+            </span>
+
             <strong>
               Education search unavailable
             </strong>
@@ -713,8 +724,8 @@ export default function EducationResultsPage() {
       )}
 
       {loading && (
-        <section className="tourism-results-grid">
-          <article className="tourism-option-card">
+        <section className="tourism-results-grid fm-education-results-grid">
+          <article className="tourism-option-card fm-education-loading-card">
             <span className="fm-badge">
               Searching
             </span>
@@ -735,7 +746,11 @@ export default function EducationResultsPage() {
       {!loading &&
         !error &&
         sortedOptions.length === 0 && (
-          <section className="tourism-empty-state">
+          <section className="tourism-empty-state fm-education-empty-state">
+            <span className="fm-section-kicker">
+              SEARCH COMPLETE
+            </span>
+
             <span className="fm-badge">
               No matching options
             </span>
@@ -768,7 +783,7 @@ export default function EducationResultsPage() {
       {!loading &&
         !error &&
         sortedOptions.length > 0 && (
-          <section className="tourism-results-grid">
+          <section className="tourism-results-grid fm-education-results-grid">
             {sortedOptions.map(
               (option, index) => (
                 <OptionCard
@@ -787,8 +802,12 @@ export default function EducationResultsPage() {
         )}
 
       {!loading && !error && (
-        <section className="tourism-support-section">
-          <div>
+        <section className="tourism-support-section fm-education-support-section">
+          <div className="fm-education-support-heading">
+            <span className="fm-section-kicker">
+              NEXT STEP
+            </span>
+
             <span className="fm-badge">
               Travel preparation
             </span>
@@ -807,7 +826,7 @@ export default function EducationResultsPage() {
             </p>
           </div>
 
-          <div className="tourism-track-grid">
+          <div className="tourism-track-grid fm-education-service-grid">
             <TravelServiceCard
               title="Flights"
               description="Search flight options for your education destination."
@@ -861,4 +880,4 @@ export default function EducationResultsPage() {
       )}
     </main>
   );
-      }
+}
