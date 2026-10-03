@@ -97,7 +97,10 @@ function getStops(flight) {
   }
 
   if (Array.isArray(flight?.segments)) {
-    return Math.max(flight.segments.length - 1, 0);
+    return Math.max(
+      flight.segments.length - 1,
+      0
+    );
   }
 
   return 0;
@@ -139,15 +142,23 @@ export default function FlightResults({
 
       case "departure":
         return list.sort((a, b) =>
-          String(getDepartureTime(a)).localeCompare(
-            String(getDepartureTime(b))
+          String(
+            getDepartureTime(a)
+          ).localeCompare(
+            String(
+              getDepartureTime(b)
+            )
           )
         );
 
       case "arrival":
         return list.sort((a, b) =>
-          String(getArrivalTime(a)).localeCompare(
-            String(getArrivalTime(b))
+          String(
+            getArrivalTime(a)
+          ).localeCompare(
+            String(
+              getArrivalTime(b)
+            )
           )
         );
 
@@ -171,23 +182,32 @@ export default function FlightResults({
   if (loading) {
     return (
       <section
-        className="flight-results"
+        className="flight-results fm-flight-results"
         aria-live="polite"
         aria-busy="true"
       >
-        <div className="flight-results-header">
+        <div className="fm-results-heading">
           <div>
+            <span className="fm-section-kicker">
+              SEARCHING
+            </span>
+
             <h2>Finding flights</h2>
+
             <p>
-              Searching available flight options...
+              Searching available flight
+              options...
             </p>
           </div>
         </div>
 
-        <div className="flight-results-loading">
+        <div
+          className="flight-results-loading fm-results-loading"
+          aria-label="Loading flight results"
+        >
           {[1, 2, 3].map((item) => (
             <div
-              className="loading-card"
+              className="loading-card fm-loading-card"
               key={item}
             >
               <div className="loading-line loading-line-large" />
@@ -202,21 +222,26 @@ export default function FlightResults({
 
   if (!sortedFlights.length) {
     return (
-      <section className="flight-results">
-        <div className="empty-state">
+      <section className="flight-results fm-flight-results">
+        <div className="empty-state fm-results-empty">
           <div
-            className="empty-state-icon"
+            className="empty-state-icon fm-empty-icon"
             aria-hidden="true"
           >
             ✈
           </div>
 
+          <span className="fm-section-kicker">
+            SEARCH COMPLETE
+          </span>
+
           <h2>No flights found</h2>
 
           <p>
-            We couldn't find flights matching this
-            search. Try changing your dates,
-            airports, cabin, or stop preference.
+            We couldn't find flights matching
+            this search. Try changing your
+            dates, airports, cabin, or stop
+            preference.
           </p>
         </div>
       </section>
@@ -224,9 +249,13 @@ export default function FlightResults({
   }
 
   return (
-    <section className="flight-results">
-      <div className="flight-results-header">
+    <section className="flight-results fm-flight-results">
+      <div className="fm-results-heading">
         <div>
+          <span className="fm-section-kicker">
+            FLIGHT SEARCH
+          </span>
+
           <h2>
             {sortedFlights.length}{" "}
             {sortedFlights.length === 1
@@ -240,19 +269,51 @@ export default function FlightResults({
             partner.
           </p>
         </div>
+
+        <div
+          className="fm-results-count"
+          aria-label={`${sortedFlights.length} flight options found`}
+        >
+          <strong>
+            {sortedFlights.length}
+          </strong>
+
+          <span>
+            options
+          </span>
+        </div>
       </div>
 
-      <div className="flight-results-list">
-        {sortedFlights.map((flight, index) => (
-          <FlightCard
-            key={getFlightId(
-              flight,
-              index
-            )}
-            offer={flight}
-            sessionId={sessionId}
-          />
-        ))}
+      <div className="fm-results-divider" />
+
+      <div className="fm-results-context">
+        <span>
+          Available options
+        </span>
+
+        <span>
+          Sorted by{" "}
+          <strong>
+            {sortBy === "price"
+              ? "price"
+              : sortBy}
+          </strong>
+        </span>
+      </div>
+
+      <div className="flight-results-list fm-results-list">
+        {sortedFlights.map(
+          (flight, index) => (
+            <FlightCard
+              key={getFlightId(
+                flight,
+                index
+              )}
+              offer={flight}
+              sessionId={sessionId}
+            />
+          )
+        )}
       </div>
     </section>
   );
