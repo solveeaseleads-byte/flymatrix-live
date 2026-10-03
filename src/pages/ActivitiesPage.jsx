@@ -376,9 +376,9 @@ export default function ActivitiesPage() {
   }
 
   return (
-    <main className="page-container">
-      <section className="activities-hero">
-        <div>
+    <main className="page-container fm-activities-page">
+      <section className="activities-hero fm-activities-hero">
+        <div className="fm-activities-hero-content">
           <span className="fm-badge">
             Activities & Tours
           </span>
@@ -396,8 +396,8 @@ export default function ActivitiesPage() {
         </div>
       </section>
 
-      <section className="activities-search-card">
-        <div className="planner-card-heading">
+      <section className="activities-search-card fm-activities-search-card">
+        <div className="planner-card-heading fm-activities-search-heading">
           <div>
             <span className="section-kicker">
               Experience search
@@ -409,7 +409,7 @@ export default function ActivitiesPage() {
           </div>
         </div>
 
-        <div className="tourism-form-grid">
+        <div className="tourism-form-grid fm-activities-form-grid">
           <div className="form-field">
             <label htmlFor="activity-destination">
               Destination
@@ -518,7 +518,7 @@ export default function ActivitiesPage() {
 
         {error && (
           <div
-            className="visa-error"
+            className="visa-error fm-activities-error"
             role="alert"
           >
             <strong>
@@ -529,7 +529,7 @@ export default function ActivitiesPage() {
           </div>
         )}
 
-        <div className="planner-actions">
+        <div className="planner-actions fm-activities-actions">
           <button
             type="button"
             className="btn btn-primary"
@@ -563,9 +563,9 @@ export default function ActivitiesPage() {
       </section>
 
       {searched && !loading && (
-        <section className="activity-results-section">
-          <div className="flight-results-header">
-            <div>
+        <section className="activity-results-section fm-activities-results-section">
+          <div className="flight-results-header fm-activities-results-header">
+            <div className="fm-activities-results-title">
               <span className="section-kicker">
                 Results
               </span>
@@ -590,7 +590,7 @@ export default function ActivitiesPage() {
             </div>
 
             {sortedActivities.length > 0 && (
-              <div className="form-field-inline">
+              <div className="form-field-inline fm-activities-sort">
                 <label htmlFor="activity-sort">
                   Sort
                 </label>
@@ -620,7 +620,7 @@ export default function ActivitiesPage() {
           </div>
 
           {sortedActivities.length > 0 ? (
-            <div className="activity-results-grid">
+            <div className="activity-results-grid fm-activities-results-grid">
               {sortedActivities.map(
                 (activity, index) => {
                   const image =
@@ -640,7 +640,7 @@ export default function ActivitiesPage() {
 
                   return (
                     <article
-                      className="activity-result-card"
+                      className="activity-result-card fm-activity-result-card"
                       key={
                         activity?.id ||
                         activity?.activityId ||
@@ -650,7 +650,7 @@ export default function ActivitiesPage() {
                       }
                     >
                       {image ? (
-                        <div className="activity-image-wrapper">
+                        <div className="activity-image-wrapper fm-activity-image-wrapper">
                           <img
                             src={image}
                             alt={getActivityName(
@@ -661,15 +661,15 @@ export default function ActivitiesPage() {
                           />
                         </div>
                       ) : (
-                        <div className="activity-image-placeholder">
+                        <div className="activity-image-placeholder fm-activity-image-placeholder">
                           <span>
                             ★
                           </span>
                         </div>
                       )}
 
-                      <div className="activity-result-body">
-                        <div className="activity-card-topline">
+                      <div className="activity-result-body fm-activity-result-body">
+                        <div className="activity-card-topline fm-activity-card-topline">
                           <span className="fm-badge">
                             {getProvider(
                               activity
@@ -717,7 +717,7 @@ export default function ActivitiesPage() {
                           </div>
                         )}
 
-                        <div className="activity-result-footer">
+                        <div className="activity-result-footer fm-activity-result-footer">
                           <div>
                             {Number.isFinite(
                               price
@@ -764,7 +764,7 @@ export default function ActivitiesPage() {
               )}
             </div>
           ) : (
-            <div className="empty-state">
+            <div className="empty-state fm-activities-empty-state">
               <div
                 className="empty-state-icon"
                 aria-hidden="true"
@@ -795,7 +795,7 @@ export default function ActivitiesPage() {
       )}
 
       {selectedActivity && (
-        <section className="activity-detail-card">
+        <section className="activity-detail-card fm-activity-detail-card">
           <div>
             <span className="section-kicker">
               Selected experience
@@ -822,7 +822,7 @@ export default function ActivitiesPage() {
         </section>
       )}
 
-      <section className="activity-info-grid">
+      <section className="activity-info-grid fm-activities-info-grid">
         <article className="service-card">
           <div className="service-card-icon">
             ★
@@ -872,7 +872,7 @@ export default function ActivitiesPage() {
         </article>
       </section>
 
-      <section className="planner-notice">
+      <section className="planner-notice fm-activities-notice">
         <strong>
           Activity availability notice
         </strong>
@@ -887,4 +887,4 @@ export default function ActivitiesPage() {
       </section>
     </main>
   );
-    }
+}
