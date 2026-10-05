@@ -8,34 +8,43 @@ import AirportSearch from "./AirportSearch.jsx";
 import PassengerSelector from "./PassengerSelector.jsx";
 import { navigate } from "../../router/AppRouter.jsx";
 
-const DEFAULT_MULTI_CITY_LEGS = [
-  {
-    id: "leg_1",
-    origin: null,
-    destination: null,
-    departureDate: ""
-  },
-  {
-    id: "leg_2",
-    origin: null,
-    destination: null,
-    departureDate: ""
-  }
-];
+/* =========================================================
+   DEFAULT SEARCH
+   ========================================================= */
 
 const DEFAULT_SEARCH = {
   tripType: "roundtrip",
+
   origin: null,
   destination: null,
+
   departureDate: "",
   returnDate: "",
+
   adults: 1,
   children: 0,
   infants: 0,
+
   cabin: "economy",
   stops: "any",
-  multiCityLegs: DEFAULT_MULTI_CITY_LEGS
+
+  multiCityLegs: [
+    {
+      origin: null,
+      destination: null,
+      departureDate: ""
+    },
+    {
+      origin: null,
+      destination: null,
+      departureDate: ""
+    }
+  ]
 };
+
+/* =========================================================
+   CABIN OPTIONS
+   ========================================================= */
 
 const CABIN_OPTIONS = [
   {
@@ -56,6 +65,10 @@ const CABIN_OPTIONS = [
   }
 ];
 
+/* =========================================================
+   STOP OPTIONS
+   ========================================================= */
+
 const STOP_OPTIONS = [
   {
     value: "any",
@@ -75,14 +88,18 @@ const STOP_OPTIONS = [
   }
 ];
 
-const MAX_MULTI_CITY_LEGS = 6;
+/* =========================================================
+   HELPERS
+   ========================================================= */
 
 function formatDateForDisplay(value) {
   if (!value) {
     return "";
   }
 
-  const date = new Date(`${value}T00:00:00`);
+  const date = new Date(
+    `${value}T00:00:00`
+  );
 
   if (Number.isNaN(date.getTime())) {
     return value;
@@ -120,43 +137,42 @@ function createSearchId() {
   );
 }
 
-function createLegId() {
-  return (
-    `leg_${Date.now()}_` +
-    Math.random()
-      .toString(36)
-      .slice(2, 7)
-  );
-}
-
 function normalizeAirport(value) {
   if (!value) {
     return null;
   }
 
   return {
-    code: value.code || value.iata || "",
-    name: value.name || "",
-    city: value.city || "",
-    country: value.country || "",
-    countryCode: value.countryCode || "",
-    type: value.type || "airport"
+    code:
+      value.code ||
+      value.iata ||
+      "",
+
+    name:
+      value.name ||
+      "",
+
+    city:
+      value.city ||
+      "",
+
+    country:
+      value.country ||
+      "",
+
+    countryCode:
+      value.countryCode ||
+      "",
+
+    type:
+      value.type ||
+      "airport"
   };
 }
 
-function normalizeLeg(leg) {
-  return {
-    id: leg.id || createLegId(),
-    origin: normalizeAirport(
-      leg.origin
-    ),
-    destination: normalizeAirport(
-      leg.destination
-    ),
-    departureDate:
-      leg.departureDate || ""
-  };
-}
+/* =========================================================
+   SEARCH PAYLOAD
+   ========================================================= */
 
 function buildSearchPayload(search) {
   const adults =
@@ -168,199 +184,105 @@ function buildSearchPayload(search) {
   const infants =
     Number(search.infants) || 0;
 
-  const multiCityLegs =
-    search.tripType === "multicity"
-      ? search.multiCityLegs.map(
-          normalizeLeg
-        )
-      : [];
-
-  return {
+  const payload = {
     searchId: createSearchId(),
 
-    tripType: search.tripType,
-
-    origin:
-      search.tripType === "multicity"
-        ? normalizeAirport(
-            multiCityLegs[0]?.origin
-          )
-        : normalizeAirport(
-            search.origin
-          ),
-
-    destination:
-      search.tripType === "multicity"
-        ? normalizeAirport(
-            multiCityLegs[
-              multiCityLegs.length - 1
-            ]?.destination
-          )
-        : normalizeAirport(
-            search.destination
-          ),
-
-    departureDate:
-      search.tripType === "multicity"
-        ? multiCityLegs[0]
-            ?.departureDate || ""
-        : search.departureDate,
-
-    returnDate:
-      search.tripType === "roundtrip"
-        ? search.returnDate
-        : "",
-
-    multiCityLegs,
+    tripType:
+      search.tripType,
 
     passengers: {
       adults,
       children,
       infants,
+
       total:
         adults +
         children +
         infants
     },
 
-    cabin: search.cabin,
+    cabin:
+      search.cabin,
 
-    stops: search.stops,
+    stops:
+      search.stops,
 
     createdAt:
       new Date().toISOString()
   };
-}
 
-function buildSearchQuery(search) {
-  const params =
-    new URLSearchParams();
+  /*
+   * MULTI-CITY
+   */
 
   if (
     search.tripType ===
     "multicity"
   ) {
-    const legs =
-      search.multiCityLegs.map(
-        normalizeLeg
-      );
+    payload.multiCityLegs = (
+      search.multiCityLegs ||
+      []
+    ).map((leg) => ({
+      origin:
+        normalizeAirport(
+          leg.origin
+        ),
 
-    params.set(
-      "trip",
-      "multicity"
-    );
+      destination:
+        normalizeAirport(
+          leg.destination
+        ),
 
-    params.set(
-      "tripType",
-      "multicity"
-    );
+      departureDate:
+        leg.departureDate || ""
+    }));
 
-    params.set(
-      "multiCity",
-      "true"
-    );
-
-    params.set(
-      "legs",
-      JSON.stringify(
-        legs.map((leg) => ({
-          origin:
-            leg.origin?.code || "",
-          destination:
-            leg.destination?.code || "",
-          departureDate:
-            leg.departureDate || ""
-        }))
-      )
-    );
-
-    if (legs[0]?.origin?.code) {
-      params.set(
-        "origin",
-        legs[0].origin.code
-      );
-    }
-
-    if (
-      legs[legs.length - 1]
-        ?.destination?.code
-    ) {
-      params.set(
-        "destination",
-        legs[
-          legs.length - 1
-        ].destination.code
-      );
-    }
-
-    if (
-      legs[0]?.departureDate
-    ) {
-      params.set(
-        "departureDate",
-        legs[0].departureDate
-      );
-
-      params.set(
-        "departure",
-        legs[0].departureDate
-      );
-    }
-  } else {
-    if (search.origin?.code) {
-      params.set(
-        "origin",
-        search.origin.code
-      );
-    }
-
-    if (
-      search.destination?.code
-    ) {
-      params.set(
-        "destination",
-        search.destination.code
-      );
-    }
-
-    if (search.departureDate) {
-      params.set(
-        "departureDate",
-        search.departureDate
-      );
-
-      params.set(
-        "departure",
-        search.departureDate
-      );
-    }
-
-    if (
-      search.tripType ===
-        "roundtrip" &&
-      search.returnDate
-    ) {
-      params.set(
-        "returnDate",
-        search.returnDate
-      );
-
-      params.set(
-        "return",
-        search.returnDate
-      );
-    }
-
-    params.set(
-      "trip",
-      search.tripType
-    );
-
-    params.set(
-      "tripType",
-      search.tripType
-    );
+    return payload;
   }
+
+  /*
+   * NORMAL SEARCH
+   */
+
+  payload.origin =
+    normalizeAirport(
+      search.origin
+    );
+
+  payload.destination =
+    normalizeAirport(
+      search.destination
+    );
+
+  payload.departureDate =
+    search.departureDate;
+
+  payload.returnDate =
+    search.tripType ===
+    "roundtrip"
+      ? search.returnDate
+      : "";
+
+  return payload;
+}
+
+/* =========================================================
+   QUERY STRING
+   ========================================================= */
+
+function buildSearchQuery(search) {
+  const params =
+    new URLSearchParams();
+
+  params.set(
+    "trip",
+    search.tripType
+  );
+
+  params.set(
+    "tripType",
+    search.tripType
+  );
 
   params.set(
     "adults",
@@ -396,52 +318,145 @@ function buildSearchQuery(search) {
     search.cabin
   );
 
-  if (search.stops !== "any") {
+  if (
+    search.stops &&
+    search.stops !== "any"
+  ) {
     params.set(
       "stops",
       search.stops
     );
   }
 
-  return params;
-}
-
-function validateSearch(search) {
-  const errors = {};
+  /*
+   * MULTI-CITY QUERY
+   */
 
   if (
     search.tripType ===
     "multicity"
   ) {
-    if (
-      !Array.isArray(
-        search.multiCityLegs
-      ) ||
-      search.multiCityLegs.length <
-        2
-    ) {
-      errors.multiCity =
-        "Add at least two flights to continue.";
-      return errors;
+    const legs =
+      search.multiCityLegs ||
+      [];
+
+    params.set(
+      "legs",
+      JSON.stringify(
+        legs.map((leg) => ({
+          origin:
+            leg.origin?.code ||
+            "",
+
+          destination:
+            leg.destination?.code ||
+            "",
+
+          departureDate:
+            leg.departureDate ||
+            ""
+        }))
+      )
+    );
+
+    return params;
+  }
+
+  /*
+   * NORMAL QUERY
+   */
+
+  if (search.origin?.code) {
+    params.set(
+      "origin",
+      search.origin.code
+    );
+  }
+
+  if (
+    search.destination?.code
+  ) {
+    params.set(
+      "destination",
+      search.destination.code
+    );
+  }
+
+  if (search.departureDate) {
+    params.set(
+      "departureDate",
+      search.departureDate
+    );
+
+    params.set(
+      "departure",
+      search.departureDate
+    );
+  }
+
+  if (
+    search.tripType ===
+      "roundtrip" &&
+    search.returnDate
+  ) {
+    params.set(
+      "returnDate",
+      search.returnDate
+    );
+
+    params.set(
+      "return",
+      search.returnDate
+    );
+  }
+
+  return params;
+}
+
+/* =========================================================
+   VALIDATION
+   ========================================================= */
+
+function validateSearch(search) {
+  const errors = {};
+
+  /*
+   * MULTI-CITY
+   */
+
+  if (
+    search.tripType ===
+    "multicity"
+  ) {
+    const legs =
+      search.multiCityLegs ||
+      [];
+
+    if (legs.length < 2) {
+      errors.form =
+        "Add at least two flights.";
     }
 
-    const legErrors = {};
-
-    search.multiCityLegs.forEach(
+    legs.forEach(
       (leg, index) => {
-        const currentErrors =
-          {};
-
         if (!leg.origin?.code) {
-          currentErrors.origin =
-            "Select a departure airport.";
+          errors[
+            `leg-${index}-origin`
+          ] =
+            `Select the departure airport for Flight ${
+              index + 1
+            }.`;
         }
 
         if (
           !leg.destination?.code
         ) {
-          currentErrors.destination =
-            "Select a destination airport.";
+          errors[
+            `leg-${index}-destination`
+          ] =
+            `Select the destination airport for Flight ${
+              index + 1
+            }.`;
         }
 
         if (
@@ -450,48 +465,49 @@ function validateSearch(search) {
           leg.origin.code ===
             leg.destination.code
         ) {
-          currentErrors.destination =
-            "Departure and destination cannot be the same.";
+          errors[
+            `leg-${index}-destination`
+          ] =
+            `Flight ${
+              index + 1
+            } cannot have the same departure and destination airport.`;
         }
-
-        if (!leg.departureDate) {
-          currentErrors.departureDate =
-            "Select a departure date.";
-        }
-
-        const previousLeg =
-          search.multiCityLegs[
-            index - 1
-          ];
 
         if (
-          previousLeg?.departureDate &&
+          !leg.departureDate
+        ) {
+          errors[
+            `leg-${index}-date`
+          ] =
+            `Select a departure date for Flight ${
+              index + 1
+            }.`;
+        }
+
+        if (
+          index > 0 &&
+          legs[index - 1]
+            ?.departureDate &&
           leg.departureDate &&
           leg.departureDate <
-            previousLeg.departureDate
+            legs[index - 1]
+              .departureDate
         ) {
-          currentErrors.departureDate =
-            "This date cannot be before the previous flight.";
-        }
-
-        if (
-          Object.keys(
-            currentErrors
-          ).length
-        ) {
-          legErrors[index] =
-            currentErrors;
+          errors[
+            `leg-${index}-date`
+          ] =
+            `Flight ${
+              index + 1
+            } cannot depart before Flight ${
+              index
+            }.`;
         }
       }
     );
 
-    if (
-      Object.keys(legErrors)
-        .length
-    ) {
-      errors.multiCityLegs =
-        legErrors;
-    }
+    /*
+     * Passenger validation
+     */
 
     if (
       !search.adults ||
@@ -503,6 +519,10 @@ function validateSearch(search) {
 
     return errors;
   }
+
+  /*
+   * NORMAL SEARCH
+   */
 
   if (!search.origin?.code) {
     errors.origin =
@@ -561,6 +581,10 @@ function validateSearch(search) {
   return errors;
 }
 
+/* =========================================================
+   ERROR MESSAGE
+   ========================================================= */
+
 function ErrorMessage({
   children
 }) {
@@ -578,6 +602,10 @@ function ErrorMessage({
   );
 }
 
+/* =========================================================
+   AIRPORT DISPLAY
+   ========================================================= */
+
 function AirportDisplay({
   value,
   fallback,
@@ -594,12 +622,14 @@ function AirportDisplay({
 
       <div className="fm-booking-airport-main">
         <strong>
-          {airport?.code || "---"}
+          {airport?.code ||
+            ""}
         </strong>
 
         <div className="fm-booking-airport-location">
           <span>
-            {airport?.city || fallback}
+            {airport?.city ||
+              fallback}
           </span>
 
           {airport?.name && (
@@ -613,6 +643,10 @@ function AirportDisplay({
   );
 }
 
+/* =========================================================
+   COMPONENT
+   ========================================================= */
+
 export default function FlightSearchForm({
   initialSearch = null,
   compact = false,
@@ -623,14 +657,7 @@ export default function FlightSearchForm({
     setSearch
   ] = useState(() => ({
     ...DEFAULT_SEARCH,
-    ...(initialSearch || {}),
-    multiCityLegs:
-      initialSearch?.multiCityLegs?.length >=
-      2
-        ? initialSearch.multiCityLegs.map(
-            normalizeLeg
-          )
-        : DEFAULT_MULTI_CITY_LEGS
+    ...(initialSearch || {})
   }));
 
   const [
@@ -643,15 +670,14 @@ export default function FlightSearchForm({
     setIsSubmitting
   ] = useState(false);
 
-  const [
-    showAdvanced,
-    setShowAdvanced
-  ] = useState(false);
-
   const today = useMemo(
     () => getToday(),
     []
   );
+
+  /*
+   * APPLY INITIAL SEARCH
+   */
 
   useEffect(() => {
     if (!initialSearch) {
@@ -662,17 +688,17 @@ export default function FlightSearchForm({
       (current) => ({
         ...current,
         ...initialSearch,
+
         multiCityLegs:
-          initialSearch
-            ?.multiCityLegs
-            ?.length >= 2
-            ? initialSearch.multiCityLegs.map(
-                normalizeLeg
-              )
-            : current.multiCityLegs
+          initialSearch.multiCityLegs ||
+          current.multiCityLegs
       })
     );
   }, [initialSearch]);
+
+  /* =======================================================
+     FIELD UPDATE
+     ======================================================= */
 
   function updateField(
     field,
@@ -702,44 +728,33 @@ export default function FlightSearchForm({
     );
   }
 
+  /* =======================================================
+     TRIP TYPE
+     ======================================================= */
+
   function handleTripTypeChange(
     type
   ) {
     setSearch(
-      (current) => {
-        if (
-          type === "multicity"
-        ) {
-          const legs =
-            current.multiCityLegs
-              ?.length >= 2
-              ? current.multiCityLegs
-              : DEFAULT_MULTI_CITY_LEGS;
+      (current) => ({
+        ...current,
 
-          return {
-            ...current,
-            tripType: type,
-            multiCityLegs:
-              legs.map(
-                normalizeLeg
-              )
-          };
-        }
+        tripType:
+          type,
 
-        return {
-          ...current,
-          tripType: type,
-          returnDate:
-            type ===
-            "roundtrip"
-              ? current.returnDate
-              : ""
-        };
-      }
+        returnDate:
+          type === "roundtrip"
+            ? current.returnDate
+            : ""
+      })
     );
 
     setErrors({});
   }
+
+  /* =======================================================
+     PASSENGERS
+     ======================================================= */
 
   function handlePassengerChange(
     passengers
@@ -778,6 +793,10 @@ export default function FlightSearchForm({
     );
   }
 
+  /* =======================================================
+     DEPARTURE
+     ======================================================= */
+
   function handleDepartureChange(
     event
   ) {
@@ -801,7 +820,10 @@ export default function FlightSearchForm({
 
         return {
           ...current,
-          departureDate: value,
+
+          departureDate:
+            value,
+
           returnDate
         };
       }
@@ -814,12 +836,17 @@ export default function FlightSearchForm({
         };
 
         delete next.departureDate;
+
         delete next.returnDate;
 
         return next;
       }
     );
   }
+
+  /* =======================================================
+     RETURN
+     ======================================================= */
 
   function handleReturnChange(
     event
@@ -829,6 +856,10 @@ export default function FlightSearchForm({
       event.target.value
     );
   }
+
+  /* =======================================================
+     SWAP
+     ======================================================= */
 
   function swapAirports() {
     setSearch(
@@ -850,12 +881,17 @@ export default function FlightSearchForm({
         };
 
         delete next.origin;
+
         delete next.destination;
 
         return next;
       }
     );
   }
+
+  /* =======================================================
+     MULTI-CITY LEG UPDATE
+     ======================================================= */
 
   function updateMultiCityLeg(
     index,
@@ -864,210 +900,99 @@ export default function FlightSearchForm({
   ) {
     setSearch(
       (current) => {
-        const legs =
-          current.multiCityLegs.map(
-            (leg, legIndex) =>
-              legIndex === index
-                ? {
-                    ...leg,
-                    [field]:
-                      field ===
-                      "origin" ||
-                      field ===
-                      "destination"
-                        ? normalizeAirport(
-                            value
-                          )
-                        : value
-                  }
-                : leg
-          );
+        const legs = [
+          ...(current.multiCityLegs ||
+            [])
+        ];
+
+        legs[index] = {
+          ...legs[index],
+          [field]: value
+        };
 
         return {
           ...current,
+
           multiCityLegs:
             legs
         };
       }
     );
 
-    setErrors(
-      (current) => {
-        const next = {
-          ...current
-        };
-
-        if (
-          next.multiCityLegs?.[
-            index
-          ]
-        ) {
-          const legErrors = {
-            ...next.multiCityLegs[
-              index
-            ]
-          };
-
-          delete legErrors[field];
-
-          if (
-            Object.keys(
-              legErrors
-            ).length
-          ) {
-            next.multiCityLegs[
-              index
-            ] = legErrors;
-          } else {
-            delete next.multiCityLegs[
-              index
-            ];
-          }
-        }
-
-        return next;
-      }
-    );
+    setErrors({});
   }
+
+  /* =======================================================
+     ADD MULTI-CITY LEG
+     ======================================================= */
 
   function addMultiCityLeg() {
     setSearch(
       (current) => {
-        if (
-          current.multiCityLegs
-            .length >=
-          MAX_MULTI_CITY_LEGS
-        ) {
+        const legs = [
+          ...(current.multiCityLegs ||
+            [])
+        ];
+
+        /*
+         * Maximum 4 legs.
+         */
+
+        if (legs.length >= 4) {
           return current;
         }
 
-        const previousLeg =
-          current.multiCityLegs[
-            current.multiCityLegs
-              .length - 1
-          ];
-
-        const nextLeg = {
-          id: createLegId(),
-          origin:
-            previousLeg?.destination ||
-            null,
+        legs.push({
+          origin: null,
           destination: null,
           departureDate: ""
-        };
+        });
 
         return {
           ...current,
-          multiCityLegs: [
-            ...current.multiCityLegs,
-            nextLeg
-          ]
+
+          multiCityLegs:
+            legs
         };
       }
     );
   }
+
+  /* =======================================================
+     REMOVE MULTI-CITY LEG
+     ======================================================= */
 
   function removeMultiCityLeg(
     index
   ) {
     setSearch(
       (current) => {
-        if (
-          current.multiCityLegs
-            .length <= 2
-        ) {
+        const legs = [
+          ...(current.multiCityLegs ||
+            [])
+        ];
+
+        if (legs.length <= 2) {
           return current;
         }
 
-        return {
-          ...current,
-          multiCityLegs:
-            current.multiCityLegs.filter(
-              (_, legIndex) =>
-                legIndex !== index
-            )
-        };
-      }
-    );
-
-    setErrors(
-      (current) => {
-        const next = {
-          ...current
-        };
-
-        if (
-          next.multiCityLegs
-        ) {
-          const rebuilt = {};
-
-          Object.entries(
-            next.multiCityLegs
-          ).forEach(
-            ([key, value]) => {
-              const oldIndex =
-                Number(key);
-
-              if (
-                oldIndex === index
-              ) {
-                return;
-              }
-
-              const newIndex =
-                oldIndex > index
-                  ? oldIndex - 1
-                  : oldIndex;
-
-              rebuilt[newIndex] =
-                value;
-            }
-          );
-
-          next.multiCityLegs =
-            rebuilt;
-        }
-
-        return next;
-      }
-    );
-  }
-
-  function swapMultiCityLeg(
-    index
-  ) {
-    setSearch(
-      (current) => {
-        const legs =
-          current.multiCityLegs.map(
-            (leg) => ({
-              ...leg
-            })
-          );
-
-        const currentLeg =
-          legs[index];
-
-        if (!currentLeg) {
-          return current;
-        }
-
-        legs[index] = {
-          ...currentLeg,
-          origin:
-            currentLeg.destination,
-          destination:
-            currentLeg.origin
-        };
+        legs.splice(index, 1);
 
         return {
           ...current,
+
           multiCityLegs:
             legs
         };
       }
     );
+
+    setErrors({});
   }
+
+  /* =======================================================
+     SUBMIT
+     ======================================================= */
 
   async function handleSubmit(
     event
@@ -1080,7 +1005,7 @@ export default function FlightSearchForm({
     if (
       Object.keys(
         validationErrors
-      ).length
+      ).length > 0
     ) {
       setErrors(
         validationErrors
@@ -1097,20 +1022,40 @@ export default function FlightSearchForm({
           search
         );
 
+      /*
+       * Save complete search.
+       */
+
       sessionStorage.setItem(
         "flymatrix:lastSearch",
         JSON.stringify(payload)
       );
 
+      /*
+       * Build URL.
+       */
+
       const query =
-        buildSearchQuery(search);
+        buildSearchQuery(
+          search
+        );
+
+      /*
+       * Optional callback.
+       */
 
       if (
         typeof onSearch ===
         "function"
       ) {
-        await onSearch(payload);
+        await onSearch(
+          payload
+        );
       }
+
+      /*
+       * Navigate to results.
+       */
 
       navigate(
         `/search?${query.toString()}`
@@ -1130,32 +1075,55 @@ export default function FlightSearchForm({
     }
   }
 
+  /* =======================================================
+     TRAVELER TOTAL
+     ======================================================= */
+
   const totalTravelers =
     Number(search.adults) +
     Number(search.children) +
     Number(search.infants);
 
-  const multiCity =
-    search.tripType ===
-    "multicity";
+  /* =======================================================
+     CURRENT CABIN
+     ======================================================= */
+
+  const currentCabin =
+    CABIN_OPTIONS.find(
+      (item) =>
+        item.value ===
+        search.cabin
+    ) ||
+    CABIN_OPTIONS[0];
+
+  /* =======================================================
+     RENDER
+     ======================================================= */
 
   return (
     <form
       className={[
         "fm-flight-search-form",
         "fm-wakanow-search",
+
         compact
           ? "fm-flight-search-form-compact"
           : ""
       ]
         .filter(Boolean)
         .join(" ")}
-      onSubmit={handleSubmit}
+      onSubmit={
+        handleSubmit
+      }
       noValidate
     >
-      {/* SEARCH TYPE */}
+
+      {/* =================================================
+          TRIP TYPE
+          ================================================= */}
 
       <div className="fm-booking-tabs">
+
         <button
           type="button"
           className={
@@ -1206,235 +1174,27 @@ export default function FlightSearchForm({
         >
           Multi-city
         </button>
+
       </div>
 
-      {/* MULTI-CITY */}
+      {/* =================================================
+          NORMAL ROUTE SEARCH
+          ================================================= */}
 
-      {multiCity ? (
-        <div className="fm-booking-multicity">
-
-          {search.multiCityLegs.map(
-            (leg, index) => {
-              const legErrors =
-                errors
-                  .multiCityLegs?.[
-                  index
-                ] || {};
-
-              const minimumDate =
-                index > 0 &&
-                search
-                  .multiCityLegs[
-                  index - 1
-                ]?.departureDate
-                  ? search
-                      .multiCityLegs[
-                      index - 1
-                    ].departureDate
-                  : today;
-
-              return (
-                <div
-                  className="fm-booking-multicity-leg"
-                  key={leg.id}
-                >
-                  <div className="fm-booking-multicity-leg-header">
-                    <strong>
-                      Flight {index + 1}
-                    </strong>
-
-                    {search
-                      .multiCityLegs
-                      .length > 2 && (
-                      <button
-                        type="button"
-                        className="fm-booking-remove-leg"
-                        onClick={() =>
-                          removeMultiCityLeg(
-                            index
-                          )
-                        }
-                        aria-label={`Remove flight ${index + 1}`}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="fm-booking-multicity-route">
-
-                    <div className="fm-booking-route-field">
-                      <AirportDisplay
-                        value={
-                          leg.origin
-                        }
-                        fallback="Select departure"
-                        label="From"
-                      />
-
-                      <AirportSearch
-                        id={`flight-origin-${leg.id}`}
-                        value={
-                          leg.origin
-                        }
-                        placeholder="City or airport"
-                        ariaLabel={`Flight ${index + 1} departure airport`}
-                        onChange={(
-                          airport
-                        ) =>
-                          updateMultiCityLeg(
-                            index,
-                            "origin",
-                            airport
-                          )
-                        }
-                      />
-
-                      <ErrorMessage>
-                        {
-                          legErrors.origin
-                        }
-                      </ErrorMessage>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="fm-booking-swap fm-booking-multicity-swap"
-                      onClick={() =>
-                        swapMultiCityLeg(
-                          index
-                        )
-                      }
-                      title="Swap airports"
-                      aria-label={`Swap airports for flight ${index + 1}`}
-                    >
-                      ⇄
-                    </button>
-
-                    <div className="fm-booking-route-field">
-                      <AirportDisplay
-                        value={
-                          leg.destination
-                        }
-                        fallback="Select destination"
-                        label="To"
-                      />
-
-                      <AirportSearch
-                        id={`flight-destination-${leg.id}`}
-                        value={
-                          leg.destination
-                        }
-                        placeholder="City or airport"
-                        ariaLabel={`Flight ${index + 1} destination airport`}
-                        onChange={(
-                          airport
-                        ) =>
-                          updateMultiCityLeg(
-                            index,
-                            "destination",
-                            airport
-                          )
-                        }
-                      />
-
-                      <ErrorMessage>
-                        {
-                          legErrors.destination
-                        }
-                      </ErrorMessage>
-                    </div>
-
-                    <div className="fm-booking-detail-field fm-booking-multicity-date">
-                      <span className="fm-booking-field-label">
-                        Departure
-                      </span>
-
-                      <input
-                        id={`multi-city-date-${leg.id}`}
-                        type="date"
-                        min={
-                          minimumDate
-                        }
-                        value={
-                          leg.departureDate
-                        }
-                        onChange={(
-                          event
-                        ) =>
-                          updateMultiCityLeg(
-                            index,
-                            "departureDate",
-                            event
-                              .target
-                              .value
-                          )
-                        }
-                        aria-invalid={Boolean(
-                          legErrors.departureDate
-                        )}
-                      />
-
-                      <span className="fm-booking-value">
-                        {leg.departureDate
-                          ? formatDateForDisplay(
-                              leg.departureDate
-                            )
-                          : "Choose date"}
-                      </span>
-
-                      <ErrorMessage>
-                        {
-                          legErrors.departureDate
-                        }
-                      </ErrorMessage>
-                    </div>
-                  </div>
-                </div>
-              );
-            }
-          )}
-
-          <div className="fm-booking-multicity-add-row">
-            <button
-              type="button"
-              className="fm-booking-add-leg"
-              onClick={
-                addMultiCityLeg
-              }
-              disabled={
-                search.multiCityLegs
-                  .length >=
-                MAX_MULTI_CITY_LEGS
-              }
-            >
-              <span>+</span>
-              Add another flight
-            </button>
-
-            <span>
-              {search.multiCityLegs.length}
-              /
-              {MAX_MULTI_CITY_LEGS} flights
-            </span>
-          </div>
-
-          <ErrorMessage>
-            {errors.multiCity}
-          </ErrorMessage>
-        </div>
-      ) : (
+      {search.tripType !==
+        "multicity" && (
         <>
-          {/* NORMAL ROUTE */}
-
           <div className="fm-booking-main-row">
 
+            {/* FROM */}
+
             <div className="fm-booking-route-field">
+
               <AirportDisplay
                 value={
                   search.origin
                 }
-                fallback="Select departure"
+                fallback="City or airport"
                 label="From"
               />
 
@@ -1458,9 +1218,14 @@ export default function FlightSearchForm({
               />
 
               <ErrorMessage>
-                {errors.origin}
+                {
+                  errors.origin
+                }
               </ErrorMessage>
+
             </div>
+
+            {/* SWAP */}
 
             <button
               type="button"
@@ -1474,12 +1239,15 @@ export default function FlightSearchForm({
               ⇄
             </button>
 
+            {/* TO */}
+
             <div className="fm-booking-route-field">
+
               <AirportDisplay
                 value={
                   search.destination
                 }
-                fallback="Select destination"
+                fallback="City or airport"
                 label="To"
               />
 
@@ -1507,14 +1275,21 @@ export default function FlightSearchForm({
                   errors.destination
                 }
               </ErrorMessage>
+
             </div>
+
           </div>
 
-          {/* NORMAL TRAVEL DETAILS */}
+          {/* =================================================
+              DATES
+              ================================================= */}
 
           <div className="fm-booking-details-row">
 
+            {/* DEPARTURE */}
+
             <div className="fm-booking-detail-field">
+
               <span className="fm-booking-field-label">
                 Departure
               </span>
@@ -1539,7 +1314,7 @@ export default function FlightSearchForm({
                   ? formatDateForDisplay(
                       search.departureDate
                     )
-                  : "Choose date"}
+                  : "Select date"}
               </span>
 
               <ErrorMessage>
@@ -1547,17 +1322,24 @@ export default function FlightSearchForm({
                   errors.departureDate
                 }
               </ErrorMessage>
+
             </div>
+
+            {/* RETURN */}
 
             <div
               className={[
                 "fm-booking-detail-field",
+
                 search.tripType !==
                   "roundtrip"
                   ? "disabled"
                   : ""
-              ].join(" ")}
+              ]
+                .filter(Boolean)
+                .join(" ")}
             >
+
               <span className="fm-booking-field-label">
                 Return
               </span>
@@ -1592,7 +1374,7 @@ export default function FlightSearchForm({
                     ? formatDateForDisplay(
                         search.returnDate
                       )
-                    : "Choose date"}
+                    : "Select date"}
               </span>
 
               <ErrorMessage>
@@ -1600,269 +1382,312 @@ export default function FlightSearchForm({
                   errors.returnDate
                 }
               </ErrorMessage>
+
             </div>
 
-            <div className="fm-booking-detail-field">
-              <span className="fm-booking-field-label">
-                Travellers
-              </span>
-
-              <PassengerSelector
-                adults={
-                  search.adults
-                }
-                children={
-                  search.children
-                }
-                infants={
-                  search.infants
-                }
-                onChange={
-                  handlePassengerChange
-                }
-              />
-
-              <span className="fm-booking-value">
-                {totalTravelers}{" "}
-                traveller
-                {totalTravelers !==
-                1
-                  ? "s"
-                  : ""}
-              </span>
-
-              <ErrorMessage>
-                {errors.passengers}
-              </ErrorMessage>
-            </div>
-
-            <div className="fm-booking-detail-field">
-              <label
-                className="fm-booking-field-label"
-                htmlFor="cabin-class"
-              >
-                Class
-              </label>
-
-              <select
-                id="cabin-class"
-                value={
-                  search.cabin
-                }
-                onChange={(
-                  event
-                ) =>
-                  updateField(
-                    "cabin",
-                    event.target
-                      .value
-                  )
-                }
-              >
-                {CABIN_OPTIONS.map(
-                  (option) => (
-                    <option
-                      key={
-                        option.value
-                      }
-                      value={
-                        option.value
-                      }
-                    >
-                      {
-                        option.label
-                      }
-                    </option>
-                  )
-                )}
-              </select>
-
-              <span className="fm-booking-value">
-                {
-                  CABIN_OPTIONS.find(
-                    (item) =>
-                      item.value ===
-                      search.cabin
-                  )?.label
-                }
-              </span>
-            </div>
           </div>
         </>
       )}
 
-      {/* MULTI-CITY TRAVELLERS / CLASS */}
+      {/* =================================================
+          MULTI-CITY
+          ================================================= */}
 
-      {multiCity && (
-        <div className="fm-booking-details-row fm-booking-multicity-details">
+      {search.tripType ===
+        "multicity" && (
+        <div className="fm-booking-multicity">
 
-          <div className="fm-booking-detail-field">
-            <span className="fm-booking-field-label">
-              Travellers
-            </span>
+          {(search.multiCityLegs ||
+            []
+          ).map(
+            (
+              leg,
+              index
+            ) => (
+              <div
+                className="fm-multicity-leg"
+                key={
+                  `leg-${index}`
+                }
+              >
 
-            <PassengerSelector
-              adults={
-                search.adults
-              }
-              children={
-                search.children
-              }
-              infants={
-                search.infants
-              }
-              onChange={
-                handlePassengerChange
-              }
-            />
+                <div className="fm-multicity-leg-header">
 
-            <span className="fm-booking-value">
-              {totalTravelers}{" "}
-              traveller
-              {totalTravelers !== 1
-                ? "s"
-                : ""}
-            </span>
+                  <strong>
+                    Flight{" "}
+                    {index + 1}
+                  </strong>
 
-            <ErrorMessage>
-              {errors.passengers}
-            </ErrorMessage>
-          </div>
+                  {index >=
+                    2 && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        removeMultiCityLeg(
+                          index
+                        )
+                      }
+                    >
+                      Remove
+                    </button>
+                  )}
 
-          <div className="fm-booking-detail-field">
-            <label
-              className="fm-booking-field-label"
-              htmlFor="cabin-class-multicity"
-            >
-              Class
-            </label>
+                </div>
 
-            <select
-              id="cabin-class-multicity"
-              value={
-                search.cabin
-              }
-              onChange={(event) =>
-                updateField(
-                  "cabin",
-                  event.target.value
-                )
-              }
-            >
-              {CABIN_OPTIONS.map(
-                (option) => (
-                  <option
-                    key={
-                      option.value
-                    }
+                <div className="fm-booking-main-row">
+
+                  {/* LEG FROM */}
+
+                  <div className="fm-booking-route-field">
+
+                    <AirportDisplay
+                      value={
+                        leg.origin
+                      }
+                      fallback="City or airport"
+                      label="From"
+                    />
+
+                    <AirportSearch
+                      id={`multicity-origin-${index}`}
+                      value={
+                        leg.origin
+                      }
+                      placeholder="City or airport"
+                      ariaLabel={`Flight ${
+                        index + 1
+                      } departure airport`}
+                      onChange={(
+                        airport
+                      ) =>
+                        updateMultiCityLeg(
+                          index,
+                          "origin",
+                          normalizeAirport(
+                            airport
+                          )
+                        )
+                      }
+                    />
+
+                    <ErrorMessage>
+                      {
+                        errors[
+                          `leg-${index}-origin`
+                        ]
+                      }
+                    </ErrorMessage>
+
+                  </div>
+
+                  {/* LEG TO */}
+
+                  <div className="fm-booking-route-field">
+
+                    <AirportDisplay
+                      value={
+                        leg.destination
+                      }
+                      fallback="City or airport"
+                      label="To"
+                    />
+
+                    <AirportSearch
+                      id={`multicity-destination-${index}`}
+                      value={
+                        leg.destination
+                      }
+                      placeholder="City or airport"
+                      ariaLabel={`Flight ${
+                        index + 1
+                      } destination airport`}
+                      onChange={(
+                        airport
+                      ) =>
+                        updateMultiCityLeg(
+                          index,
+                          "destination",
+                          normalizeAirport(
+                            airport
+                          )
+                        )
+                      }
+                    />
+
+                    <ErrorMessage>
+                      {
+                        errors[
+                          `leg-${index}-destination`
+                        ]
+                      }
+                    </ErrorMessage>
+
+                  </div>
+
+                </div>
+
+                {/* LEG DATE */}
+
+                <div className="fm-multicity-date">
+
+                  <span className="fm-booking-field-label">
+                    Departure
+                  </span>
+
+                  <input
+                    type="date"
+                    min={today}
                     value={
-                      option.value
+                      leg.departureDate
                     }
-                  >
-                    {option.label}
-                  </option>
-                )
-              )}
-            </select>
+                    onChange={(
+                      event
+                    ) =>
+                      updateMultiCityLeg(
+                        index,
+                        "departureDate",
+                        event.target
+                          .value
+                      )
+                    }
+                    aria-label={`Flight ${
+                      index + 1
+                    } departure date`}
+                  />
 
-            <span className="fm-booking-value">
-              {
-                CABIN_OPTIONS.find(
-                  (item) =>
-                    item.value ===
-                    search.cabin
-                )?.label
+                  <ErrorMessage>
+                    {
+                      errors[
+                        `leg-${index}-date`
+                      ]
+                    }
+                  </ErrorMessage>
+
+                </div>
+
+              </div>
+            )
+          )}
+
+          {/* ADD FLIGHT */}
+
+          {(
+            search.multiCityLegs ||
+            []
+          ).length < 4 && (
+            <button
+              type="button"
+              className="fm-add-flight"
+              onClick={
+                addMultiCityLeg
               }
-            </span>
-          </div>
+            >
+              + Add another flight
+            </button>
+          )}
+
         </div>
       )}
 
-      {/* ADVANCED */}
+      {/* =================================================
+          TRAVELLERS
+          ================================================= */}
 
-      <div className="fm-booking-options">
+      <div className="fm-booking-travellers">
 
-        <button
-          type="button"
-          className="fm-booking-options-toggle"
-          onClick={() =>
-            setShowAdvanced(
-              (current) =>
-                !current
-            )
-          }
-          aria-expanded={
-            showAdvanced
-          }
-        >
-          <span>
-            {showAdvanced
-              ? "Hide search options"
-              : "More search options"}
+        <div className="fm-booking-travellers-content">
+
+          <span className="fm-booking-field-label">
+            Travellers
           </span>
 
-          <span>
-            {showAdvanced
-              ? "−"
-              : "+"}
+          <PassengerSelector
+            adults={
+              search.adults
+            }
+            children={
+              search.children
+            }
+            infants={
+              search.infants
+            }
+            onChange={
+              handlePassengerChange
+            }
+          />
+
+          <span className="fm-booking-traveller-value">
+            {totalTravelers}{" "}
+            {totalTravelers ===
+            1
+              ? "Adult"
+              : "Travellers"}
           </span>
-        </button>
 
-        {showAdvanced && (
-          <div className="fm-booking-options-panel">
-            <label htmlFor="stops">
-              Stops
-            </label>
+        </div>
 
-            <select
-              id="stops"
-              value={
-                search.stops
-              }
-              onChange={(event) =>
-                updateField(
-                  "stops",
-                  event.target.value
-                )
-              }
-            >
-              {STOP_OPTIONS.map(
-                (option) => (
-                  <option
-                    key={
-                      option.value
-                    }
-                    value={
-                      option.value
-                    }
-                  >
-                    {option.label}
-                  </option>
-                )
-              )}
-            </select>
-          </div>
-        )}
+        <ErrorMessage>
+          {errors.passengers}
+        </ErrorMessage>
+
       </div>
 
-      {/* FORM ERROR */}
-
-      {errors.form && (
-        <div
-          className="fm-booking-form-error"
-          role="alert"
-        >
-          {errors.form}
-        </div>
-      )}
-
-      {/* ACTION */}
+      {/* =================================================
+          BOTTOM ACTION ROW
+          ================================================= */}
 
       <div className="fm-booking-action-row">
-        <p>
-          Search live flight options from
-          available travel providers.
-        </p>
+
+        {/* CABIN */}
+
+        <div className="fm-booking-cabin">
+
+          <label
+            htmlFor="cabin-class"
+            className="sr-only"
+          >
+            Cabin class
+          </label>
+
+          <select
+            id="cabin-class"
+            value={
+              search.cabin
+            }
+            onChange={(
+              event
+            ) =>
+              updateField(
+                "cabin",
+                event.target.value
+              )
+            }
+          >
+            {CABIN_OPTIONS.map(
+              (option) => (
+                <option
+                  key={
+                    option.value
+                  }
+                  value={
+                    option.value
+                  }
+                >
+                  {option.label}
+                </option>
+              )
+            )}
+          </select>
+
+          <span className="fm-booking-cabin-current">
+            {
+              currentCabin.label
+            }
+          </span>
+
+        </div>
+
+        {/* SEARCH */}
 
         <button
           type="submit"
@@ -1875,7 +1700,77 @@ export default function FlightSearchForm({
             ? "Searching..."
             : "Search flights"}
         </button>
+
       </div>
+
+      {/* =================================================
+          OPTIONAL STOP FILTER
+          ================================================= */}
+
+      <details className="fm-booking-extra-options">
+
+        <summary>
+          More flight options
+        </summary>
+
+        <div className="fm-booking-extra-content">
+
+          <label htmlFor="stops">
+            Stops
+          </label>
+
+          <select
+            id="stops"
+            value={
+              search.stops
+            }
+            onChange={(
+              event
+            ) =>
+              updateField(
+                "stops",
+                event.target.value
+              )
+            }
+          >
+            {STOP_OPTIONS.map(
+              (option) => (
+                <option
+                  key={
+                    option.value
+                  }
+                  value={
+                    option.value
+                  }
+                >
+                  {
+                    option.label
+                  }
+                </option>
+              )
+            )}
+          </select>
+
+        </div>
+
+      </details>
+
+      {/* =================================================
+          FORM ERROR
+          ================================================= */}
+
+      {errors.form && (
+        <div
+          className="fm-booking-form-error"
+          role="alert"
+        >
+          {errors.form}
+        </div>
+      )}
+
+      {/* =================================================
+          DISCLAIMER
+          ================================================= */}
 
       <div className="fm-booking-disclaimer">
         Prices and availability are
@@ -1883,6 +1778,7 @@ export default function FlightSearchForm({
         provider. Final terms are confirmed
         before booking.
       </div>
+
     </form>
   );
 }
