@@ -259,33 +259,56 @@ export default function EsimPage() {
   }
 
   return (
-    <main className="fm-page fm-esim-page">
-      <section className="fm-section fm-esim-section">
-        <div className="fm-container fm-esim-container">
-
-          <div className="fm-page-header fm-esim-page-header">
+    <main className="fm-esim-page">
+      <section className="fm-page-section fm-esim-hero">
+        <div className="fm-container">
+          <div className="fm-esim-hero-content">
             <span className="fm-eyebrow">
               CONNECTIVITY
             </span>
 
-            <h1>
-              eSIM & Travel Connectivity
-            </h1>
+            <div className="fm-esim-hero-heading">
+              <div>
+                <h1>
+                  eSIM & Travel Connectivity
+                </h1>
 
-            <p>
-              Find mobile-data options for your
-              destination and continue to the
-              connectivity provider.
-            </p>
+                <p>
+                  Find mobile-data options for your
+                  destination and continue to the
+                  connectivity provider.
+                </p>
+              </div>
+
+              <span className="fm-badge">
+                Travel connected
+              </span>
+            </div>
           </div>
 
           <form
-            className="fm-card fm-search-panel fm-esim-search-panel"
+            className="fm-card fm-esim-search-panel"
             onSubmit={searchEsimPackages}
           >
-            <div className="fm-search-grid fm-esim-search-grid">
+            <div className="fm-esim-search-heading">
+              <div>
+                <span className="fm-section-kicker">
+                  SEARCH CONNECTIVITY
+                </span>
 
-              <div className="fm-field">
+                <h2>
+                  Find an eSIM for your trip
+                </h2>
+
+                <p>
+                  Select your destination, expected
+                  data use and trip duration.
+                </p>
+              </div>
+            </div>
+
+            <div className="fm-esim-search-grid">
+              <div className="fm-form-field">
                 <label htmlFor="esim-destination">
                   Destination
                 </label>
@@ -310,7 +333,7 @@ export default function EsimPage() {
                 </select>
               </div>
 
-              <div className="fm-field">
+              <div className="fm-form-field">
                 <label htmlFor="esim-region">
                   Region
                 </label>
@@ -333,7 +356,7 @@ export default function EsimPage() {
                 </select>
               </div>
 
-              <div className="fm-field">
+              <div className="fm-form-field">
                 <label htmlFor="esim-data">
                   Data requirement
                 </label>
@@ -371,7 +394,7 @@ export default function EsimPage() {
                 </select>
               </div>
 
-              <div className="fm-field">
+              <div className="fm-form-field">
                 <label htmlFor="esim-duration">
                   Trip duration
                 </label>
@@ -404,14 +427,12 @@ export default function EsimPage() {
                   </option>
                 </select>
               </div>
-
             </div>
 
-            <div className="fm-actions fm-esim-actions">
-
+            <div className="fm-esim-actions">
               <button
                 type="submit"
-                className="fm-btn fm-primary"
+                className="fm-btn fm-btn-primary"
                 disabled={loading}
               >
                 {loading
@@ -421,20 +442,27 @@ export default function EsimPage() {
 
               <button
                 type="button"
-                className="fm-btn fm-secondary"
+                className="fm-btn fm-btn-secondary"
                 onClick={openProvider}
               >
                 Browse provider
               </button>
-
             </div>
           </form>
+        </div>
+      </section>
 
-          {loading && (
-            <section
-              className="fm-card fm-esim-status-card"
-              aria-live="polite"
-            >
+      <section className="fm-container fm-esim-content">
+        {loading && (
+          <section
+            className="fm-card fm-esim-status-card fm-esim-loading-card"
+            aria-live="polite"
+          >
+            <div className="fm-esim-status-icon">
+              ↻
+            </div>
+
+            <div>
               <span className="fm-eyebrow">
                 SEARCHING
               </span>
@@ -448,14 +476,20 @@ export default function EsimPage() {
                 eSIM data source. Provider prices and
                 availability can change.
               </p>
-            </section>
-          )}
+            </div>
+          </section>
+        )}
 
-          {!loading && error && (
-            <section className="fm-card fm-esim-status-card fm-esim-error-card">
-              <div className="fm-badge">
+        {!loading && error && (
+          <section className="fm-card fm-esim-status-card fm-esim-error-card">
+            <div className="fm-esim-status-icon">
+              !
+            </div>
+
+            <div className="fm-esim-status-content">
+              <span className="fm-badge">
                 Provider search unavailable
-              </div>
+              </span>
 
               <h2>
                 Continue with the provider
@@ -465,26 +499,32 @@ export default function EsimPage() {
                 {error}
               </p>
 
-              <div className="fm-actions">
+              <div className="fm-esim-status-actions">
                 <button
                   type="button"
-                  className="fm-btn fm-primary"
+                  className="fm-btn fm-btn-primary"
                   onClick={openProvider}
                 >
                   Open eSIM provider
                 </button>
               </div>
-            </section>
-          )}
+            </div>
+          </section>
+        )}
 
-          {!loading &&
-            searched &&
-            !error &&
-            packages.length === 0 && (
-              <section className="fm-card fm-esim-status-card">
-                <div className="fm-badge">
+        {!loading &&
+          searched &&
+          !error &&
+          packages.length === 0 && (
+            <section className="fm-card fm-esim-status-card fm-esim-empty-card">
+              <div className="fm-esim-status-icon">
+                0
+              </div>
+
+              <div className="fm-esim-status-content">
+                <span className="fm-badge">
                   No live packages returned
-                </div>
+                </span>
 
                 <h2>
                   No provider packages were returned
@@ -499,234 +539,277 @@ export default function EsimPage() {
 
                 <button
                   type="button"
-                  className="fm-btn fm-primary"
+                  className="fm-btn fm-btn-primary"
                   onClick={openProvider}
                 >
                   Check provider options
                 </button>
-              </section>
-            )}
+              </div>
+            </section>
+          )}
 
-          {!loading && packages.length > 0 && (
-            <section className="fm-section-inner fm-esim-results-section">
+        {!loading && packages.length > 0 && (
+          <section className="fm-esim-results-section">
+            <div className="fm-esim-section-heading">
+              <div>
+                <span className="fm-eyebrow">
+                  LIVE / CACHED DATA
+                </span>
 
-              <div className="fm-section-heading fm-esim-results-heading">
-                <div>
-                  <span className="fm-eyebrow">
-                    LIVE / CACHED DATA
-                  </span>
+                <h2>
+                  Available eSIM options
+                </h2>
 
-                  <h2>
-                    Available eSIM options
-                  </h2>
-                </div>
+                <p>
+                  Packages returned for{" "}
+                  {selectedCountry?.name ||
+                    destination}
+                  .
+                </p>
+              </div>
 
-                <span className="fm-meta fm-esim-result-count">
-                  {packages.length}{" "}
+              <span className="fm-esim-result-count">
+                <strong>
+                  {packages.length}
+                </strong>
+
+                <span>
                   {packages.length === 1
                     ? "option"
                     : "options"}
                 </span>
-              </div>
+              </span>
+            </div>
 
-              <div className="fm-grid fm-esim-results-grid">
-                {packages.map(
-                  (item, index) => {
-                    const price =
-                      getPrice(item);
+            <div className="fm-esim-results-grid">
+              {packages.map(
+                (item, index) => {
+                  const price =
+                    getPrice(item);
 
-                    const currency =
-                      getCurrency(item);
+                  const currency =
+                    getCurrency(item);
 
-                    const provider =
-                      getProvider(item);
+                  const provider =
+                    getProvider(item);
 
-                    const providerUrl =
-                      item?.url ||
-                      item?.link ||
-                      item?.bookingUrl ||
-                      item?.booking_url ||
-                      AIRALO_AFFILIATE_URL;
+                  const providerUrl =
+                    item?.url ||
+                    item?.link ||
+                    item?.bookingUrl ||
+                    item?.booking_url ||
+                    AIRALO_AFFILIATE_URL;
 
-                    return (
-                      <article
-                        className="fm-card fm-esim-result-card"
-                        key={
-                          item?.id ||
-                          item?.packageId ||
-                          item?.package_id ||
-                          `esim-${index}`
-                        }
-                      >
+                  return (
+                    <article
+                      className="fm-card fm-esim-result-card"
+                      key={
+                        item?.id ||
+                        item?.packageId ||
+                        item?.package_id ||
+                        `esim-${index}`
+                      }
+                    >
+                      <div className="fm-esim-result-top">
                         <span className="fm-badge">
                           eSIM
                         </span>
 
-                        <h3>
-                          {getPackageName(item)}
-                        </h3>
+                        <span className="fm-esim-provider-label">
+                          {provider}
+                        </span>
+                      </div>
 
-                        <div className="fm-meta">
-                          Provider: {provider}
+                      <h3>
+                        {getPackageName(item)}
+                      </h3>
+
+                      <div className="fm-esim-result-details">
+                        <div>
+                          <span>Data</span>
+
+                          <strong>
+                            {getData(item)}
+                          </strong>
                         </div>
 
-                        <div className="fm-meta">
-                          Data: {getData(item)}
-                        </div>
+                        <div>
+                          <span>Validity</span>
 
-                        <div className="fm-meta">
-                          Validity: {getValidity(item)}
+                          <strong>
+                            {getValidity(item)}
+                          </strong>
                         </div>
+                      </div>
 
-                        <div className="fm-price">
-                          {price === null
-                            ? "Price from provider"
-                            : `${currency} ${price.toLocaleString()}`}
+                      <div className="fm-esim-result-bottom">
+                        <div className="fm-esim-result-price">
+                          <span>
+                            Provider price
+                          </span>
+
+                          <strong>
+                            {price === null
+                              ? "Price from provider"
+                              : `${currency} ${price.toLocaleString()}`}
+                          </strong>
                         </div>
 
                         <a
-                          className="fm-btn fm-primary"
+                          className="fm-btn fm-btn-primary"
                           href={providerUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
                           View provider
                         </a>
-                      </article>
-                    );
-                  }
-                )}
-              </div>
-
-            </section>
-          )}
-
-          <section className="fm-section-inner fm-esim-guide-section">
-
-            <div className="fm-section-heading fm-esim-guide-heading">
-              <div>
-                <span className="fm-eyebrow">
-                  CONNECTIVITY GUIDE
-                </span>
-
-                <h2>
-                  Choose connectivity around your trip
-                </h2>
-              </div>
-            </div>
-
-            <div className="fm-grid fm-esim-guide-grid">
-
-              <article className="fm-card fm-esim-guide-card">
-                <div className="fm-esim-guide-number">
-                  01
-                </div>
-
-                <h3>
-                  Short city trip
-                </h3>
-
-                <p>
-                  A smaller data package can be
-                  suitable when you mainly need maps,
-                  messaging and occasional browsing.
-                </p>
-
-                <button
-                  type="button"
-                  className="fm-btn fm-secondary"
-                  onClick={() => {
-                    setDataNeed("3 GB");
-                    setDuration("7 days");
-                  }}
-                >
-                  Use 3 GB / 7 days
-                </button>
-              </article>
-
-              <article className="fm-card fm-esim-guide-card">
-                <div className="fm-esim-guide-number">
-                  02
-                </div>
-
-                <h3>
-                  Two-week holiday
-                </h3>
-
-                <p>
-                  A medium package can be considered
-                  when using maps, messaging, social
-                  apps and travel services regularly.
-                </p>
-
-                <button
-                  type="button"
-                  className="fm-btn fm-secondary"
-                  onClick={() => {
-                    setDataNeed("5 GB");
-                    setDuration("15 days");
-                  }}
-                >
-                  Use 5 GB / 15 days
-                </button>
-              </article>
-
-              <article className="fm-card fm-esim-guide-card">
-                <div className="fm-esim-guide-number">
-                  03
-                </div>
-
-                <h3>
-                  Heavy connectivity
-                </h3>
-
-                <p>
-                  Larger packages may be more suitable
-                  for frequent video, hotspot use,
-                  navigation and extended travel.
-                </p>
-
-                <button
-                  type="button"
-                  className="fm-btn fm-secondary"
-                  onClick={() => {
-                    setDataNeed("20 GB");
-                    setDuration("30 days");
-                  }}
-                >
-                  Use 20 GB / 30 days
-                </button>
-              </article>
-
+                      </div>
+                    </article>
+                  );
+                }
+              )}
             </div>
           </section>
+        )}
 
-          <section className="fm-card fm-section-inner fm-esim-planner-card">
+        <section className="fm-esim-guide-section">
+          <div className="fm-esim-section-heading">
+            <div>
+              <span className="fm-eyebrow">
+                CONNECTIVITY GUIDE
+              </span>
 
-            <div className="fm-section-heading">
-              <div>
-                <span className="fm-eyebrow">
-                  TRIP PLANNING
-                </span>
+              <h2>
+                Choose connectivity around your trip
+              </h2>
 
-                <h2>
-                  Add connectivity to your itinerary
-                </h2>
-              </div>
+              <p>
+                Use these starting points to quickly
+                adjust the search to a typical travel
+                pattern.
+              </p>
             </div>
+          </div>
 
-            <p>
-              Your eSIM choice is only one part of
-              travel preparation. Combine connectivity
-              with flights, accommodation, activities,
-              documents and other trip requirements.
-            </p>
+          <div className="fm-esim-guide-grid">
+            <article className="fm-card fm-esim-guide-card">
+              <div className="fm-esim-guide-number">
+                01
+              </div>
 
-            <div className="fm-actions">
+              <span className="fm-badge">
+                Short trip
+              </span>
+
+              <h3>
+                Short city trip
+              </h3>
+
+              <p>
+                A smaller data package can be
+                suitable when you mainly need maps,
+                messaging and occasional browsing.
+              </p>
 
               <button
                 type="button"
-                className="fm-btn fm-primary"
+                className="fm-btn fm-btn-secondary"
+                onClick={() => {
+                  setDataNeed("3 GB");
+                  setDuration("7 days");
+                }}
+              >
+                Use 3 GB / 7 days
+              </button>
+            </article>
+
+            <article className="fm-card fm-esim-guide-card">
+              <div className="fm-esim-guide-number">
+                02
+              </div>
+
+              <span className="fm-badge">
+                Holiday
+              </span>
+
+              <h3>
+                Two-week holiday
+              </h3>
+
+              <p>
+                A medium package can be considered
+                when using maps, messaging, social
+                apps and travel services regularly.
+              </p>
+
+              <button
+                type="button"
+                className="fm-btn fm-btn-secondary"
+                onClick={() => {
+                  setDataNeed("5 GB");
+                  setDuration("15 days");
+                }}
+              >
+                Use 5 GB / 15 days
+              </button>
+            </article>
+
+            <article className="fm-card fm-esim-guide-card">
+              <div className="fm-esim-guide-number">
+                03
+              </div>
+
+              <span className="fm-badge">
+                Heavy use
+              </span>
+
+              <h3>
+                Heavy connectivity
+              </h3>
+
+              <p>
+                Larger packages may be more suitable
+                for frequent video, hotspot use,
+                navigation and extended travel.
+              </p>
+
+              <button
+                type="button"
+                className="fm-btn fm-btn-secondary"
+                onClick={() => {
+                  setDataNeed("20 GB");
+                  setDuration("30 days");
+                }}
+              >
+                Use 20 GB / 30 days
+              </button>
+            </article>
+          </div>
+        </section>
+
+        <section className="fm-card fm-esim-planner-card">
+          <div className="fm-esim-planner-content">
+            <div>
+              <span className="fm-eyebrow">
+                TRIP PLANNING
+              </span>
+
+              <h2>
+                Add connectivity to your itinerary
+              </h2>
+
+              <p>
+                Your eSIM choice is only one part of
+                travel preparation. Combine connectivity
+                with flights, accommodation, activities,
+                documents and other trip requirements.
+              </p>
+            </div>
+
+            <div className="fm-esim-planner-actions">
+              <button
+                type="button"
+                className="fm-btn fm-btn-primary"
                 onClick={openPlanner}
               >
                 Add to trip planner
@@ -734,7 +817,7 @@ export default function EsimPage() {
 
               <button
                 type="button"
-                className="fm-btn fm-secondary"
+                className="fm-btn fm-btn-secondary"
                 onClick={() =>
                   (window.location.href =
                     "/essentials")
@@ -742,23 +825,30 @@ export default function EsimPage() {
               >
                 Travel essentials
               </button>
-
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section className="fm-card fm-disclaimer fm-esim-disclaimer">
+        <section className="fm-card fm-esim-disclaimer">
+          <div className="fm-esim-disclaimer-heading">
+            <span className="fm-eyebrow">
+              PROVIDER INFORMATION
+            </span>
 
             <strong>
-              Provider information
+              Connectivity information
             </strong>
+          </div>
 
+          <div className="fm-esim-disclaimer-copy">
             <p>
               FlyMatrix does not manufacture or
-              directly supply eSIM connectivity. Package
-              availability, network coverage, supported
-              devices, activation requirements, validity,
-              pricing and final purchase terms are
-              determined by the provider.
+              directly supply eSIM connectivity.
+              Package availability, network coverage,
+              supported devices, activation
+              requirements, validity, pricing and final
+              purchase terms are determined by the
+              provider.
             </p>
 
             <p>
@@ -768,10 +858,8 @@ export default function EsimPage() {
               FlyMatrix sends you to the configured
               affiliate provider instead.
             </p>
-
-          </section>
-
-        </div>
+          </div>
+        </section>
       </section>
     </main>
   );
