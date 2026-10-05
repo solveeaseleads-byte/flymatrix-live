@@ -12,17 +12,13 @@ import { navigate } from "../router/AppRouter.jsx";
 const EMPTY_SEARCH = {
   searchId: "",
   tripType: "roundtrip",
-
   origin: null,
   destination: null,
-
   departureDate: "",
   returnDate: "",
-
   adults: 1,
   children: 0,
   infants: 0,
-
   cabin: "economy",
   stops: "any",
 };
@@ -38,37 +34,29 @@ function normalizeAirport(value) {
       value.iata ||
       value.iataCode ||
       "",
-
     name:
       value.name ||
       value.airportName ||
       "",
-
     city:
       value.city ||
       value.cityName ||
       "",
-
     country:
       value.country ||
       value.countryName ||
       "",
-
     countryCode:
       value.countryCode ||
       value.country_code ||
       "",
-
     type:
       value.type ||
       "airport",
   };
 }
 
-function readNumber(
-  value,
-  fallback = 0
-) {
+function readNumber(value, fallback = 0) {
   const number = Number(value);
 
   return Number.isFinite(number)
@@ -83,10 +71,7 @@ function normalizePassengerCount(
 ) {
   return Math.max(
     minimum,
-    readNumber(
-      value,
-      fallback
-    )
+    readNumber(value, fallback)
   );
 }
 
@@ -119,7 +104,6 @@ function readSearchFromUrl() {
             originCode
               .trim()
               .toUpperCase(),
-
           name: "",
           city: "",
           country: "",
@@ -135,7 +119,6 @@ function readSearchFromUrl() {
               destinationCode
                 .trim()
                 .toUpperCase(),
-
             name: "",
             city: "",
             country: "",
@@ -145,24 +128,14 @@ function readSearchFromUrl() {
         : null,
 
     departureDate:
-      params.get(
-        "departureDate"
-      ) ||
-      params.get(
-        "departure"
-      ) ||
-      params.get(
-        "depart"
-      ) ||
+      params.get("departureDate") ||
+      params.get("departure") ||
+      params.get("depart") ||
       "",
 
     returnDate:
-      params.get(
-        "returnDate"
-      ) ||
-      params.get(
-        "return"
-      ) ||
+      params.get("returnDate") ||
+      params.get("return") ||
       "",
 
     adults:
@@ -302,11 +275,6 @@ function mergeSearchData() {
     ...(urlSearch || {}),
   };
 
-  /*
-   * URL airport codes are authoritative.
-   * If the stored search contains the same
-   * airport, restore its full metadata.
-   */
   if (
     urlSearch.origin?.code &&
     storedSearch?.origin?.code ===
@@ -332,9 +300,7 @@ function createInitialSearch() {
   return mergeSearchData();
 }
 
-function hasMeaningfulSearch(
-  search
-) {
+function hasMeaningfulSearch(search) {
   return Boolean(
     search?.origin?.code &&
       search?.destination?.code &&
@@ -342,9 +308,7 @@ function hasMeaningfulSearch(
   );
 }
 
-function buildSearchPayload(
-  search
-) {
+function buildSearchPayload(search) {
   return {
     searchId:
       search?.searchId ||
@@ -405,9 +369,7 @@ function buildSearchPayload(
   };
 }
 
-function buildSearchQuery(
-  payload
-) {
+function buildSearchQuery(payload) {
   const params =
     new URLSearchParams();
 
@@ -437,18 +399,14 @@ function buildSearchQuery(
     );
   }
 
-  if (
-    payload.destination?.code
-  ) {
+  if (payload.destination?.code) {
     params.set(
       "destination",
       payload.destination.code
     );
   }
 
-  if (
-    payload.departureDate
-  ) {
+  if (payload.departureDate) {
     params.set(
       "departureDate",
       payload.departureDate
@@ -460,9 +418,7 @@ function buildSearchQuery(
     );
   }
 
-  if (
-    payload.returnDate
-  ) {
+  if (payload.returnDate) {
     params.set(
       "returnDate",
       payload.returnDate
@@ -518,35 +474,19 @@ function extractResults(data) {
     return data;
   }
 
-  if (
-    Array.isArray(
-      data?.results
-    )
-  ) {
+  if (Array.isArray(data?.results)) {
     return data.results;
   }
 
-  if (
-    Array.isArray(
-      data?.flights
-    )
-  ) {
+  if (Array.isArray(data?.flights)) {
     return data.flights;
   }
 
-  if (
-    Array.isArray(
-      data?.offers
-    )
-  ) {
+  if (Array.isArray(data?.offers)) {
     return data.offers;
   }
 
-  if (
-    Array.isArray(
-      data?.data
-    )
-  ) {
+  if (Array.isArray(data?.data)) {
     return data.data;
   }
 
@@ -611,10 +551,7 @@ export default function SearchPage() {
         const nextSearch =
           createInitialSearch();
 
-        setSearch(
-          nextSearch
-        );
-
+        setSearch(nextSearch);
         setResults([]);
         setSearchError("");
         setSessionId("");
@@ -628,9 +565,7 @@ export default function SearchPage() {
             nextSearch
           );
         } else {
-          setHasSearched(
-            false
-          );
+          setHasSearched(false);
         }
       };
 
@@ -639,12 +574,11 @@ export default function SearchPage() {
       handleNavigation
     );
 
-    return () => {
+    return () =>
       window.removeEventListener(
         "popstate",
         handleNavigation
       );
-    };
   }, []);
 
   const payload = useMemo(
@@ -663,10 +597,7 @@ export default function SearchPage() {
         nextSearch
       );
 
-    setSearch(
-      nextSearch
-    );
-
+    setSearch(nextSearch);
     setLoading(true);
     setSearchError("");
     setHasSearched(true);
@@ -756,7 +687,6 @@ export default function SearchPage() {
           `/api/flights?${params.toString()}`,
           {
             method: "GET",
-
             headers: {
               Accept:
                 "application/json",
@@ -782,9 +712,7 @@ export default function SearchPage() {
       }
 
       const flightResults =
-        extractResults(
-          data
-        );
+        extractResults(data);
 
       const backendSessionId =
         data?.sessionId ||
@@ -859,9 +787,7 @@ export default function SearchPage() {
     }
   }
 
-  function handleSearch(
-    nextPayload
-  ) {
+  function handleSearch(nextPayload) {
     const nextSearch = {
       ...EMPTY_SEARCH,
 
@@ -1041,10 +967,7 @@ export default function SearchPage() {
       );
     }
 
-    setSearch(
-      EMPTY_SEARCH
-    );
-
+    setSearch(EMPTY_SEARCH);
     setResults([]);
     setSearchError("");
     setSessionId("");
@@ -1056,9 +979,7 @@ export default function SearchPage() {
       airlines: [],
     });
 
-    navigate(
-      "/search"
-    );
+    navigate("/search");
   }
 
   const showSearchForm =
@@ -1068,55 +989,62 @@ export default function SearchPage() {
     );
 
   return (
-    <div className="search-page fm-search-page">
-      <section className="page-hero search-page-hero">
-        <div className="page-hero-inner">
-          <span className="eyebrow">
-            FLYMATRIX FLIGHT SEARCH
-          </span>
+    <div className="fm-search-page">
 
-          <h1>
-            Find flights for your journey
-          </h1>
+      <section className="fm-page-section fm-search-hero">
+        <div className="fm-container">
 
-          <p>
-            Search using your exact route,
-            travel dates and passenger
-            requirements.
-          </p>
+          <div className="fm-search-hero-content">
+
+            <span className="fm-eyebrow">
+              FLYMATRIX FLIGHT SEARCH
+            </span>
+
+            <h1>
+              Find flights for your journey
+            </h1>
+
+            <p>
+              Search using your exact route,
+              travel dates and passenger
+              requirements.
+            </p>
+
+          </div>
+
         </div>
       </section>
 
-      <section className="search-page-content fm-search-content">
-        <div className="section-container">
+      <section className="fm-search-content">
+        <div className="fm-container">
+
           {showSearchForm ? (
-            <div className="search-page-panel fm-search-panel">
+            <div className="fm-search-panel">
+
               <FlightSearchForm
-                initialSearch={
-                  search
-                }
-                onSearch={
-                  handleSearch
-                }
+                initialSearch={search}
+                onSearch={handleSearch}
               />
+
             </div>
           ) : (
             <>
-              <div className="search-summary-wrapper">
+
+              <div className="fm-search-summary">
                 <SearchSummary
-                  search={
-                    search
-                  }
-                  onEdit={
-                    editSearch
-                  }
+                  search={search}
+                  onEdit={editSearch}
                 />
               </div>
 
-              <div className="search-results-layout fm-search-results-layout">
-                <aside className="flight-filters-column fm-search-filters">
-                  <div className="filter-panel fm-search-filter-panel">
-                    <div className="filter-panel-header">
+              <div className="fm-search-results-layout">
+
+                <aside className="fm-search-filters">
+
+                  <div className="fm-search-filter-panel">
+
+                    <div className="fm-search-filter-header">
+
                       <strong>
                         Filter results
                       </strong>
@@ -1136,9 +1064,11 @@ export default function SearchPage() {
                       >
                         Reset
                       </button>
+
                     </div>
 
-                    <div className="filter-field">
+                    <div className="fm-search-filter-field">
+
                       <label htmlFor="result-stops">
                         Stops
                       </label>
@@ -1148,19 +1078,12 @@ export default function SearchPage() {
                         value={
                           filters.maxStops
                         }
-                        onChange={(
-                          event
-                        ) =>
-                          handleFilterChange(
-                            {
-                              ...filters,
-
-                              maxStops:
-                                event
-                                  .target
-                                  .value,
-                            }
-                          )
+                        onChange={(event) =>
+                          handleFilterChange({
+                            ...filters,
+                            maxStops:
+                              event.target.value,
+                          })
                         }
                       >
                         <option value="any">
@@ -1179,9 +1102,11 @@ export default function SearchPage() {
                           Up to 2 stops
                         </option>
                       </select>
+
                     </div>
 
-                    <div className="filter-field">
+                    <div className="fm-search-filter-field">
+
                       <label htmlFor="max-price">
                         Maximum price
                       </label>
@@ -1195,28 +1120,27 @@ export default function SearchPage() {
                         value={
                           filters.maxPrice
                         }
-                        onChange={(
-                          event
-                        ) =>
-                          handleFilterChange(
-                            {
-                              ...filters,
-
-                              maxPrice:
-                                event
-                                  .target
-                                  .value,
-                            }
-                          )
+                        onChange={(event) =>
+                          handleFilterChange({
+                            ...filters,
+                            maxPrice:
+                              event.target.value,
+                          })
                         }
                       />
+
                     </div>
+
                   </div>
+
                 </aside>
 
-                <section className="flight-results-column fm-search-results-column">
-                  <div className="results-toolbar fm-search-toolbar">
-                    <div>
+                <section className="fm-search-results-column">
+
+                  <div className="fm-search-toolbar">
+
+                    <div className="fm-search-toolbar-info">
+
                       <strong>
                         {loading
                           ? "Searching flights…"
@@ -1226,34 +1150,27 @@ export default function SearchPage() {
                       </strong>
 
                       <span>
-                        {search.origin
-                          ?.code ||
+                        {search.origin?.code ||
                           "Origin"}{" "}
                         →{" "}
-                        {search
-                          .destination
-                          ?.code ||
+                        {search.destination?.code ||
                           "Destination"}
                       </span>
+
                     </div>
 
-                    <div className="sort-control">
+                    <div className="fm-search-sort">
+
                       <label htmlFor="sort-results">
                         Sort
                       </label>
 
                       <select
                         id="sort-results"
-                        value={
-                          sortBy
-                        }
-                        onChange={(
-                          event
-                        ) =>
+                        value={sortBy}
+                        onChange={(event) =>
                           setSortBy(
-                            event
-                              .target
-                              .value
+                            event.target.value
                           )
                         }
                       >
@@ -1269,12 +1186,14 @@ export default function SearchPage() {
                           Shortest duration
                         </option>
                       </select>
+
                     </div>
+
                   </div>
 
                   {searchError && (
                     <div
-                      className="search-error-card"
+                      className="fm-search-error"
                       role="alert"
                     >
                       <strong>
@@ -1282,14 +1201,12 @@ export default function SearchPage() {
                       </strong>
 
                       <p>
-                        {
-                          searchError
-                        }
+                        {searchError}
                       </p>
 
                       <button
                         type="button"
-                        className="btn btn-primary"
+                        className="fm-btn fm-btn-primary"
                         onClick={() =>
                           performSearch(
                             search
@@ -1304,8 +1221,9 @@ export default function SearchPage() {
                   {!loading &&
                     !searchError &&
                     !results.length && (
-                      <div className="empty-results-card">
-                        <div className="empty-results-icon">
+                      <div className="fm-search-empty">
+
+                        <div className="fm-search-empty-icon">
                           ✈
                         </div>
 
@@ -1322,7 +1240,7 @@ export default function SearchPage() {
 
                         <button
                           type="button"
-                          className="btn btn-primary"
+                          className="fm-btn fm-btn-primary"
                           onClick={() =>
                             performSearch(
                               search
@@ -1331,39 +1249,34 @@ export default function SearchPage() {
                         >
                           Search again
                         </button>
+
                       </div>
                     )}
 
                   <FlightResults
-                    results={
-                      results
-                    }
-                    loading={
-                      loading
-                    }
-                    sortBy={
-                      sortBy
-                    }
-                    filters={
-                      filters
-                    }
-                    onSelect={
-                      handleFlightSelect
-                    }
+                    results={results}
+                    loading={loading}
+                    sortBy={sortBy}
+                    filters={filters}
+                    onSelect={handleFlightSelect}
                     sessionId={
                       sessionId ||
                       payload.searchId
                     }
                   />
+
                 </section>
+
               </div>
+
             </>
           )}
 
-          <div className="search-page-footer-actions fm-search-footer">
+          <div className="fm-search-footer">
+
             <button
               type="button"
-              className="btn btn-secondary"
+              className="fm-btn fm-btn-secondary"
               onClick={() =>
                 navigate("/")
               }
@@ -1374,17 +1287,18 @@ export default function SearchPage() {
             {!showSearchForm && (
               <button
                 type="button"
-                className="btn btn-secondary"
-                onClick={
-                  clearSearch
-                }
+                className="fm-btn fm-btn-secondary"
+                onClick={clearSearch}
               >
                 Clear search
               </button>
             )}
+
           </div>
+
         </div>
       </section>
+
     </div>
   );
-      }
+}
