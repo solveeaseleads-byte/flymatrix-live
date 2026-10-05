@@ -21,7 +21,10 @@ const AFFILIATES = {
     "https://ivisa.tpk.lv/zXqbkMmK",
 };
 
-function formatCurrency(value, currency = "USD") {
+function formatCurrency(
+  value,
+  currency = "USD"
+) {
   const amount = Number(value);
 
   if (!Number.isFinite(amount)) {
@@ -29,11 +32,14 @@ function formatCurrency(value, currency = "USD") {
   }
 
   try {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency,
-      maximumFractionDigits: 0,
-    }).format(amount);
+    return new Intl.NumberFormat(
+      "en-US",
+      {
+        style: "currency",
+        currency,
+        maximumFractionDigits: 0,
+      }
+    ).format(amount);
   } catch {
     return `${currency} ${Math.round(
       amount
@@ -42,15 +48,16 @@ function formatCurrency(value, currency = "USD") {
 }
 
 function getApiUrl(path) {
-  const normalized = String(path || "").replace(
-    /^\/+/,
-    ""
-  );
+  const normalized = String(
+    path || ""
+  ).replace(/^\/+/, "");
 
   return `/api/${normalized}`;
 }
 
-async function fetchTourismOptions(params) {
+async function fetchTourismOptions(
+  params
+) {
   const query = new URLSearchParams();
 
   Object.entries(params).forEach(
@@ -60,7 +67,10 @@ async function fetchTourismOptions(params) {
         value !== null &&
         value !== ""
       ) {
-        query.set(key, String(value));
+        query.set(
+          key,
+          String(value)
+        );
       }
     }
   );
@@ -73,7 +83,8 @@ async function fetchTourismOptions(params) {
       method: "GET",
       credentials: "include",
       headers: {
-        Accept: "application/json",
+        Accept:
+          "application/json",
       },
     }
   );
@@ -92,7 +103,10 @@ function normalizeOptions(payload) {
     return payload;
   }
 
-  if (!payload || typeof payload !== "object") {
+  if (
+    !payload ||
+    typeof payload !== "object"
+  ) {
     return [];
   }
 
@@ -115,11 +129,15 @@ function getOptionPrice(option) {
     return {
       amount: price,
       currency:
-        option?.currency || "USD",
+        option?.currency ||
+        "USD",
     };
   }
 
-  if (price && typeof price === "object") {
+  if (
+    price &&
+    typeof price === "object"
+  ) {
     return {
       amount:
         price.amount ??
@@ -138,7 +156,8 @@ function getOptionPrice(option) {
       option?.estimatedPrice ??
       null,
     currency:
-      option?.currency || "USD",
+      option?.currency ||
+      "USD",
   };
 }
 
@@ -161,7 +180,9 @@ function getOptionTitle(option) {
   );
 }
 
-function getOptionDescription(option) {
+function getOptionDescription(
+  option
+) {
   return (
     option?.description ||
     option?.summary ||
@@ -178,7 +199,10 @@ function getCategoryLabel(option) {
   );
 }
 
-function getBookingUrl(option, category) {
+function getBookingUrl(
+  option,
+  category
+) {
   if (option?.trackingUrl) {
     return option.trackingUrl;
   }
@@ -191,10 +215,15 @@ function getBookingUrl(option, category) {
     return option.bookingUrl;
   }
 
-  return AFFILIATES[category] || null;
+  return (
+    AFFILIATES[category] ||
+    null
+  );
 }
 
-function normalizeCategory(option) {
+function normalizeCategory(
+  option
+) {
   const value = String(
     option?.category ||
       option?.type ||
@@ -205,7 +234,9 @@ function normalizeCategory(option) {
   if (
     value.includes("hotel") ||
     value.includes("stay") ||
-    value.includes("accommodation")
+    value.includes(
+      "accommodation"
+    )
   ) {
     return "hotels";
   }
@@ -228,70 +259,98 @@ function normalizeCategory(option) {
 }
 
 function sortByPrice(options) {
-  return [...options].sort((a, b) => {
-    const aPrice = getOptionPrice(a).amount;
-    const bPrice = getOptionPrice(b).amount;
+  return [...options].sort(
+    (a, b) => {
+      const aPrice =
+        getOptionPrice(a).amount;
 
-    const aNumber = Number.isFinite(
-      Number(aPrice)
-    )
-      ? Number(aPrice)
-      : Infinity;
+      const bPrice =
+        getOptionPrice(b).amount;
 
-    const bNumber = Number.isFinite(
-      Number(bPrice)
-    )
-      ? Number(bPrice)
-      : Infinity;
+      const aNumber =
+        Number.isFinite(
+          Number(aPrice)
+        )
+          ? Number(aPrice)
+          : Infinity;
 
-    return aNumber - bNumber;
-  });
+      const bNumber =
+        Number.isFinite(
+          Number(bPrice)
+        )
+          ? Number(bPrice)
+          : Infinity;
+
+      return aNumber - bNumber;
+    }
+  );
 }
 
-function ProviderStatus({ source }) {
+function ProviderStatus({
+  source,
+}) {
   if (!source) {
     return (
-      <span className="provider-status">
+      <span className="fm-provider-status">
         Provider data
       </span>
     );
   }
 
-  const normalized = String(source).toLowerCase();
+  const normalized =
+    String(source).toLowerCase();
 
-  let label = "Provider data";
+  let label =
+    "Provider data";
 
   if (normalized === "live") {
-    label = "Live provider data";
-  } else if (normalized === "cached") {
-    label = "Cached provider data";
+    label =
+      "Live provider data";
+  } else if (
+    normalized === "cached"
+  ) {
+    label =
+      "Cached provider data";
   } else if (
     normalized === "estimate" ||
     normalized === "estimated"
   ) {
-    label = "Provider estimate";
+    label =
+      "Provider estimate";
   }
 
   return (
-    <span className="provider-status">
+    <span className="fm-provider-status">
       {label}
     </span>
   );
 }
 
-function OptionCard({ option, onOpen }) {
-  const price = getOptionPrice(option);
-  const category = normalizeCategory(option);
-  const bookingUrl = getBookingUrl(
-    option,
-    category
-  );
+function OptionCard({
+  option,
+  onOpen,
+}) {
+  const price =
+    getOptionPrice(option);
+
+  const category =
+    normalizeCategory(option);
+
+  const bookingUrl =
+    getBookingUrl(
+      option,
+      category
+    );
 
   return (
-    <article className="tourism-option-card fm-leisure-option-card">
-      <div className="tourism-option-top fm-leisure-option-top">
+    <article className="fm-leisure-option-card">
+
+      <div className="fm-leisure-option-top">
+
         <span className="fm-badge">
-          {getCategoryLabel(option)}
+          {getCategoryLabel(
+            option
+          )}
         </span>
 
         <ProviderStatus
@@ -300,6 +359,7 @@ function OptionCard({ option, onOpen }) {
             option?.dataSource
           }
         />
+
       </div>
 
       <h3>
@@ -307,67 +367,88 @@ function OptionCard({ option, onOpen }) {
       </h3>
 
       <p>
-        {getOptionDescription(option)}
+        {getOptionDescription(
+          option
+        )}
       </p>
 
-      <div className="tourism-option-provider">
-        <span>Provider</span>
+      <div className="fm-leisure-option-provider">
+
+        <span>
+          Provider
+        </span>
 
         <strong>
-          {getProviderName(option)}
+          {getProviderName(
+            option
+          )}
         </strong>
+
       </div>
 
-      <div className="tourism-option-bottom">
+      <div className="fm-leisure-option-bottom">
+
         <div>
-          <span className="tourism-option-price-label">
+
+          <span className="fm-leisure-option-price-label">
             Price
           </span>
 
-          <strong className="tourism-option-price">
+          <strong className="fm-leisure-option-price">
             {formatCurrency(
               price.amount,
               price.currency
             )}
           </strong>
+
         </div>
 
         {bookingUrl && (
           <button
             type="button"
-            className="btn btn-primary"
+            className="fm-btn fm-btn-primary"
             onClick={() =>
-              onOpen(bookingUrl)
+              onOpen(
+                bookingUrl
+              )
             }
           >
             View provider
           </button>
         )}
+
       </div>
+
     </article>
   );
 }
 
 export default function LeisureResultsPage() {
   const params = useMemo(
-    () => getCurrentSearchParams(),
+    () =>
+      getCurrentSearchParams(),
     []
   );
 
   const country =
-    params.get("country") || "";
+    params.get("country") ||
+    "";
 
   const city =
-    params.get("city") || "";
+    params.get("city") ||
+    "";
 
   const budget =
-    params.get("budget") || "";
+    params.get("budget") ||
+    "";
 
   const days =
-    params.get("days") || "7";
+    params.get("days") ||
+    "7";
 
   const lifestyle =
-    params.get("lifestyle") || "Budget";
+    params.get("lifestyle") ||
+    "Budget";
 
   const facilities =
     params.get("facilities")
@@ -389,11 +470,15 @@ export default function LeisureResultsPage() {
   const [source, setSource] =
     useState("");
 
-  const [categoryFilter, setCategoryFilter] =
-    useState("all");
+  const [
+    categoryFilter,
+    setCategoryFilter,
+  ] = useState("all");
 
-  const [sortOrder, setSortOrder] =
-    useState("price");
+  const [
+    sortOrder,
+    setSortOrder,
+  ] = useState("price");
 
   useEffect(() => {
     let active = true;
@@ -419,7 +504,9 @@ export default function LeisureResultsPage() {
         }
 
         const normalized =
-          normalizeOptions(response);
+          normalizeOptions(
+            response
+          );
 
         setOptions(normalized);
 
@@ -428,7 +515,9 @@ export default function LeisureResultsPage() {
             response?.dataSource ||
             ""
         );
-      } catch (requestError) {
+      } catch (
+        requestError
+      ) {
         if (!active) {
           return;
         }
@@ -460,35 +549,54 @@ export default function LeisureResultsPage() {
     facilities.join(","),
   ]);
 
-  const filteredOptions = useMemo(() => {
-    let result = [...options];
+  const filteredOptions =
+    useMemo(() => {
+      let result = [
+        ...options,
+      ];
 
-    if (categoryFilter !== "all") {
-      result = result.filter(
-        (option) =>
-          normalizeCategory(option) ===
-          categoryFilter
-      );
-    }
+      if (
+        categoryFilter !==
+        "all"
+      ) {
+        result =
+          result.filter(
+            (option) =>
+              normalizeCategory(
+                option
+              ) ===
+              categoryFilter
+          );
+      }
 
-    if (sortOrder === "price") {
-      result = sortByPrice(result);
-    }
+      if (
+        sortOrder === "price"
+      ) {
+        result =
+          sortByPrice(result);
+      }
 
-    if (sortOrder === "name") {
-      result.sort((a, b) =>
-        getOptionTitle(a).localeCompare(
-          getOptionTitle(b)
-        )
-      );
-    }
+      if (
+        sortOrder === "name"
+      ) {
+        result.sort(
+          (a, b) =>
+            getOptionTitle(
+              a
+            ).localeCompare(
+              getOptionTitle(
+                b
+              )
+            )
+        );
+      }
 
-    return result;
-  }, [
-    options,
-    categoryFilter,
-    sortOrder,
-  ]);
+      return result;
+    }, [
+      options,
+      categoryFilter,
+      sortOrder,
+    ]);
 
   function openProvider(url) {
     if (!url) {
@@ -503,20 +611,25 @@ export default function LeisureResultsPage() {
   }
 
   return (
-    <main className="page-container fm-leisure-results-page">
-      <section className="tourism-results-header fm-leisure-results-header">
+    <main className="fm-leisure-results-page">
+
+      <section className="fm-leisure-results-header">
+
         <button
           type="button"
-          className="btn btn-secondary fm-leisure-change-trip"
+          className="fm-btn fm-btn-secondary fm-leisure-change-trip"
           onClick={() =>
-            navigate("/tourism/leisure")
+            navigate(
+              "/tourism/leisure"
+            )
           }
         >
           ← Change trip
         </button>
 
         <div className="fm-leisure-results-title">
-          <span className="fm-section-kicker">
+
+          <span className="fm-eyebrow">
             LEISURE SEARCH
           </span>
 
@@ -525,7 +638,8 @@ export default function LeisureResultsPage() {
           </span>
 
           <h1>
-            {city || "Your destination"}
+            {city ||
+              "Your destination"}
           </h1>
 
           <p>
@@ -535,44 +649,63 @@ export default function LeisureResultsPage() {
                 }`
               : "Travel options based on your selected preferences."}
           </p>
+
         </div>
+
       </section>
 
-      <section className="tourism-search-summary fm-leisure-search-summary">
+      <section className="fm-leisure-search-summary">
+
         <div>
-          <span>Trip length</span>
+          <span>
+            Trip length
+          </span>
+
           <strong>
             {days} days
           </strong>
         </div>
 
         <div>
-          <span>Budget</span>
+          <span>
+            Budget
+          </span>
+
           <strong>
-            {budget || "Not specified"}
+            {budget ||
+              "Not specified"}
           </strong>
         </div>
 
         <div>
-          <span>Lifestyle</span>
+          <span>
+            Lifestyle
+          </span>
+
           <strong>
             {lifestyle}
           </strong>
         </div>
 
         <div>
-          <span>Services</span>
+          <span>
+            Services
+          </span>
+
           <strong>
             {facilities.length
               ? `${facilities.length} selected`
               : "None selected"}
           </strong>
         </div>
+
       </section>
 
-      <section className="tourism-results-toolbar fm-leisure-results-toolbar">
+      <section className="fm-leisure-results-toolbar">
+
         <div className="fm-leisure-results-status">
-          <span className="fm-section-kicker">
+
+          <span className="fm-eyebrow">
             SEARCH RESULTS
           </span>
 
@@ -582,19 +715,26 @@ export default function LeisureResultsPage() {
               : `${filteredOptions.length} options`}
           </strong>
 
-          {!loading && source && (
-            <ProviderStatus source={source} />
-          )}
+          {!loading &&
+            source && (
+              <ProviderStatus
+                source={source}
+              />
+            )}
+
         </div>
 
-        <div className="tourism-results-controls fm-leisure-results-controls">
+        <div className="fm-leisure-results-controls">
+
           <label htmlFor="tourism-category">
             Category
           </label>
 
           <select
             id="tourism-category"
-            value={categoryFilter}
+            value={
+              categoryFilter
+            }
             onChange={(event) =>
               setCategoryFilter(
                 event.target.value
@@ -639,113 +779,135 @@ export default function LeisureResultsPage() {
               Name
             </option>
           </select>
+
         </div>
+
       </section>
 
       {loading && (
-        <section className="flight-results-loading fm-leisure-loading">
+        <section className="fm-leisure-loading">
+
           <div className="fm-leisure-loading-heading">
-            <span className="fm-section-kicker">
+
+            <span className="fm-eyebrow">
               SEARCHING
             </span>
 
             <strong>
-              Checking connected tourism providers
+              Checking connected
+              tourism providers
             </strong>
+
           </div>
 
-          {[1, 2, 3].map((item) => (
-            <div
-              className="loading-card fm-leisure-loading-card"
-              key={item}
-            >
-              <div className="loading-line loading-line-large" />
-              <div className="loading-line" />
-              <div className="loading-line loading-line-short" />
-            </div>
-          ))}
-        </section>
-      )}
+          {[1, 2, 3].map(
+            (item) => (
+              <div
+                className="fm-leisure-loading-card"
+                key={item}
+              >
+                <div className="fm-loading-line fm-loading-line-large" />
+                <div className="fm-loading-line" />
+                <div className="fm-loading-line fm-loading-line-short" />
+              </div>
+            )
+          )}
 
-      {!loading && error && (
-        <section className="empty-state fm-leisure-empty-state fm-leisure-error-state">
-          <div
-            className="empty-state-icon"
-            aria-hidden="true"
-          >
-            !
-          </div>
-
-          <span className="fm-section-kicker">
-            SEARCH UNAVAILABLE
-          </span>
-
-          <h2>
-            Live tourism data is unavailable
-          </h2>
-
-          <p>
-            {error}
-          </p>
-
-          <p>
-            No provider price has been invented
-            as a fallback. You can change your
-            trip requirements and try again.
-          </p>
-
-          <div className="fm-leisure-empty-actions">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() =>
-                window.location.reload()
-              }
-            >
-              Try again
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() =>
-                navigate("/tourism/leisure")
-              }
-            >
-              Change trip
-            </button>
-          </div>
         </section>
       )}
 
       {!loading &&
+        error && (
+          <section className="fm-leisure-empty-state fm-leisure-error-state">
+
+            <div
+              className="fm-leisure-empty-icon"
+              aria-hidden="true"
+            >
+              !
+            </div>
+
+            <span className="fm-eyebrow">
+              SEARCH UNAVAILABLE
+            </span>
+
+            <h2>
+              Live tourism data is
+              unavailable
+            </h2>
+
+            <p>
+              {error}
+            </p>
+
+            <p>
+              No provider price has
+              been invented as a
+              fallback. You can change
+              your trip requirements
+              and try again.
+            </p>
+
+            <div className="fm-leisure-empty-actions">
+
+              <button
+                type="button"
+                className="fm-btn fm-btn-primary"
+                onClick={() =>
+                  window.location.reload()
+                }
+              >
+                Try again
+              </button>
+
+              <button
+                type="button"
+                className="fm-btn fm-btn-secondary"
+                onClick={() =>
+                  navigate(
+                    "/tourism/leisure"
+                  )
+                }
+              >
+                Change trip
+              </button>
+
+            </div>
+
+          </section>
+        )}
+
+      {!loading &&
         !error &&
         !filteredOptions.length && (
-          <section className="empty-state fm-leisure-empty-state">
+          <section className="fm-leisure-empty-state">
+
             <div
-              className="empty-state-icon"
+              className="fm-leisure-empty-icon"
               aria-hidden="true"
             >
               🌍
             </div>
 
-            <span className="fm-section-kicker">
+            <span className="fm-eyebrow">
               SEARCH COMPLETE
             </span>
 
             <h2>
-              No matching options found
+              No matching options
+              found
             </h2>
 
             <p>
-              There are currently no connected
-              provider options matching these
+              There are currently no
+              connected provider
+              options matching these
               filters.
             </p>
 
             <button
               type="button"
-              className="btn btn-primary"
+              className="fm-btn fm-btn-primary"
               onClick={() =>
                 navigate(
                   "/tourism/leisure"
@@ -754,15 +916,21 @@ export default function LeisureResultsPage() {
             >
               Change preferences
             </button>
+
           </section>
         )}
 
       {!loading &&
         !error &&
-        filteredOptions.length > 0 && (
-          <section className="tourism-options-grid fm-leisure-options-grid">
+        filteredOptions.length >
+          0 && (
+          <section className="fm-leisure-options-grid">
+
             {filteredOptions.map(
-              (option, index) => (
+              (
+                option,
+                index
+              ) => (
                 <OptionCard
                   key={
                     option?.id ||
@@ -773,33 +941,43 @@ export default function LeisureResultsPage() {
                     )}-${index}`
                   }
                   option={option}
-                  onOpen={openProvider}
+                  onOpen={
+                    openProvider
+                  }
                 />
               )
             )}
+
           </section>
         )}
 
-      <section className="tourism-results-notice fm-leisure-results-notice">
-        <span className="fm-section-kicker">
+      <section className="fm-leisure-results-notice">
+
+        <span className="fm-eyebrow">
           DATA TRANSPARENCY
         </span>
 
         <strong>
-          Important pricing information
+          Important pricing
+          information
         </strong>
 
         <p>
-          Provider prices and availability can
-          change. A price shown here should be
-          treated according to its source as live,
-          cached, or an estimate. Final price,
-          availability, taxes, cancellation
-          conditions and booking terms are
-          confirmed by the provider before
+          Provider prices and
+          availability can change. A
+          price shown here should be
+          treated according to its
+          source as live, cached, or
+          an estimate. Final price,
+          availability, taxes,
+          cancellation conditions and
+          booking terms are confirmed
+          by the provider before
           purchase.
         </p>
+
       </section>
+
     </main>
   );
 }
