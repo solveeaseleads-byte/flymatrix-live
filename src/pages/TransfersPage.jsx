@@ -315,19 +315,27 @@ export default function TransfersPage() {
 
           <header className="fm-page-header fm-transfers-header">
             <span className="fm-eyebrow">
-              TRANSFERS
+              GROUND TRANSPORTATION
             </span>
 
-            <h1>
-              Airport & City Transfers
-            </h1>
+            <div className="fm-transfers-header-row">
+              <div>
+                <h1>
+                  Airport & City Transfers
+                </h1>
 
-            <p>
-              Plan the ground-transfer part of
-              your journey and continue to a
-              configured transfer provider for
-              availability and booking.
-            </p>
+                <p>
+                  Plan the ground-transfer part of
+                  your journey and continue to a
+                  configured transfer provider for
+                  availability and booking.
+                </p>
+              </div>
+
+              <div className="fm-badge fm-transfers-header-badge">
+                Transfer planning
+              </div>
+            </div>
           </header>
 
           <form
@@ -349,6 +357,13 @@ export default function TransfersPage() {
                   passenger count to check the
                   configured transfer source.
                 </p>
+              </div>
+
+              <div className="fm-transfers-search-note">
+                <span>BOOKING FLOW</span>
+                <strong>
+                  Search → Compare → Provider
+                </strong>
               </div>
             </div>
 
@@ -533,47 +548,59 @@ export default function TransfersPage() {
 
           {loading && (
             <section
-              className="fm-card fm-transfers-status-card"
+              className="fm-card fm-transfers-status-card fm-transfers-loading-card"
               aria-live="polite"
               aria-busy="true"
             >
-              <span className="fm-eyebrow">
-                SEARCHING
-              </span>
+              <div className="fm-transfers-status-icon">
+                ↗
+              </div>
 
-              <h2>
-                Checking transfer options
-              </h2>
+              <div>
+                <span className="fm-eyebrow">
+                  SEARCHING
+                </span>
 
-              <p>
-                FlyMatrix is checking the
-                configured transfer data source.
-              </p>
+                <h2>
+                  Checking transfer options
+                </h2>
+
+                <p>
+                  FlyMatrix is checking the
+                  configured transfer data source.
+                </p>
+              </div>
             </section>
           )}
 
           {!loading && error && (
             <section className="fm-card fm-transfers-status-card fm-transfers-error-card">
 
-              <span className="fm-badge">
-                Search unavailable
-              </span>
+              <div className="fm-transfers-status-icon">
+                !
+              </div>
 
-              <h2>
-                Continue with the provider
-              </h2>
+              <div className="fm-transfers-status-content">
+                <span className="fm-badge">
+                  Search unavailable
+                </span>
 
-              <p>
-                {error}
-              </p>
+                <h2>
+                  Continue with the provider
+                </h2>
 
-              <button
-                type="button"
-                className="fm-btn fm-primary"
-                onClick={openProvider}
-              >
-                Open transfer provider
-              </button>
+                <p>
+                  {error}
+                </p>
+
+                <button
+                  type="button"
+                  className="fm-btn fm-primary"
+                  onClick={openProvider}
+                >
+                  Open transfer provider
+                </button>
+              </div>
 
             </section>
           )}
@@ -584,29 +611,35 @@ export default function TransfersPage() {
             transfers.length === 0 && (
               <section className="fm-card fm-transfers-status-card">
 
-                <span className="fm-badge">
-                  No live results returned
-                </span>
+                <div className="fm-transfers-status-icon">
+                  —
+                </div>
 
-                <h2>
-                  No transfer options were returned
-                </h2>
+                <div className="fm-transfers-status-content">
+                  <span className="fm-badge">
+                    No live results returned
+                  </span>
 
-                <p>
-                  The configured data source did
-                  not return transfer options for
-                  this search. You can continue to
-                  the provider to check current
-                  availability.
-                </p>
+                  <h2>
+                    No transfer options were returned
+                  </h2>
 
-                <button
-                  type="button"
-                  className="fm-btn fm-primary"
-                  onClick={openProvider}
-                >
-                  Check provider availability
-                </button>
+                  <p>
+                    The configured data source did
+                    not return transfer options for
+                    this search. You can continue to
+                    the provider to check current
+                    availability.
+                  </p>
+
+                  <button
+                    type="button"
+                    className="fm-btn fm-primary"
+                    onClick={openProvider}
+                  >
+                    Check provider availability
+                  </button>
+                </div>
 
               </section>
             )}
@@ -624,9 +657,16 @@ export default function TransfersPage() {
                     <h2>
                       Available transfers
                     </h2>
+
+                    <p className="fm-transfers-results-description">
+                      Review returned options before
+                      continuing to the provider for
+                      final availability and booking
+                      terms.
+                    </p>
                   </div>
 
-                  <span className="fm-meta">
+                  <span className="fm-meta fm-transfers-result-count">
                     {transfers.length}{" "}
                     {transfers.length === 1
                       ? "option"
@@ -664,9 +704,15 @@ export default function TransfersPage() {
                             `transfer-${index}`
                           }
                         >
-                          <span className="fm-badge">
-                            Transfer
-                          </span>
+                          <div className="fm-transfer-result-top">
+                            <span className="fm-badge">
+                              Transfer
+                            </span>
+
+                            <span className="fm-transfer-result-type">
+                              {transferType}
+                            </span>
+                          </div>
 
                           <h3>
                             {getTransferName(
@@ -674,39 +720,66 @@ export default function TransfersPage() {
                             )}
                           </h3>
 
-                          <div className="fm-meta">
-                            Provider:{" "}
-                            {provider}
+                          <div className="fm-transfer-result-details">
+
+                            <div>
+                              <span>
+                                Provider
+                              </span>
+
+                              <strong>
+                                {provider}
+                              </strong>
+                            </div>
+
+                            <div>
+                              <span>
+                                Vehicle
+                              </span>
+
+                              <strong>
+                                {getVehicle(
+                                  item
+                                )}
+                              </strong>
+                            </div>
+
+                            <div>
+                              <span>
+                                Capacity
+                              </span>
+
+                              <strong>
+                                {getCapacity(
+                                  item
+                                )}
+                              </strong>
+                            </div>
+
                           </div>
 
-                          <div className="fm-meta">
-                            Vehicle:{" "}
-                            {getVehicle(
-                              item
-                            )}
-                          </div>
+                          <div className="fm-transfer-result-bottom">
+                            <div>
+                              <span className="fm-transfer-price-label">
+                                Provider price
+                              </span>
 
-                          <div className="fm-meta">
-                            Capacity:{" "}
-                            {getCapacity(
-                              item
-                            )}
-                          </div>
+                              <div className="fm-price">
+                                {price === null
+                                  ? "Price from provider"
+                                  : `${currency} ${price.toLocaleString()}`}
+                              </div>
+                            </div>
 
-                          <div className="fm-price">
-                            {price === null
-                              ? "Price from provider"
-                              : `${currency} ${price.toLocaleString()}`}
+                            <a
+                              className="fm-btn fm-primary"
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              View / book
+                            </a>
                           </div>
-
-                          <a
-                            className="fm-btn fm-primary"
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            View / book
-                          </a>
                         </article>
                       );
                     }
@@ -727,6 +800,12 @@ export default function TransfersPage() {
                 <h2>
                   Match the transfer to your journey
                 </h2>
+
+                <p>
+                  Choose a transfer style based on
+                  your arrival, group size and
+                  preferred travel arrangement.
+                </p>
               </div>
             </div>
 
@@ -736,6 +815,10 @@ export default function TransfersPage() {
                 <div className="fm-transfer-type-icon">
                   ✈
                 </div>
+
+                <span className="fm-section-kicker">
+                  OPTION 01
+                </span>
 
                 <h3>
                   Airport arrival
@@ -765,6 +848,10 @@ export default function TransfersPage() {
                   🚘
                 </div>
 
+                <span className="fm-section-kicker">
+                  OPTION 02
+                </span>
+
                 <h3>
                   Private transfer
                 </h3>
@@ -792,6 +879,10 @@ export default function TransfersPage() {
                 <div className="fm-transfer-type-icon">
                   👥
                 </div>
+
+                <span className="fm-section-kicker">
+                  OPTION 03
+                </span>
 
                 <h3>
                   Shared transfer
@@ -821,20 +912,22 @@ export default function TransfersPage() {
 
           <section className="fm-card fm-section-inner fm-transfers-planner-card">
 
-            <span className="fm-eyebrow">
-              TRIP PLANNER
-            </span>
+            <div className="fm-transfers-planner-content">
+              <span className="fm-eyebrow">
+                TRIP PLANNER
+              </span>
 
-            <h2>
-              Add the transfer to your trip plan
-            </h2>
+              <h2>
+                Add the transfer to your trip plan
+              </h2>
 
-            <p>
-              Keep your ground transportation
-              together with flights, hotels,
-              activities, connectivity and other
-              travel requirements.
-            </p>
+              <p>
+                Keep your ground transportation
+                together with flights, hotels,
+                activities, connectivity and other
+                travel requirements.
+              </p>
+            </div>
 
             <div className="fm-actions">
 
@@ -862,9 +955,15 @@ export default function TransfersPage() {
 
           <section className="fm-card fm-disclaimer fm-transfers-disclaimer">
 
-            <strong>
-              Provider information
-            </strong>
+            <div className="fm-transfers-disclaimer-heading">
+              <span className="fm-section-kicker">
+                IMPORTANT
+              </span>
+
+              <strong>
+                Provider information
+              </strong>
+            </div>
 
             <p>
               FlyMatrix does not directly operate
@@ -885,7 +984,7 @@ export default function TransfersPage() {
             </p>
 
             {destinationLabel && (
-              <p>
+              <p className="fm-transfers-current-destination">
                 Current destination:
                 {" "}
                 <strong>
@@ -900,4 +999,4 @@ export default function TransfersPage() {
       </section>
     </main>
   );
-      }
+}
