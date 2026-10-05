@@ -7972,3 +7972,537 @@ p {
     padding: 20px;
   }
 }
+/* =========================================================
+   FlyMatrix eSIM Page
+   ========================================================= */
+
+.fm-esim-page {
+  width: 100%;
+  min-height: 100%;
+}
+
+.fm-esim-hero {
+  padding-top: 34px;
+  padding-bottom: 34px;
+}
+
+.fm-esim-hero-content {
+  max-width: 900px;
+  margin: 0 auto 26px;
+}
+
+.fm-esim-hero-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28px;
+  margin-top: 10px;
+}
+
+.fm-esim-hero-heading h1 {
+  margin: 0 0 10px;
+  max-width: 760px;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.05;
+  font-weight: 850;
+  letter-spacing: -0.035em;
+  color: #0f172a;
+}
+
+.fm-esim-hero-heading p {
+  max-width: 680px;
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.fm-esim-search-panel {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 26px;
+}
+
+.fm-esim-search-heading {
+  margin-bottom: 22px;
+}
+
+.fm-esim-search-heading h2 {
+  margin: 7px 0 5px;
+  color: #0f172a;
+  font-size: 22px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.fm-esim-search-heading p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.fm-esim-search-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.fm-esim-search-grid .fm-form-field {
+  min-width: 0;
+}
+
+.fm-esim-search-grid label {
+  display: block;
+  margin-bottom: 7px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.fm-esim-search-grid select {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 13px;
+  border: 1px solid #dbe2ea;
+  border-radius: 10px;
+  background: #fff;
+  color: #1e293b;
+  font-size: 14px;
+  outline: none;
+}
+
+.fm-esim-search-grid select:focus {
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.16);
+}
+
+.fm-esim-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.fm-esim-content {
+  padding-bottom: 52px;
+}
+
+.fm-esim-status-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  max-width: 900px;
+  margin: 0 auto 34px;
+  padding: 24px;
+}
+
+.fm-esim-status-icon {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.fm-esim-status-content {
+  min-width: 0;
+}
+
+.fm-esim-status-card h2 {
+  margin: 8px 0 7px;
+  color: #0f172a;
+  font-size: 21px;
+  line-height: 1.25;
+  font-weight: 800;
+}
+
+.fm-esim-status-card p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.fm-esim-status-actions {
+  margin-top: 18px;
+}
+
+.fm-esim-results-section,
+.fm-esim-guide-section {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-top: 18px;
+}
+
+.fm-esim-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 18px;
+}
+
+.fm-esim-section-heading h2 {
+  margin: 6px 0 5px;
+  color: #0f172a;
+  font-size: 26px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.fm-esim-section-heading p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.fm-esim-result-count {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: baseline;
+  gap: 6px;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 11px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.fm-esim-result-count strong {
+  color: #0f172a;
+  font-size: 20px;
+}
+
+.fm-esim-results-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.fm-esim-result-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 21px;
+}
+
+.fm-esim-result-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 17px;
+}
+
+.fm-esim-provider-label {
+  overflow: hidden;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fm-esim-result-card h3 {
+  margin: 0 0 16px;
+  color: #0f172a;
+  font-size: 18px;
+  line-height: 1.3;
+  font-weight: 800;
+}
+
+.fm-esim-result-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.fm-esim-result-details > div {
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid #edf1f5;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.fm-esim-result-details span,
+.fm-esim-result-price span {
+  display: block;
+  margin-bottom: 5px;
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.fm-esim-result-details strong {
+  display: block;
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.fm-esim-result-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.fm-esim-result-price {
+  min-width: 0;
+}
+
+.fm-esim-result-price strong {
+  display: block;
+  color: #0f172a;
+  font-size: 20px;
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+.fm-esim-result-bottom .fm-btn {
+  flex: 0 0 auto;
+}
+
+.fm-esim-guide-section {
+  margin-top: 48px;
+}
+
+.fm-esim-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.fm-esim-guide-card {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 22px;
+}
+
+.fm-esim-guide-number {
+  margin-bottom: 18px;
+  color: #cbd5e1;
+  font-size: 28px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.fm-esim-guide-card h3 {
+  margin: 10px 0 8px;
+  color: #0f172a;
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 800;
+}
+
+.fm-esim-guide-card p {
+  flex: 1;
+  margin: 0 0 20px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.fm-esim-guide-card .fm-btn {
+  align-self: flex-start;
+}
+
+.fm-esim-planner-card {
+  max-width: 1180px;
+  margin: 48px auto 0;
+  padding: 26px;
+}
+
+.fm-esim-planner-content {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.fm-esim-planner-content h2 {
+  margin: 7px 0 8px;
+  color: #0f172a;
+  font-size: 25px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.fm-esim-planner-content p {
+  max-width: 700px;
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.fm-esim-planner-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.fm-esim-disclaimer {
+  max-width: 1180px;
+  margin: 18px auto 0;
+  padding: 21px 24px;
+}
+
+.fm-esim-disclaimer-heading {
+  margin-bottom: 10px;
+}
+
+.fm-esim-disclaimer-heading strong {
+  display: block;
+  margin-top: 5px;
+  color: #334155;
+  font-size: 14px;
+}
+
+.fm-esim-disclaimer-copy {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.fm-esim-disclaimer-copy p {
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+@media (max-width: 980px) {
+  .fm-esim-search-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fm-esim-results-grid,
+  .fm-esim-guide-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fm-esim-planner-content {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .fm-esim-disclaimer-copy {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .fm-esim-hero {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+
+  .fm-esim-hero-heading {
+    display: block;
+  }
+
+  .fm-esim-hero-heading .fm-badge {
+    display: inline-flex;
+    margin-top: 15px;
+  }
+
+  .fm-esim-search-panel {
+    padding: 20px;
+  }
+
+  .fm-esim-search-grid,
+  .fm-esim-results-grid,
+  .fm-esim-guide-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-esim-section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .fm-esim-result-bottom {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fm-esim-result-bottom .fm-btn {
+    width: 100%;
+  }
+
+  .fm-esim-status-card {
+    padding: 20px;
+  }
+
+  .fm-esim-planner-card {
+    padding: 21px;
+  }
+
+  .fm-esim-planner-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .fm-esim-planner-actions .fm-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .fm-esim-hero-heading h1 {
+    font-size: 29px;
+  }
+
+  .fm-esim-search-heading h2 {
+    font-size: 20px;
+  }
+
+  .fm-esim-search-panel {
+    border-radius: 15px;
+  }
+
+  .fm-esim-status-card {
+    display: block;
+  }
+
+  .fm-esim-status-icon {
+    margin-bottom: 14px;
+  }
+
+  .fm-esim-result-card,
+  .fm-esim-guide-card {
+    padding: 18px;
+  }
+
+  .fm-esim-planner-card {
+    border-radius: 15px;
+  }
+
+  .fm-esim-disclaimer {
+    padding: 18px;
+  }
+}
