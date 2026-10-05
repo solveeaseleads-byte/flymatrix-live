@@ -52,7 +52,7 @@ const PRIMARY_ACTIONS = [
     description:
       "Find flights by route, dates, passengers, cabin and stops.",
     path: "/search",
-    className: "home-launch-primary",
+    className: "fm-home-launch-primary",
   },
   {
     icon: "🧭",
@@ -60,7 +60,7 @@ const PRIMARY_ACTIONS = [
     description:
       "Build a practical journey around your destination and budget.",
     path: "/planner",
-    className: "home-launch-secondary",
+    className: "fm-home-launch-secondary",
   },
 ];
 
@@ -89,29 +89,25 @@ const PREPARATION_ACTIONS = [
   {
     icon: "🛂",
     title: "Visa Guidance",
-    description:
-      "Review travel-document and visa guidance.",
+    description: "Review travel-document and visa guidance.",
     path: "/visa",
   },
   {
     icon: "🏨",
     title: "Hotels",
-    description:
-      "Explore accommodation options.",
+    description: "Explore accommodation options.",
     path: "/hotels",
   },
   {
     icon: "🎟️",
     title: "Activities",
-    description:
-      "Discover attractions and things to do.",
+    description: "Discover attractions and things to do.",
     path: "/activities",
   },
   {
     icon: "📱",
     title: "eSIM",
-    description:
-      "Find connectivity options for your journey.",
+    description: "Find connectivity options for your journey.",
     path: "/esim",
   },
 ];
@@ -120,36 +116,31 @@ const SERVICE_ACTIONS = [
   {
     icon: "🧳",
     title: "Luggage Storage",
-    description:
-      "Find luggage-storage options around your journey.",
+    description: "Find luggage-storage options around your journey.",
     path: "/luggage",
   },
   {
     icon: "🚕",
     title: "Transfers",
-    description:
-      "Explore airport and destination transfers.",
+    description: "Explore airport and destination transfers.",
     path: "/transfers",
   },
   {
     icon: "🛟",
     title: "Travel Assistance",
-    description:
-      "Access travel assistance and disruption support.",
+    description: "Access travel assistance and disruption support.",
     path: "/assistance",
   },
   {
     icon: "🔔",
     title: "Fare Alerts",
-    description:
-      "Monitor routes and travel dates.",
+    description: "Monitor routes and travel dates.",
     path: "/alerts",
   },
   {
     icon: "🎒",
     title: "Travel Essentials",
-    description:
-      "Prepare documents, baggage and other essentials.",
+    description: "Prepare documents, baggage and other essentials.",
     path: "/essentials",
   },
 ];
@@ -179,8 +170,8 @@ function SectionHeading({
   description,
 }) {
   return (
-    <div className="section-heading">
-      <span className="eyebrow">
+    <div className="fm-home-section-heading">
+      <span className="fm-eyebrow">
         {eyebrow}
       </span>
 
@@ -199,13 +190,13 @@ function LaunchCard({
   return (
     <InternalLink
       path={action.path}
-      className={`home-launch-card ${action.className || ""}`}
+      className={`fm-home-launch-card ${action.className || ""}`}
     >
-      <span className="home-launch-icon">
+      <span className="fm-home-launch-icon">
         {action.icon}
       </span>
 
-      <span className="home-launch-content">
+      <span className="fm-home-launch-content">
         <strong>
           {action.title}
         </strong>
@@ -215,7 +206,7 @@ function LaunchCard({
         </span>
       </span>
 
-      <span className="home-launch-arrow">
+      <span className="fm-home-launch-arrow">
         →
       </span>
     </InternalLink>
@@ -228,13 +219,13 @@ function NavigationCard({
   return (
     <InternalLink
       path={item.path}
-      className="home-navigation-card"
+      className="fm-home-navigation-card"
     >
-      <span className="home-navigation-icon">
+      <span className="fm-home-navigation-icon">
         {item.icon}
       </span>
 
-      <span className="home-navigation-content">
+      <span className="fm-home-navigation-content">
         <strong>
           {item.title}
         </strong>
@@ -244,7 +235,7 @@ function NavigationCard({
         </span>
       </span>
 
-      <span className="home-navigation-arrow">
+      <span className="fm-home-navigation-arrow">
         →
       </span>
     </InternalLink>
@@ -257,10 +248,9 @@ function RouteCard({
   return (
     <button
       type="button"
-      className="home-route-card"
+      className="fm-home-route-card"
       onClick={() => {
-        const params =
-          new URLSearchParams();
+        const params = new URLSearchParams();
 
         params.set(
           "origin",
@@ -277,12 +267,12 @@ function RouteCard({
         );
       }}
     >
-      <span className="home-route-codes">
+      <span className="fm-home-route-codes">
         <span>
           {route.fromCode}
         </span>
 
-        <span className="home-route-arrow">
+        <span className="fm-home-route-arrow">
           →
         </span>
 
@@ -291,11 +281,11 @@ function RouteCard({
         </span>
       </span>
 
-      <span className="home-route-name">
+      <span className="fm-home-route-name">
         {route.label}
       </span>
 
-      <span className="home-route-action">
+      <span className="fm-home-route-action">
         Search route →
       </span>
     </button>
@@ -304,20 +294,20 @@ function RouteCard({
 
 export default function HomePage() {
   return (
-    <div className="home-page">
+    <div className="fm-home-page">
 
       {/* =====================================================
           APPLICATION LAUNCH
       ===================================================== */}
 
-      <section className="home-hero">
-        <div className="section-container">
+      <section className="fm-home-hero">
+        <div className="fm-container">
 
-          <div className="home-hero-grid">
+          <div className="fm-home-hero-grid">
 
-            <div className="home-hero-content">
+            <div className="fm-home-hero-content">
 
-              <span className="eyebrow">
+              <span className="fm-eyebrow">
                 GLOBAL FLIGHT SEARCH & TRAVEL INTELLIGENCE
               </span>
 
@@ -329,13 +319,13 @@ export default function HomePage() {
                 </span>
               </h1>
 
-              <p className="home-hero-description">
+              <p className="fm-home-hero-description">
                 FlyMatrix brings flight search,
                 trip planning and travel preparation
                 together in one connected experience.
               </p>
 
-              <div className="home-launch-actions">
+              <div className="fm-home-launch-actions">
 
                 {PRIMARY_ACTIONS.map(
                   (action) => (
@@ -348,7 +338,7 @@ export default function HomePage() {
 
               </div>
 
-              <div className="home-trust-row">
+              <div className="fm-home-trust-row">
                 <span>
                   ✓ Global routes
                 </span>
@@ -368,10 +358,11 @@ export default function HomePage() {
                 QUICK SEARCH
             ================================================= */}
 
-            <div className="home-quick-search">
+            <div className="fm-home-quick-search">
 
-              <div className="home-quick-search-header">
-                <span className="eyebrow">
+              <div className="fm-home-quick-search-header">
+
+                <span className="fm-eyebrow">
                   QUICK SEARCH
                 </span>
 
@@ -383,9 +374,10 @@ export default function HomePage() {
                   Enter your journey details
                   to continue to flight results.
                 </p>
+
               </div>
 
-              <div className="home-search-card">
+              <div className="fm-home-search-card">
                 <FlightSearchForm />
               </div>
 
@@ -396,13 +388,12 @@ export default function HomePage() {
         </div>
       </section>
 
-
       {/* =====================================================
           PRIMARY APPLICATION ENTRY
       ===================================================== */}
 
-      <section className="home-entry-section">
-        <div className="section-container">
+      <section className="fm-home-entry-section">
+        <div className="fm-container">
 
           <SectionHeading
             eyebrow="START HERE"
@@ -410,15 +401,16 @@ export default function HomePage() {
             description="Choose a workflow and FlyMatrix will take you to the dedicated experience."
           />
 
-          <div className="home-entry-grid">
+          <div className="fm-home-entry-grid">
 
-            <div className="home-entry-column">
+            <div className="fm-home-entry-column">
 
-              <div className="home-entry-label">
+              <div className="fm-home-entry-label">
                 EXPLORE
               </div>
 
-              <div className="home-navigation-grid">
+              <div className="fm-home-navigation-grid">
+
                 {EXPLORE_ACTIONS.map(
                   (item) => (
                     <NavigationCard
@@ -427,17 +419,19 @@ export default function HomePage() {
                     />
                   )
                 )}
+
               </div>
 
             </div>
 
-            <div className="home-entry-column">
+            <div className="fm-home-entry-column">
 
-              <div className="home-entry-label">
+              <div className="fm-home-entry-label">
                 PREPARE
               </div>
 
-              <div className="home-navigation-grid">
+              <div className="fm-home-navigation-grid">
+
                 {PREPARATION_ACTIONS.map(
                   (item) => (
                     <NavigationCard
@@ -446,6 +440,7 @@ export default function HomePage() {
                     />
                   )
                 )}
+
               </div>
 
             </div>
@@ -455,13 +450,12 @@ export default function HomePage() {
         </div>
       </section>
 
-
       {/* =====================================================
           POPULAR ROUTES
       ===================================================== */}
 
-      <section className="home-routes-section">
-        <div className="section-container">
+      <section className="fm-home-routes-section">
+        <div className="fm-container">
 
           <SectionHeading
             eyebrow="POPULAR ROUTES"
@@ -469,7 +463,7 @@ export default function HomePage() {
             description="Select a route to open flight search with the airports already selected."
           />
 
-          <div className="home-routes-grid">
+          <div className="fm-home-routes-grid">
 
             {FEATURED_ROUTES.map(
               (route) => (
@@ -485,13 +479,12 @@ export default function HomePage() {
         </div>
       </section>
 
-
       {/* =====================================================
           TRAVEL SERVICES
       ===================================================== */}
 
-      <section className="home-services-section">
-        <div className="section-container">
+      <section className="fm-home-services-section">
+        <div className="fm-container">
 
           <SectionHeading
             eyebrow="TRAVEL SERVICES"
@@ -499,7 +492,7 @@ export default function HomePage() {
             description="Open the specific service you need instead of searching through one long page."
           />
 
-          <div className="home-services-grid">
+          <div className="fm-home-services-grid">
 
             {SERVICE_ACTIONS.map(
               (item) => (
@@ -515,13 +508,12 @@ export default function HomePage() {
         </div>
       </section>
 
-
       {/* =====================================================
           SIMPLE WORKFLOW
       ===================================================== */}
 
-      <section className="home-workflow-section">
-        <div className="section-container">
+      <section className="fm-home-workflow-section">
+        <div className="fm-container">
 
           <SectionHeading
             eyebrow="THE FLYMATRIX FLOW"
@@ -529,14 +521,14 @@ export default function HomePage() {
             description="Each stage leads into the next part of your journey."
           />
 
-          <div className="home-workflow">
+          <div className="fm-home-workflow">
 
             <button
               type="button"
               onClick={() =>
                 navigate("/search")
               }
-              className="home-workflow-step"
+              className="fm-home-workflow-step"
             >
               <span>01</span>
 
@@ -558,7 +550,7 @@ export default function HomePage() {
               onClick={() =>
                 navigate("/planner")
               }
-              className="home-workflow-step"
+              className="fm-home-workflow-step"
             >
               <span>02</span>
 
@@ -580,7 +572,7 @@ export default function HomePage() {
               onClick={() =>
                 navigate("/visa")
               }
-              className="home-workflow-step"
+              className="fm-home-workflow-step"
             >
               <span>03</span>
 
@@ -602,7 +594,7 @@ export default function HomePage() {
               onClick={() =>
                 navigate("/hotels")
               }
-              className="home-workflow-step"
+              className="fm-home-workflow-step"
             >
               <span>04</span>
 
@@ -624,7 +616,7 @@ export default function HomePage() {
               onClick={() =>
                 navigate("/alerts")
               }
-              className="home-workflow-step"
+              className="fm-home-workflow-step"
             >
               <span>05</span>
 
@@ -646,18 +638,18 @@ export default function HomePage() {
         </div>
       </section>
 
-
       {/* =====================================================
           FINAL ACTION
       ===================================================== */}
 
-      <section className="home-final-section">
-        <div className="section-container">
+      <section className="fm-home-final-section">
+        <div className="fm-container">
 
-          <div className="home-final-card">
+          <div className="fm-home-final-card">
 
             <div>
-              <span className="eyebrow">
+
+              <span className="fm-eyebrow">
                 READY TO TRAVEL?
               </span>
 
@@ -670,13 +662,14 @@ export default function HomePage() {
                 planning workflow and let
                 FlyMatrix guide the next step.
               </p>
+
             </div>
 
-            <div className="home-final-actions">
+            <div className="fm-home-final-actions">
 
               <button
                 type="button"
-                className="btn btn-primary"
+                className="fm-btn fm-btn-primary"
                 onClick={() =>
                   navigate("/search")
                 }
@@ -686,7 +679,7 @@ export default function HomePage() {
 
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="fm-btn fm-btn-secondary"
                 onClick={() =>
                   navigate("/planner")
                 }
@@ -703,4 +696,4 @@ export default function HomePage() {
 
     </div>
   );
-      }
+}
