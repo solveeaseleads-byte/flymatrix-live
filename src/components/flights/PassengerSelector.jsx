@@ -9,10 +9,17 @@ export default function PassengerSelector({
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
 
+  const safeAdults = Math.max(1, Number(adults) || 1);
+  const safeChildren = Math.max(0, Number(children) || 0);
+  const safeInfants = Math.min(
+    safeAdults,
+    Math.max(0, Number(infants) || 0)
+  );
+
   const passengerTotal =
-    Number(adults || 0) +
-    Number(children || 0) +
-    Number(infants || 0);
+    safeAdults +
+    safeChildren +
+    safeInfants;
 
   useEffect(() => {
     function handleOutsideClick(event) {
@@ -39,25 +46,19 @@ export default function PassengerSelector({
 
   function updatePassenger(type, amount) {
     const current = {
-      adults: Number(adults) || 1,
-      children: Number(children) || 0,
-      infants: Number(infants) || 0
+      adults: safeAdults,
+      children: safeChildren,
+      infants: safeInfants
     };
 
     const next = {
-      ...current
-    };
-
-    next[type] =
-      Math.max(
+      ...current,
+      [type]: Math.max(
         type === "adults" ? 1 : 0,
         current[type] + amount
-      );
+      )
+    };
 
-    /*
-     * Optional safety rule:
-     * infants cannot exceed adults.
-     */
     if (type === "adults") {
       next.infants = Math.min(
         next.infants,
@@ -65,9 +66,7 @@ export default function PassengerSelector({
       );
     }
 
-    if (
-      typeof onChange === "function"
-    ) {
+    if (typeof onChange === "function") {
       onChange(next);
     }
   }
@@ -75,21 +74,23 @@ export default function PassengerSelector({
   function getSummary() {
     const parts = [];
 
-    if (adults > 0) {
+    parts.push(
+      `${safeAdults} adult${safeAdults !== 1 ? "s" : ""}`
+    );
+
+    if (safeChildren > 0) {
       parts.push(
-        `${adults} adult${adults !== 1 ? "s" : ""}`
+        `${safeChildren} child${
+          safeChildren !== 1 ? "ren" : ""
+        }`
       );
     }
 
-    if (children > 0) {
+    if (safeInfants > 0) {
       parts.push(
-        `${children} child${children !== 1 ? "ren" : ""}`
-      );
-    }
-
-    if (infants > 0) {
-      parts.push(
-        `${infants} infant${infants !== 1 ? "s" : ""}`
+        `${safeInfants} infant${
+          safeInfants !== 1 ? "s" : ""
+        }`
       );
     }
 
@@ -110,7 +111,7 @@ export default function PassengerSelector({
         aria-expanded={open}
         aria-haspopup="dialog"
       >
-        <span>
+        <span className="passenger-selector-summary">
           {getSummary()}
         </span>
 
@@ -133,7 +134,7 @@ export default function PassengerSelector({
           <PassengerRow
             label="Adults"
             description="Age 12+"
-            value={adults}
+            value={safeAdults}
             min={1}
             onDecrease={() =>
               updatePassenger(
@@ -152,7 +153,7 @@ export default function PassengerSelector({
           <PassengerRow
             label="Children"
             description="Age 2–11"
-            value={children}
+            value={safeChildren}
             min={0}
             onDecrease={() =>
               updatePassenger(
@@ -171,9 +172,9 @@ export default function PassengerSelector({
           <PassengerRow
             label="Infants"
             description="Under 2"
-            value={infants}
+            value={safeInfants}
             min={0}
-            max={adults}
+            max={safeAdults}
             onDecrease={() =>
               updatePassenger(
                 "infants",
@@ -230,13 +231,9 @@ function PassengerRow({
   return (
     <div className="passenger-row">
       <div className="passenger-info">
-        <strong>
-          {label}
-        </strong>
+        <strong>{label}</strong>
 
-        <span>
-          {description}
-        </span>
+        <span>{description}</span>
       </div>
 
       <div className="passenger-controls">
