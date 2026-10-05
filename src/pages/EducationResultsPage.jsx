@@ -202,7 +202,7 @@ function ProviderStatus({ source }) {
   }
 
   return (
-    <span className="provider-status">
+    <span className="fm-provider-status">
       {label}
     </span>
   );
@@ -217,8 +217,8 @@ function OptionCard({ option, onOpen }) {
   const directUrl = getBookingUrl(option);
 
   return (
-    <article className="tourism-option-card fm-education-option-card">
-      <div className="tourism-option-top fm-education-option-top">
+    <article className="fm-card fm-education-option-card">
+      <div className="fm-education-option-top">
         <span className="fm-badge">
           {category}
         </span>
@@ -226,60 +226,64 @@ function OptionCard({ option, onOpen }) {
         <ProviderStatus source={source} />
       </div>
 
-      <h3>{title}</h3>
+      <div className="fm-education-option-heading">
+        <h3>{title}</h3>
 
-      <div className="education-institution">
-        {institution}
+        <div className="fm-education-option-institution">
+          {institution}
+        </div>
       </div>
 
-      <p>{getDescription(option)}</p>
+      <p className="fm-education-option-description">
+        {getDescription(option)}
+      </p>
 
-      {option?.city && (
-        <div className="tourism-option-provider">
-          <span>Location</span>
+      <div className="fm-education-option-details">
+        {option?.city && (
+          <div className="fm-education-option-detail">
+            <span>Location</span>
+
+            <strong>
+              {option.city}
+              {option.country
+                ? `, ${option.country}`
+                : ""}
+            </strong>
+          </div>
+        )}
+
+        <div className="fm-education-option-detail">
+          <span>Study level</span>
 
           <strong>
-            {option.city}
-            {option.country
-              ? `, ${option.country}`
-              : ""}
+            {option?.level ||
+              option?.studyLevel ||
+              "Not specified"}
           </strong>
         </div>
-      )}
 
-      <div className="tourism-option-provider">
-        <span>Study level</span>
+        {option?.duration && (
+          <div className="fm-education-option-detail">
+            <span>Duration</span>
 
-        <strong>
-          {option?.level ||
-            option?.studyLevel ||
-            "Not specified"}
-        </strong>
+            <strong>{option.duration}</strong>
+          </div>
+        )}
+
+        {option?.studyMode && (
+          <div className="fm-education-option-detail">
+            <span>Study mode</span>
+
+            <strong>{option.studyMode}</strong>
+          </div>
+        )}
       </div>
 
-      {option?.duration && (
-        <div className="tourism-option-provider">
-          <span>Duration</span>
+      <div className="fm-education-option-bottom">
+        <div className="fm-education-option-price">
+          <span>Published / provider cost</span>
 
-          <strong>{option.duration}</strong>
-        </div>
-      )}
-
-      {option?.studyMode && (
-        <div className="tourism-option-provider">
-          <span>Study mode</span>
-
-          <strong>{option.studyMode}</strong>
-        </div>
-      )}
-
-      <div className="tourism-option-bottom">
-        <div>
-          <span className="tourism-option-price-label">
-            Published / provider cost
-          </span>
-
-          <strong className="tourism-option-price">
+          <strong>
             {formatCurrency(
               price.amount,
               price.currency
@@ -290,7 +294,7 @@ function OptionCard({ option, onOpen }) {
         {directUrl && (
           <button
             type="button"
-            className="btn btn-primary"
+            className="fm-btn fm-btn-primary"
             onClick={() => onOpen(directUrl)}
           >
             View provider
@@ -314,10 +318,12 @@ function TravelServiceCard({
   }
 
   return (
-    <article className="tourism-track-card fm-education-service-card">
-      <span className="fm-badge">
-        Travel service
-      </span>
+    <article className="fm-education-service-card">
+      <div className="fm-education-service-top">
+        <span className="fm-badge">
+          Travel service
+        </span>
+      </div>
 
       <h3>{title}</h3>
 
@@ -325,7 +331,7 @@ function TravelServiceCard({
 
       <button
         type="button"
-        className="btn btn-secondary"
+        className="fm-btn fm-btn-secondary"
         onClick={() => onOpen(url)}
       >
         Open provider
@@ -544,340 +550,360 @@ export default function EducationResultsPage() {
   }
 
   return (
-    <main className="page-container fm-education-results-page">
-      <section className="tourism-results-header fm-education-results-header">
-        <button
-          type="button"
-          className="btn btn-secondary fm-education-back-button"
-          onClick={() =>
-            navigate(
-              "/tourism/education"
-            )
-          }
-        >
-          ← Change study plan
-        </button>
-
-        <div className="fm-education-results-title">
-          <span className="fm-section-kicker">
-            EDUCATION SEARCH
-          </span>
-
-          <span className="fm-badge">
-            Education Tourism
-          </span>
-
-          <h1>
-            {city ||
-              country ||
-              "Education options"}
-          </h1>
-
-          <p>
-            {field
-              ? `${field} study options`
-              : "Education options based on your selected requirements."}
-          </p>
-        </div>
-      </section>
-
-      <section className="tourism-search-summary fm-education-search-summary">
-        <div>
-          <span>Destination</span>
-
-          <strong>
-            {city ||
-              country ||
-              "Not specified"}
-          </strong>
-        </div>
-
-        <div>
-          <span>Study level</span>
-
-          <strong>
-            {level || "Not specified"}
-          </strong>
-        </div>
-
-        <div>
-          <span>Duration</span>
-
-          <strong>
-            {duration || "Not specified"}
-          </strong>
-        </div>
-
-        <div>
-          <span>Study mode</span>
-
-          <strong>
-            {studyMode || "Not specified"}
-          </strong>
-        </div>
-      </section>
-
-      <section className="tourism-results-toolbar fm-education-results-toolbar">
-        <div className="fm-education-results-count">
-          <span className="fm-section-kicker">
-            SEARCH RESULTS
-          </span>
-
-          <strong>
-            {loading
-              ? "Loading options..."
-              : `${sortedOptions.length} options`}
-          </strong>
-
-          {!loading && source && (
-            <ProviderStatus
-              source={source}
-            />
-          )}
-        </div>
-
-        <div className="tourism-results-controls fm-education-results-controls">
-          <label htmlFor="education-category">
-            Category
-          </label>
-
-          <select
-            id="education-category"
-            value={categoryFilter}
-            onChange={(event) =>
-              setCategoryFilter(
-                event.target.value
+    <main className="fm-education-results-page">
+      <section className="fm-page-section fm-education-results-hero">
+        <div className="fm-container">
+          <button
+            type="button"
+            className="fm-btn fm-btn-secondary fm-education-back-button"
+            onClick={() =>
+              navigate(
+                "/tourism/education"
               )
             }
           >
-            <option value="all">
-              All
-            </option>
+            ← Change study plan
+          </button>
 
-            <option value="certificate">
-              Certificate
-            </option>
+          <div className="fm-education-results-title">
+            <span className="fm-eyebrow">
+              EDUCATION SEARCH
+            </span>
 
-            <option value="diploma">
-              Diploma
-            </option>
+            <span className="fm-badge">
+              Education Tourism
+            </span>
 
-            <option value="bachelor">
-              Bachelor's
-            </option>
+            <h1>
+              {city ||
+                country ||
+                "Education options"}
+            </h1>
 
-            <option value="master">
-              Master's
-            </option>
-
-            <option value="doctorate">
-              Doctorate
-            </option>
-          </select>
-
-          <label htmlFor="education-sort">
-            Sort
-          </label>
-
-          <select
-            id="education-sort"
-            value={sortOrder}
-            onChange={(event) =>
-              setSortOrder(
-                event.target.value
-              )
-            }
-          >
-            <option value="price">
-              Lowest price
-            </option>
-
-            <option value="price-desc">
-              Highest price
-            </option>
-          </select>
+            <p>
+              {field
+                ? `${field} study options`
+                : "Education options based on your selected requirements."}
+            </p>
+          </div>
         </div>
       </section>
 
-      {error && (
-        <section className="tourism-error fm-education-error">
+      <section className="fm-container">
+        <div className="fm-education-search-summary">
           <div>
-            <span className="fm-section-kicker">
-              SEARCH ERROR
+            <span>Destination</span>
+
+            <strong>
+              {city ||
+                country ||
+                "Not specified"}
+            </strong>
+          </div>
+
+          <div>
+            <span>Study level</span>
+
+            <strong>
+              {level || "Not specified"}
+            </strong>
+          </div>
+
+          <div>
+            <span>Duration</span>
+
+            <strong>
+              {duration || "Not specified"}
+            </strong>
+          </div>
+
+          <div>
+            <span>Study mode</span>
+
+            <strong>
+              {studyMode || "Not specified"}
+            </strong>
+          </div>
+        </div>
+
+        <section className="fm-education-results-toolbar">
+          <div className="fm-education-results-count">
+            <span className="fm-eyebrow">
+              SEARCH RESULTS
             </span>
 
             <strong>
-              Education search unavailable
+              {loading
+                ? "Loading options..."
+                : `${sortedOptions.length} options`}
             </strong>
 
-            <p>{error}</p>
+            {!loading && source && (
+              <ProviderStatus
+                source={source}
+              />
+            )}
           </div>
 
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={retrySearch}
-          >
-            Try again
-          </button>
+          <div className="fm-education-results-controls">
+            <div className="fm-form-field">
+              <label htmlFor="education-category">
+                Category
+              </label>
+
+              <select
+                id="education-category"
+                value={categoryFilter}
+                onChange={(event) =>
+                  setCategoryFilter(
+                    event.target.value
+                  )
+                }
+              >
+                <option value="all">
+                  All
+                </option>
+
+                <option value="certificate">
+                  Certificate
+                </option>
+
+                <option value="diploma">
+                  Diploma
+                </option>
+
+                <option value="bachelor">
+                  Bachelor's
+                </option>
+
+                <option value="master">
+                  Master's
+                </option>
+
+                <option value="doctorate">
+                  Doctorate
+                </option>
+              </select>
+            </div>
+
+            <div className="fm-form-field">
+              <label htmlFor="education-sort">
+                Sort
+              </label>
+
+              <select
+                id="education-sort"
+                value={sortOrder}
+                onChange={(event) =>
+                  setSortOrder(
+                    event.target.value
+                  )
+                }
+              >
+                <option value="price">
+                  Lowest price
+                </option>
+
+                <option value="price-desc">
+                  Highest price
+                </option>
+              </select>
+            </div>
+          </div>
         </section>
-      )}
 
-      {loading && (
-        <section className="tourism-results-grid fm-education-results-grid">
-          <article className="tourism-option-card fm-education-loading-card">
-            <span className="fm-badge">
-              Searching
-            </span>
+        {error && (
+          <section className="fm-education-error">
+            <div className="fm-education-error-content">
+              <span className="fm-eyebrow">
+                SEARCH ERROR
+              </span>
 
-            <h3>
-              Finding education options...
-            </h3>
+              <h2>
+                Education search unavailable
+              </h2>
 
-            <p>
-              We are checking the connected
-              education service using your
-              selected requirements.
-            </p>
-          </article>
-        </section>
-      )}
-
-      {!loading &&
-        !error &&
-        sortedOptions.length === 0 && (
-          <section className="tourism-empty-state fm-education-empty-state">
-            <span className="fm-section-kicker">
-              SEARCH COMPLETE
-            </span>
-
-            <span className="fm-badge">
-              No matching options
-            </span>
-
-            <h2>
-              No education options were
-              returned.
-            </h2>
-
-            <p>
-              Try changing the destination,
-              study level, field, duration,
-              budget, or study mode.
-            </p>
+              <p>{error}</p>
+            </div>
 
             <button
               type="button"
-              className="btn btn-primary"
-              onClick={() =>
-                navigate(
-                  "/tourism/education"
-                )
-              }
+              className="fm-btn fm-btn-primary"
+              onClick={retrySearch}
             >
-              Change study plan
+              Try again
             </button>
           </section>
         )}
 
-      {!loading &&
-        !error &&
-        sortedOptions.length > 0 && (
-          <section className="tourism-results-grid fm-education-results-grid">
-            {sortedOptions.map(
-              (option, index) => (
-                <OptionCard
-                  key={
-                    option?.id ||
-                    option?.programId ||
-                    option?.institutionId ||
-                    `${getTitle(option)}-${index}`
-                  }
-                  option={option}
-                  onOpen={openProvider}
-                />
-              )
-            )}
+        {loading && (
+          <section className="fm-education-results-grid">
+            <article className="fm-card fm-education-loading-card">
+              <span className="fm-badge">
+                Searching
+              </span>
+
+              <div className="fm-education-loading-copy">
+                <h3>
+                  Finding education options...
+                </h3>
+
+                <p>
+                  We are checking the connected
+                  education service using your
+                  selected requirements.
+                </p>
+              </div>
+
+              <div className="fm-education-loading-lines">
+                <span />
+                <span />
+                <span />
+              </div>
+            </article>
           </section>
         )}
 
-      {!loading && !error && (
-        <section className="tourism-support-section fm-education-support-section">
-          <div className="fm-education-support-heading">
-            <span className="fm-section-kicker">
-              NEXT STEP
-            </span>
+        {!loading &&
+          !error &&
+          sortedOptions.length === 0 && (
+            <section className="fm-education-empty-state">
+              <span className="fm-education-empty-icon">
+                🎓
+              </span>
 
-            <span className="fm-badge">
-              Travel preparation
-            </span>
+              <span className="fm-eyebrow">
+                SEARCH COMPLETE
+              </span>
 
-            <h2>
-              Prepare for your education
-              journey
-            </h2>
+              <span className="fm-badge">
+                No matching options
+              </span>
 
-            <p>
-              After selecting an education
-              option, use the connected travel
-              services to prepare flights,
-              accommodation, activities, visa
-              information, eSIM and assistance.
-            </p>
-          </div>
+              <h2>
+                No education options were
+                returned.
+              </h2>
 
-          <div className="tourism-track-grid fm-education-service-grid">
-            <TravelServiceCard
-              title="Flights"
-              description="Search flight options for your education destination."
-              category="flights"
-              onOpen={openProvider}
-            />
+              <p>
+                Try changing the destination,
+                study level, field, duration,
+                budget, or study mode.
+              </p>
 
-            <TravelServiceCard
-              title="Accommodation"
-              description="Find accommodation options for your study stay."
-              category="hotels"
-              onOpen={openProvider}
-            />
+              <button
+                type="button"
+                className="fm-btn fm-btn-primary"
+                onClick={() =>
+                  navigate(
+                    "/tourism/education"
+                  )
+                }
+              >
+                Change study plan
+              </button>
+            </section>
+          )}
 
-            <TravelServiceCard
-              title="Activities"
-              description="Explore activities and things to do at your destination."
-              category="activities"
-              onOpen={openProvider}
-            />
+        {!loading &&
+          !error &&
+          sortedOptions.length > 0 && (
+            <section className="fm-education-results-grid">
+              {sortedOptions.map(
+                (option, index) => (
+                  <OptionCard
+                    key={
+                      option?.id ||
+                      option?.programId ||
+                      option?.institutionId ||
+                      `${getTitle(option)}-${index}`
+                    }
+                    option={option}
+                    onOpen={openProvider}
+                  />
+                )
+              )}
+            </section>
+          )}
 
-            <TravelServiceCard
-              title="eSIM"
-              description="Prepare mobile connectivity before travelling."
-              category="esim"
-              onOpen={openProvider}
-            />
+        {!loading && !error && (
+          <section className="fm-education-support-section">
+            <div className="fm-education-support-heading">
+              <span className="fm-eyebrow">
+                NEXT STEP
+              </span>
 
-            <TravelServiceCard
-              title="Visa information"
-              description="Check visa information and application requirements."
-              category="visa"
-              onOpen={openProvider}
-            />
+              <span className="fm-badge">
+                Travel preparation
+              </span>
 
-            <TravelServiceCard
-              title="Travel assistance"
-              description="Explore travel assistance options before departure."
-              category="assistance"
-              onOpen={openProvider}
-            />
+              <h2>
+                Prepare for your education
+                journey
+              </h2>
 
-            <TravelServiceCard
-              title="Luggage storage"
-              description="Find luggage storage options when needed."
-              category="luggage"
-              onOpen={openProvider}
-            />
-          </div>
-        </section>
-      )}
+              <p>
+                After selecting an education
+                option, use the connected travel
+                services to prepare flights,
+                accommodation, activities, visa
+                information, eSIM and assistance.
+              </p>
+            </div>
+
+            <div className="fm-education-service-grid">
+              <TravelServiceCard
+                title="Flights"
+                description="Search flight options for your education destination."
+                category="flights"
+                onOpen={openProvider}
+              />
+
+              <TravelServiceCard
+                title="Accommodation"
+                description="Find accommodation options for your study stay."
+                category="hotels"
+                onOpen={openProvider}
+              />
+
+              <TravelServiceCard
+                title="Activities"
+                description="Explore activities and things to do at your destination."
+                category="activities"
+                onOpen={openProvider}
+              />
+
+              <TravelServiceCard
+                title="eSIM"
+                description="Prepare mobile connectivity before travelling."
+                category="esim"
+                onOpen={openProvider}
+              />
+
+              <TravelServiceCard
+                title="Visa information"
+                description="Check visa information and application requirements."
+                category="visa"
+                onOpen={openProvider}
+              />
+
+              <TravelServiceCard
+                title="Travel assistance"
+                description="Explore travel assistance options before departure."
+                category="assistance"
+                onOpen={openProvider}
+              />
+
+              <TravelServiceCard
+                title="Luggage storage"
+                description="Find luggage storage options when needed."
+                category="luggage"
+                onOpen={openProvider}
+              />
+            </div>
+          </section>
+        )}
+      </section>
     </main>
   );
 }
