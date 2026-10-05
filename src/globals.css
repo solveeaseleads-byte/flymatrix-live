@@ -8506,3 +8506,473 @@ p {
     padding: 18px;
   }
 }
+/* =========================================================
+   FlyMatrix Transfers — presentation alignment
+   ========================================================= */
+
+.fm-transfers-page {
+  width: 100%;
+}
+
+.fm-transfers-section {
+  padding-top: 30px;
+  padding-bottom: 56px;
+}
+
+.fm-transfers-header {
+  max-width: 1180px;
+  margin: 0 auto 28px;
+}
+
+.fm-transfers-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.fm-transfers-header h1 {
+  margin: 7px 0 10px;
+  max-width: 760px;
+}
+
+.fm-transfers-header p {
+  max-width: 720px;
+  margin: 0;
+  color: #64748b;
+  line-height: 1.65;
+}
+
+.fm-transfers-header-badge {
+  flex: 0 0 auto;
+  margin-top: 10px;
+}
+
+.fm-transfers-search-card {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px;
+}
+
+.fm-transfers-search-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 24px;
+}
+
+.fm-transfers-search-heading h2 {
+  margin: 7px 0 6px;
+  color: #0f172a;
+}
+
+.fm-transfers-search-heading p {
+  max-width: 650px;
+  margin: 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.fm-transfers-search-note {
+  flex: 0 0 auto;
+  min-width: 190px;
+  padding: 13px 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.fm-transfers-search-note span {
+  display: block;
+  margin-bottom: 5px;
+  color: #94a3b8;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+
+.fm-transfers-search-note strong {
+  display: block;
+  color: #334155;
+  font-size: 12px;
+}
+
+.fm-transfers-form-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.fm-transfers-actions {
+  margin-top: 24px;
+  padding-top: 22px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.fm-transfers-status-card {
+  max-width: 1180px;
+  margin: 22px auto 0;
+  padding: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.fm-transfers-status-icon {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.fm-transfers-status-content {
+  min-width: 0;
+}
+
+.fm-transfers-status-card h2 {
+  margin: 8px 0;
+  color: #0f172a;
+}
+
+.fm-transfers-status-card p {
+  max-width: 680px;
+  margin: 0 0 17px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.fm-transfers-results-section,
+.fm-transfers-planning-section {
+  max-width: 1180px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fm-transfers-results-heading {
+  margin-bottom: 20px;
+}
+
+.fm-transfers-results-description {
+  max-width: 650px;
+  margin: 7px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.fm-transfers-result-count {
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.fm-transfers-results-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.fm-transfer-result-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 22px;
+}
+
+.fm-transfer-result-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.fm-transfer-result-type {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+.fm-transfer-result-card h3 {
+  margin: 0 0 18px;
+  color: #0f172a;
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.fm-transfer-result-details {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.fm-transfer-result-details > div {
+  min-width: 0;
+  padding-bottom: 11px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.fm-transfer-result-details span {
+  display: block;
+  margin-bottom: 4px;
+  color: #94a3b8;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.fm-transfer-result-details strong {
+  display: block;
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.fm-transfer-result-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.fm-transfer-price-label {
+  display: block;
+  margin-bottom: 5px;
+  color: #94a3b8;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.fm-transfer-result-bottom .fm-price {
+  color: #0f172a;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.fm-transfer-result-bottom .fm-btn {
+  flex: 0 0 auto;
+}
+
+.fm-transfers-section-heading {
+  margin-bottom: 20px;
+}
+
+.fm-transfers-section-heading p {
+  max-width: 680px;
+  margin: 7px 0 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.fm-transfers-type-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.fm-transfer-type-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 22px;
+}
+
+.fm-transfer-type-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  font-size: 19px;
+}
+
+.fm-transfer-type-card .fm-section-kicker {
+  margin-bottom: 6px;
+}
+
+.fm-transfer-type-card h3 {
+  margin: 0 0 8px;
+  color: #0f172a;
+}
+
+.fm-transfer-type-card p {
+  flex: 1;
+  margin: 0 0 20px;
+  color: #64748b;
+  line-height: 1.6;
+  font-size: 13px;
+}
+
+.fm-transfers-planner-card {
+  max-width: 1180px;
+  margin: 30px auto 0;
+  padding: 26px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.fm-transfers-planner-content {
+  min-width: 0;
+  max-width: 700px;
+}
+
+.fm-transfers-planner-card h2 {
+  margin: 7px 0 8px;
+  color: #0f172a;
+}
+
+.fm-transfers-planner-card p {
+  margin: 0;
+  color: #64748b;
+  line-height: 1.65;
+}
+
+.fm-transfers-planner-card .fm-actions {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.fm-transfers-disclaimer {
+  max-width: 1180px;
+  margin: 22px auto 0;
+}
+
+.fm-transfers-disclaimer-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.fm-transfers-disclaimer-heading strong {
+  color: #334155;
+  font-size: 15px;
+}
+
+.fm-transfers-disclaimer p {
+  line-height: 1.6;
+}
+
+.fm-transfers-current-destination {
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.fm-transfers-current-destination strong {
+  color: #334155;
+}
+
+@media (max-width: 980px) {
+  .fm-transfers-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fm-transfers-results-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fm-transfers-type-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-transfers-planner-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .fm-transfers-planner-card .fm-actions {
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .fm-transfers-header-row,
+  .fm-transfers-search-heading {
+    display: block;
+  }
+
+  .fm-transfers-header-badge {
+    display: inline-flex;
+    margin-top: 16px;
+  }
+
+  .fm-transfers-search-note {
+    margin-top: 18px;
+  }
+
+  .fm-transfers-search-card {
+    padding: 21px;
+  }
+
+  .fm-transfers-status-card {
+    padding: 20px;
+  }
+
+  .fm-transfers-results-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-transfers-planner-card {
+    padding: 21px;
+  }
+}
+
+@media (max-width: 560px) {
+  .fm-transfers-section {
+    padding-top: 20px;
+    padding-bottom: 40px;
+  }
+
+  .fm-transfers-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-transfers-actions,
+  .fm-transfers-planner-card .fm-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .fm-transfers-actions .fm-btn,
+  .fm-transfers-planner-card .fm-actions .fm-btn {
+    width: 100%;
+  }
+
+  .fm-transfers-status-card {
+    display: block;
+  }
+
+  .fm-transfers-status-icon {
+    margin-bottom: 14px;
+  }
+
+  .fm-transfer-result-bottom {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fm-transfer-result-bottom .fm-btn {
+    width: 100%;
+  }
+}
