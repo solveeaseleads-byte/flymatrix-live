@@ -42,10 +42,7 @@ export default function AlertsPage() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(alert)
-      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(alert));
     } catch {
       // Storage may be unavailable in some browser configurations.
     }
@@ -75,10 +72,7 @@ export default function AlertsPage() {
       return "Select a departure date.";
     }
 
-    if (
-      alert.tripType === "roundtrip" &&
-      !alert.returnDate
-    ) {
+    if (alert.tripType === "roundtrip" && !alert.returnDate) {
       return "Select a return date.";
     }
 
@@ -100,10 +94,8 @@ export default function AlertsPage() {
 
     if (
       alert.maxPrice !== "" &&
-      (
-        Number.isNaN(Number(alert.maxPrice)) ||
-        Number(alert.maxPrice) <= 0
-      )
+      (Number.isNaN(Number(alert.maxPrice)) ||
+        Number(alert.maxPrice) <= 0)
     ) {
       return "Enter a valid maximum price.";
     }
@@ -112,11 +104,7 @@ export default function AlertsPage() {
       return "Enter an email address for the alert.";
     }
 
-    if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
-        alert.email.trim()
-      )
-    ) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(alert.email.trim())) {
       return "Enter a valid email address.";
     }
 
@@ -140,43 +128,37 @@ export default function AlertsPage() {
     setLoading(true);
 
     try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(alert)
-      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(alert));
 
       let backendRegistered = false;
 
       try {
-        const response = await fetch(
-          "/api/alerts",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({
-              origin: alert.origin.trim(),
-              destination: alert.destination.trim(),
-              departureDate: alert.departureDate,
-              returnDate:
-                alert.tripType === "roundtrip"
-                  ? alert.returnDate
-                  : null,
-              tripType: alert.tripType,
-              adults: Number(alert.adults),
-              cabin: alert.cabin,
-              maxPrice:
-                alert.maxPrice === ""
-                  ? null
-                  : Number(alert.maxPrice),
-              currency: alert.currency,
-              email: alert.email.trim(),
-              enabled: alert.enabled,
-            }),
-          }
-        );
+        const response = await fetch("/api/alerts", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            origin: alert.origin.trim(),
+            destination: alert.destination.trim(),
+            departureDate: alert.departureDate,
+            returnDate:
+              alert.tripType === "roundtrip"
+                ? alert.returnDate
+                : null,
+            tripType: alert.tripType,
+            adults: Number(alert.adults),
+            cabin: alert.cabin,
+            maxPrice:
+              alert.maxPrice === ""
+                ? null
+                : Number(alert.maxPrice),
+            currency: alert.currency,
+            email: alert.email.trim(),
+            enabled: alert.enabled,
+          }),
+        });
 
         if (response.ok) {
           backendRegistered = true;
@@ -209,18 +191,13 @@ export default function AlertsPage() {
     setAlert(next);
 
     try {
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(next)
-      );
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch {
       // Ignore storage errors.
     }
 
     setSaved(true);
-    setMessage(
-      "The fare alert has been disabled on this device."
-    );
+    setMessage("The fare alert has been disabled on this device.");
   }
 
   function clearAlert() {
@@ -232,9 +209,7 @@ export default function AlertsPage() {
 
     setAlert(DEFAULT_ALERT);
     setSaved(false);
-    setMessage(
-      "The saved fare alert has been cleared."
-    );
+    setMessage("The saved fare alert has been cleared.");
     setError("");
   }
 
@@ -242,53 +217,26 @@ export default function AlertsPage() {
     const params = new URLSearchParams();
 
     if (alert.origin.trim()) {
-      params.set(
-        "origin",
-        alert.origin.trim()
-      );
+      params.set("origin", alert.origin.trim());
     }
 
     if (alert.destination.trim()) {
-      params.set(
-        "destination",
-        alert.destination.trim()
-      );
+      params.set("destination", alert.destination.trim());
     }
 
     if (alert.departureDate) {
-      params.set(
-        "departure",
-        alert.departureDate
-      );
+      params.set("departure", alert.departureDate);
     }
 
-    if (
-      alert.tripType === "roundtrip" &&
-      alert.returnDate
-    ) {
-      params.set(
-        "return",
-        alert.returnDate
-      );
+    if (alert.tripType === "roundtrip" && alert.returnDate) {
+      params.set("return", alert.returnDate);
     }
 
-    params.set(
-      "tripType",
-      alert.tripType
-    );
+    params.set("tripType", alert.tripType);
+    params.set("adults", String(alert.adults));
+    params.set("cabin", alert.cabin);
 
-    params.set(
-      "adults",
-      String(alert.adults)
-    );
-
-    params.set(
-      "cabin",
-      alert.cabin
-    );
-
-    window.location.href =
-      `/search?${params.toString()}`;
+    window.location.href = `/search?${params.toString()}`;
   }
 
   return (
@@ -297,23 +245,31 @@ export default function AlertsPage() {
         <div className="fm-container">
 
           <header className="fm-page-header fm-alerts-header">
-            <span className="fm-eyebrow">
-              FARE ALERTS
-            </span>
+            <div className="fm-alerts-header-content">
+              <span className="fm-eyebrow">
+                FARE ALERTS
+              </span>
 
-            <h1>
-              Monitor a Flight Route
-            </h1>
+              <h1>Monitor a Flight Route</h1>
 
-            <p>
-              Create a fare-alert preference for a
-              route, travel dates, passenger count
-              and target price.
-            </p>
+              <p>
+                Create a fare-alert preference for a route,
+                travel dates, passenger count and target price.
+              </p>
+            </div>
+
+            <div className="fm-alerts-header-badge">
+              <span className="fm-alerts-header-icon">↯</span>
+
+              <div>
+                <strong>Route monitoring</strong>
+                <span>Set your conditions before monitoring.</span>
+              </div>
+            </div>
           </header>
 
           <form
-            className="fm-card fm-search-panel fm-alerts-search-card"
+            className="fm-card fm-alerts-search-card"
             onSubmit={saveAlert}
           >
             <div className="fm-alerts-search-heading">
@@ -322,108 +278,82 @@ export default function AlertsPage() {
                   ALERT SETUP
                 </span>
 
-                <h2>
-                  Define the fare you want to monitor
-                </h2>
+                <h2>Define the fare you want to monitor</h2>
 
                 <p>
-                  Set your route, travel dates,
-                  passenger details and optional
-                  target price.
+                  Set your route, travel dates, passenger
+                  details and optional target price.
                 </p>
               </div>
+
+              <span className="fm-badge">
+                {alert.enabled ? "Monitoring enabled" : "Disabled"}
+              </span>
             </div>
 
-            <div className="fm-search-grid fm-alerts-form-grid">
+            <div className="fm-alerts-form-grid">
 
-              <div className="fm-field">
-                <label htmlFor="alert-origin">
-                  From
-                </label>
+              <div className="fm-form-field">
+                <label htmlFor="alert-origin">From</label>
 
                 <input
                   id="alert-origin"
                   type="text"
                   value={alert.origin}
                   onChange={(event) =>
-                    update(
-                      "origin",
-                      event.target.value
-                    )
+                    update("origin", event.target.value)
                   }
                   placeholder="e.g. LOS"
                   autoComplete="off"
                 />
               </div>
 
-              <div className="fm-field">
-                <label htmlFor="alert-destination">
-                  To
-                </label>
+              <div className="fm-form-field">
+                <label htmlFor="alert-destination">To</label>
 
                 <input
                   id="alert-destination"
                   type="text"
                   value={alert.destination}
                   onChange={(event) =>
-                    update(
-                      "destination",
-                      event.target.value
-                    )
+                    update("destination", event.target.value)
                   }
                   placeholder="e.g. LHR"
                   autoComplete="off"
                 />
               </div>
 
-              <div className="fm-field">
-                <label htmlFor="alert-trip-type">
-                  Trip type
-                </label>
+              <div className="fm-form-field">
+                <label htmlFor="alert-trip-type">Trip type</label>
 
                 <select
                   id="alert-trip-type"
                   value={alert.tripType}
                   onChange={(event) =>
-                    update(
-                      "tripType",
-                      event.target.value
-                    )
+                    update("tripType", event.target.value)
                   }
                 >
-                  <option value="roundtrip">
-                    Round trip
-                  </option>
-
-                  <option value="oneway">
-                    One way
-                  </option>
+                  <option value="roundtrip">Round trip</option>
+                  <option value="oneway">One way</option>
                 </select>
               </div>
 
-              <div className="fm-field">
-                <label htmlFor="alert-departure">
-                  Departure
-                </label>
+              <div className="fm-form-field">
+                <label htmlFor="alert-departure">Departure</label>
 
                 <input
                   id="alert-departure"
                   type="date"
                   value={alert.departureDate}
                   onChange={(event) =>
-                    update(
-                      "departureDate",
-                      event.target.value
-                    )
+                    update("departureDate", event.target.value)
                   }
                 />
               </div>
 
               {alert.tripType === "roundtrip" && (
-                <div className="fm-field">
-                  <label htmlFor="alert-return">
-                    Return
-                  </label>
+                <div className="fm-form-field">
+                  <label htmlFor="alert-return">Return</label>
 
                   <input
                     id="alert-return"
@@ -431,81 +361,54 @@ export default function AlertsPage() {
                     value={alert.returnDate}
                     min={alert.departureDate}
                     onChange={(event) =>
-                      update(
-                        "returnDate",
-                        event.target.value
-                      )
+                      update("returnDate", event.target.value)
                     }
                   />
                 </div>
               )}
 
-              <div className="fm-field">
-                <label htmlFor="alert-adults">
-                  Adults
-                </label>
+              <div className="fm-form-field">
+                <label htmlFor="alert-adults">Adults</label>
 
                 <select
                   id="alert-adults"
                   value={alert.adults}
                   onChange={(event) =>
-                    update(
-                      "adults",
-                      Number(event.target.value)
-                    )
+                    update("adults", Number(event.target.value))
                   }
                 >
                   {Array.from(
                     { length: 9 },
                     (_, index) => index + 1
                   ).map((number) => (
-                    <option
-                      key={number}
-                      value={number}
-                    >
+                    <option key={number} value={number}>
                       {number}{" "}
-                      {number === 1
-                        ? "adult"
-                        : "adults"}
+                      {number === 1 ? "adult" : "adults"}
                     </option>
                   ))}
                 </select>
               </div>
 
-              <div className="fm-field">
-                <label htmlFor="alert-cabin">
-                  Cabin
-                </label>
+              <div className="fm-form-field">
+                <label htmlFor="alert-cabin">Cabin</label>
 
                 <select
                   id="alert-cabin"
                   value={alert.cabin}
                   onChange={(event) =>
-                    update(
-                      "cabin",
-                      event.target.value
-                    )
+                    update("cabin", event.target.value)
                   }
                 >
-                  <option value="economy">
-                    Economy
-                  </option>
-
+                  <option value="economy">Economy</option>
                   <option value="premium_economy">
                     Premium economy
                   </option>
-
-                  <option value="business">
-                    Business
-                  </option>
-
-                  <option value="first">
-                    First class
-                  </option>
+                  <option value="business">Business</option>
+                  <option value="first">First class</option>
                 </select>
               </div>
 
-              <div className="fm-field">
+              <div className="fm-form-field">
                 <label htmlFor="alert-currency">
                   Target-price currency
                 </label>
@@ -514,39 +417,19 @@ export default function AlertsPage() {
                   id="alert-currency"
                   value={alert.currency}
                   onChange={(event) =>
-                    update(
-                      "currency",
-                      event.target.value
-                    )
+                    update("currency", event.target.value)
                   }
                 >
-                  <option value="USD">
-                    USD
-                  </option>
-
-                  <option value="EUR">
-                    EUR
-                  </option>
-
-                  <option value="GBP">
-                    GBP
-                  </option>
-
-                  <option value="CAD">
-                    CAD
-                  </option>
-
-                  <option value="AUD">
-                    AUD
-                  </option>
-
-                  <option value="NGN">
-                    NGN
-                  </option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                  <option value="GBP">GBP</option>
+                  <option value="CAD">CAD</option>
+                  <option value="AUD">AUD</option>
+                  <option value="NGN">NGN</option>
                 </select>
               </div>
 
-              <div className="fm-field">
+              <div className="fm-form-field">
                 <label htmlFor="alert-price">
                   Maximum target price
                 </label>
@@ -558,29 +441,21 @@ export default function AlertsPage() {
                   step="0.01"
                   value={alert.maxPrice}
                   onChange={(event) =>
-                    update(
-                      "maxPrice",
-                      event.target.value
-                    )
+                    update("maxPrice", event.target.value)
                   }
                   placeholder="Optional"
                 />
               </div>
 
-              <div className="fm-field">
-                <label htmlFor="alert-email">
-                  Alert email
-                </label>
+              <div className="fm-form-field">
+                <label htmlFor="alert-email">Alert email</label>
 
                 <input
                   id="alert-email"
                   type="email"
                   value={alert.email}
                   onChange={(event) =>
-                    update(
-                      "email",
-                      event.target.value
-                    )
+                    update("email", event.target.value)
                   }
                   placeholder="you@example.com"
                   autoComplete="email"
@@ -589,26 +464,22 @@ export default function AlertsPage() {
 
             </div>
 
-            <div className="fm-actions fm-alerts-actions">
-
+            <div className="fm-alerts-actions">
               <button
                 type="submit"
-                className="fm-btn fm-primary"
+                className="fm-btn fm-btn-primary"
                 disabled={loading}
               >
-                {loading
-                  ? "Saving..."
-                  : "Save fare alert"}
+                {loading ? "Saving..." : "Save fare alert"}
               </button>
 
               <button
                 type="button"
-                className="fm-btn fm-secondary"
+                className="fm-btn fm-btn-secondary"
                 onClick={openSearch}
               >
                 Search this route
               </button>
-
             </div>
           </form>
 
@@ -617,19 +488,19 @@ export default function AlertsPage() {
               className="fm-card fm-alerts-message-card"
               aria-live="polite"
             >
-              <span className="fm-badge">
-                {alert.enabled
-                  ? "Alert saved"
-                  : "Alert disabled"}
-              </span>
+              <div className="fm-alerts-message-icon">✓</div>
 
-              <h2>
-                Your fare-alert preference
-              </h2>
+              <div className="fm-alerts-message-content">
+                <span className="fm-badge">
+                  {alert.enabled
+                    ? "Alert saved"
+                    : "Alert disabled"}
+                </span>
 
-              <p>
-                {message}
-              </p>
+                <h2>Your fare-alert preference</h2>
+
+                <p>{message}</p>
+              </div>
             </section>
           )}
 
@@ -638,6 +509,7 @@ export default function AlertsPage() {
               className="fm-card fm-alerts-message-card"
               aria-live="polite"
             >
+              <div className="fm-alerts-message-icon">✓</div>
               <p>{message}</p>
             </section>
           )}
@@ -647,15 +519,19 @@ export default function AlertsPage() {
               className="fm-card fm-alerts-error-card"
               role="alert"
             >
-              <span className="fm-badge">
-                Check your details
-              </span>
+              <div className="fm-alerts-error-icon">!</div>
 
-              <p>{error}</p>
+              <div>
+                <span className="fm-badge">
+                  Check your details
+                </span>
+
+                <p>{error}</p>
+              </div>
             </section>
           )}
 
-          <section className="fm-section-inner fm-alerts-status-section">
+          <section className="fm-alerts-status-section">
 
             <div className="fm-section-heading fm-alerts-section-heading">
               <div>
@@ -663,9 +539,7 @@ export default function AlertsPage() {
                   ALERT STATUS
                 </span>
 
-                <h2>
-                  Your current alert
-                </h2>
+                <h2>Your current alert</h2>
               </div>
 
               <span
@@ -675,44 +549,39 @@ export default function AlertsPage() {
                     : "fm-alert-status fm-alert-status-disabled"
                 }
               >
-                {alert.enabled
-                  ? "Enabled"
-                  : "Disabled"}
+                <span className="fm-alert-status-dot" />
+                {alert.enabled ? "Enabled" : "Disabled"}
               </span>
             </div>
 
             <div className="fm-card fm-alerts-status-card">
 
-              <div className="fm-grid fm-alerts-status-grid">
+              <div className="fm-alerts-status-grid">
 
-                <div>
+                <div className="fm-alerts-status-item">
                   <span className="fm-alerts-detail-label">
                     Route
                   </span>
 
                   <strong>
-                    {alert.origin || "Not set"}{" "}
-                    →{" "}
+                    {alert.origin || "Not set"} →{" "}
                     {alert.destination || "Not set"}
                   </strong>
                 </div>
 
-                <div>
+                <div className="fm-alerts-status-item">
                   <span className="fm-alerts-detail-label">
                     Dates
                   </span>
 
                   <strong>
                     {alert.departureDate || "Not set"}
-
                     {alert.tripType === "roundtrip" &&
-                      ` → ${
-                        alert.returnDate || "Not set"
-                      }`}
+                      ` → ${alert.returnDate || "Not set"}`}
                   </strong>
                 </div>
 
-                <div>
+                <div className="fm-alerts-status-item">
                   <span className="fm-alerts-detail-label">
                     Passengers
                   </span>
@@ -725,20 +594,17 @@ export default function AlertsPage() {
                   </strong>
                 </div>
 
-                <div>
+                <div className="fm-alerts-status-item">
                   <span className="fm-alerts-detail-label">
                     Cabin
                   </span>
 
                   <strong>
-                    {alert.cabin.replace(
-                      "_",
-                      " "
-                    )}
+                    {alert.cabin.replace("_", " ")}
                   </strong>
                 </div>
 
-                <div>
+                <div className="fm-alerts-status-item">
                   <span className="fm-alerts-detail-label">
                     Target
                   </span>
@@ -752,7 +618,7 @@ export default function AlertsPage() {
                   </strong>
                 </div>
 
-                <div>
+                <div className="fm-alerts-status-item">
                   <span className="fm-alerts-detail-label">
                     Email
                   </span>
@@ -764,11 +630,11 @@ export default function AlertsPage() {
 
               </div>
 
-              <div className="fm-actions fm-alerts-status-actions">
+              <div className="fm-alerts-status-actions">
 
                 <button
                   type="button"
-                  className="fm-btn fm-secondary"
+                  className="fm-btn fm-btn-secondary"
                   onClick={disableAlert}
                   disabled={!alert.enabled}
                 >
@@ -777,7 +643,7 @@ export default function AlertsPage() {
 
                 <button
                   type="button"
-                  className="fm-btn fm-secondary"
+                  className="fm-btn fm-btn-secondary"
                   onClick={clearAlert}
                 >
                   Clear saved alert
@@ -788,7 +654,7 @@ export default function AlertsPage() {
             </div>
           </section>
 
-          <section className="fm-section-inner fm-alerts-workflow-section">
+          <section className="fm-alerts-workflow-section">
 
             <div className="fm-section-heading fm-alerts-section-heading">
               <div>
@@ -796,9 +662,7 @@ export default function AlertsPage() {
                   HOW IT WORKS
                 </span>
 
-                <h2>
-                  Fare monitoring workflow
-                </h2>
+                <h2>Fare monitoring workflow</h2>
 
                 <p>
                   Configure the conditions that matter
@@ -807,16 +671,12 @@ export default function AlertsPage() {
               </div>
             </div>
 
-            <div className="fm-grid fm-alerts-workflow-grid">
+            <div className="fm-alerts-workflow-grid">
 
               <article className="fm-card fm-alerts-workflow-card">
-                <span className="fm-alert-step">
-                  01
-                </span>
+                <span className="fm-alert-step">01</span>
 
-                <h3>
-                  Define the route
-                </h3>
+                <h3>Define the route</h3>
 
                 <p>
                   Enter the departure airport,
@@ -826,13 +686,9 @@ export default function AlertsPage() {
               </article>
 
               <article className="fm-card fm-alerts-workflow-card">
-                <span className="fm-alert-step">
-                  02
-                </span>
+                <span className="fm-alert-step">02</span>
 
-                <h3>
-                  Set your conditions
-                </h3>
+                <h3>Set your conditions</h3>
 
                 <p>
                   Choose passenger count, cabin
@@ -842,13 +698,9 @@ export default function AlertsPage() {
               </article>
 
               <article className="fm-card fm-alerts-workflow-card">
-                <span className="fm-alert-step">
-                  03
-                </span>
+                <span className="fm-alert-step">03</span>
 
-                <h3>
-                  Monitor availability
-                </h3>
+                <h3>Monitor availability</h3>
 
                 <p>
                   The configured alert service can
@@ -861,30 +713,29 @@ export default function AlertsPage() {
             </div>
           </section>
 
-          <section className="fm-card fm-section-inner fm-alerts-important-card">
+          <section className="fm-card fm-alerts-important-card">
 
-            <span className="fm-eyebrow">
-              IMPORTANT
-            </span>
+            <div className="fm-alerts-important-content">
+              <span className="fm-eyebrow">
+                IMPORTANT
+              </span>
 
-            <h2>
-              Alerts do not guarantee a fare
-            </h2>
+              <h2>Alerts do not guarantee a fare</h2>
 
-            <p>
-              Flight prices, inventory, schedules,
-              taxes and availability can change
-              between an alert and the time you
-              attempt to book. Always verify the
-              final fare and conditions with the
-              booking provider before purchasing.
-            </p>
+              <p>
+                Flight prices, inventory, schedules,
+                taxes and availability can change
+                between an alert and the time you
+                attempt to book. Always verify the
+                final fare and conditions with the
+                booking provider before purchasing.
+              </p>
+            </div>
 
-            <div className="fm-actions">
-
+            <div className="fm-alerts-important-actions">
               <button
                 type="button"
-                className="fm-btn fm-primary"
+                className="fm-btn fm-btn-primary"
                 onClick={openSearch}
               >
                 Search flights now
@@ -892,41 +743,45 @@ export default function AlertsPage() {
 
               <button
                 type="button"
-                className="fm-btn fm-secondary"
+                className="fm-btn fm-btn-secondary"
                 onClick={() =>
-                  (window.location.href =
-                    "/planner")
+                  (window.location.href = "/planner")
                 }
               >
                 Open trip planner
               </button>
-
             </div>
 
           </section>
 
-          <section className="fm-card fm-disclaimer fm-alerts-disclaimer">
+          <section className="fm-card fm-alerts-disclaimer">
 
-            <strong>
-              Alert-service information
-            </strong>
+            <div className="fm-alerts-disclaimer-heading">
+              <span className="fm-eyebrow">
+                SERVICE INFORMATION
+              </span>
 
-            <p>
-              FlyMatrix stores the alert preference
-              locally on this device and attempts to
-              register it with the configured backend
-              alert service. If that backend is
-              unavailable, local storage does not by
-              itself provide remote email monitoring.
-            </p>
+              <strong>Alert-service information</strong>
+            </div>
 
-            <p>
-              Alert delivery, frequency, provider
-              data, fare availability and final
-              booking conditions depend on the
-              configured backend and external travel
-              providers.
-            </p>
+            <div className="fm-alerts-disclaimer-copy">
+              <p>
+                FlyMatrix stores the alert preference
+                locally on this device and attempts to
+                register it with the configured backend
+                alert service. If that backend is
+                unavailable, local storage does not by
+                itself provide remote email monitoring.
+              </p>
+
+              <p>
+                Alert delivery, frequency, provider
+                data, fare availability and final
+                booking conditions depend on the
+                configured backend and external travel
+                providers.
+              </p>
+            </div>
 
           </section>
 
