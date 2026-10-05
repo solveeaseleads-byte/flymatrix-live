@@ -5,77 +5,140 @@ const DESTINATIONS = [
   {
     code: "GB",
     country: "United Kingdom",
-    cities: ["London", "Manchester", "Birmingham", "Edinburgh"],
+    cities: [
+      "London",
+      "Manchester",
+      "Birmingham",
+      "Edinburgh",
+    ],
   },
   {
     code: "IE",
     country: "Ireland",
-    cities: ["Dublin", "Cork", "Limerick"],
+    cities: [
+      "Dublin",
+      "Cork",
+      "Limerick",
+    ],
   },
   {
     code: "DE",
     country: "Germany",
-    cities: ["Berlin", "Munich", "Hamburg", "Frankfurt"],
+    cities: [
+      "Berlin",
+      "Munich",
+      "Hamburg",
+      "Frankfurt",
+    ],
   },
   {
     code: "FR",
     country: "France",
-    cities: ["Paris", "Lyon", "Toulouse", "Nice"],
+    cities: [
+      "Paris",
+      "Lyon",
+      "Toulouse",
+      "Nice",
+    ],
   },
   {
     code: "NL",
     country: "Netherlands",
-    cities: ["Amsterdam", "Rotterdam", "Eindhoven"],
+    cities: [
+      "Amsterdam",
+      "Rotterdam",
+      "Eindhoven",
+    ],
   },
   {
     code: "PT",
     country: "Portugal",
-    cities: ["Lisbon", "Porto", "Coimbra"],
+    cities: [
+      "Lisbon",
+      "Porto",
+      "Coimbra",
+    ],
   },
   {
     code: "PL",
     country: "Poland",
-    cities: ["Warsaw", "Krakow", "Wroclaw"],
+    cities: [
+      "Warsaw",
+      "Krakow",
+      "Wroclaw",
+    ],
   },
   {
     code: "HU",
     country: "Hungary",
-    cities: ["Budapest", "Debrecen", "Szeged"],
+    cities: [
+      "Budapest",
+      "Debrecen",
+      "Szeged",
+    ],
   },
   {
     code: "TR",
     country: "Türkiye",
-    cities: ["Istanbul", "Ankara", "Izmir"],
+    cities: [
+      "Istanbul",
+      "Ankara",
+      "Izmir",
+    ],
   },
   {
     code: "AE",
     country: "United Arab Emirates",
-    cities: ["Dubai", "Abu Dhabi", "Sharjah"],
+    cities: [
+      "Dubai",
+      "Abu Dhabi",
+      "Sharjah",
+    ],
   },
   {
     code: "MY",
     country: "Malaysia",
-    cities: ["Kuala Lumpur", "Penang", "Johor Bahru"],
+    cities: [
+      "Kuala Lumpur",
+      "Penang",
+      "Johor Bahru",
+    ],
   },
   {
     code: "TH",
     country: "Thailand",
-    cities: ["Bangkok", "Chiang Mai", "Phuket"],
+    cities: [
+      "Bangkok",
+      "Chiang Mai",
+      "Phuket",
+    ],
   },
   {
     code: "JP",
     country: "Japan",
-    cities: ["Tokyo", "Osaka", "Kyoto"],
+    cities: [
+      "Tokyo",
+      "Osaka",
+      "Kyoto",
+    ],
   },
   {
     code: "CA",
     country: "Canada",
-    cities: ["Toronto", "Vancouver", "Montreal"],
+    cities: [
+      "Toronto",
+      "Vancouver",
+      "Montreal",
+    ],
   },
   {
     code: "AU",
     country: "Australia",
-    cities: ["Sydney", "Melbourne", "Brisbane"],
+    cities: [
+      "Sydney",
+      "Melbourne",
+      "Brisbane",
+    ],
   },
 ];
 
@@ -120,32 +183,39 @@ const FACILITIES = [
 function buildQuery(values) {
   const query = new URLSearchParams();
 
-  Object.entries(values).forEach(([key, value]) => {
-    if (
-      value !== undefined &&
-      value !== null &&
-      value !== ""
-    ) {
-      query.set(key, String(value));
+  Object.entries(values).forEach(
+    ([key, value]) => {
+      if (
+        value !== undefined &&
+        value !== null &&
+        value !== ""
+      ) {
+        query.set(
+          key,
+          String(value)
+        );
+      }
     }
-  });
+  );
 
   return query.toString();
 }
 
 export default function EducationTourismPage() {
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
+  const [country, setCountry] =
+    useState("");
 
-  const [level, setLevel] = useState(
-    "Certificate"
-  );
+  const [city, setCity] =
+    useState("");
 
-  const [field, setField] = useState(
-    "Information Technology"
-  );
+  const [level, setLevel] =
+    useState("Certificate");
 
-  const [budget, setBudget] = useState("");
+  const [field, setField] =
+    useState("Information Technology");
+
+  const [budget, setBudget] =
+    useState("");
 
   const [duration, setDuration] =
     useState("1-3-months");
@@ -158,34 +228,43 @@ export default function EducationTourismPage() {
     setSelectedFacilities,
   ] = useState([]);
 
-  const selectedDestination = useMemo(
-    () =>
-      DESTINATIONS.find(
-        (item) => item.code === country
-      ),
-    [country]
-  );
+  const selectedDestination =
+    useMemo(
+      () =>
+        DESTINATIONS.find(
+          (item) =>
+            item.code === country
+        ),
+      [country]
+    );
 
   function updateCountry(value) {
     setCountry(value);
 
     const destination =
       DESTINATIONS.find(
-        (item) => item.code === value
+        (item) =>
+          item.code === value
       );
 
     setCity(
-      destination?.cities?.[0] || ""
+      destination?.cities?.[0] ||
+        ""
     );
   }
 
   function toggleFacility(value) {
-    setSelectedFacilities((current) =>
-      current.includes(value)
-        ? current.filter(
-            (item) => item !== value
-          )
-        : [...current, value]
+    setSelectedFacilities(
+      (current) =>
+        current.includes(value)
+          ? current.filter(
+              (item) =>
+                item !== value
+            )
+          : [
+              ...current,
+              value,
+            ]
     );
   }
 
@@ -204,58 +283,79 @@ export default function EducationTourismPage() {
 
     navigate(
       `/tourism/education/results${
-        query ? `?${query}` : ""
+        query
+          ? `?${query}`
+          : ""
       }`
     );
   }
 
   return (
-    <main className="page-container fm-education-page">
-      <section className="tourism-hero education-tourism-hero fm-education-hero">
-        <div className="tourism-hero-content">
+    <main className="fm-education-page">
+
+      <section className="fm-education-hero">
+
+        <div className="fm-education-hero-content">
+
+          <span className="fm-eyebrow">
+            EDUCATION TOURISM
+          </span>
+
           <span className="fm-badge">
             Education Tourism
           </span>
 
           <h1>
-            Plan study travel with the journey
-            included
+            Plan study travel with
+            the journey included
           </h1>
 
           <p>
-            Explore education destinations while
-            planning the practical travel
-            requirements around your study
-            journey — flights, accommodation,
-            connectivity, transfers and other
+            Explore education
+            destinations while planning
+            the practical travel
+            requirements around your
+            study journey — flights,
+            accommodation, connectivity,
+            transfers and other
             essentials.
           </p>
+
         </div>
+
       </section>
 
-      <section className="tourism-dashboard fm-education-dashboard">
-        <div className="tourism-dashboard-header fm-education-dashboard-header">
+      <section className="fm-education-dashboard">
+
+        <div className="fm-education-dashboard-header">
+
           <div>
-            <span className="section-kicker">
-              Education Tourism Intelligence
+
+            <span className="fm-eyebrow">
+              EDUCATION JOURNEY
             </span>
 
             <h2>
-              Define your education journey
+              Define your education
+              journey
             </h2>
 
             <p>
-              Select your preferred destination,
-              study level, field, duration and
-              budget. Connected provider data can
-              then be used for the travel and
-              preparation layer.
+              Select your preferred
+              destination, study level,
+              field, duration and budget.
+              Connected provider data can
+              then be used for the travel
+              and preparation layer.
             </p>
+
           </div>
+
         </div>
 
-        <div className="tourism-form-grid fm-education-form-grid">
-          <div className="form-field">
+        <div className="fm-education-form-grid">
+
+          <div className="fm-form-field">
             <label htmlFor="education-country">
               Destination country
             </label>
@@ -276,17 +376,23 @@ export default function EducationTourismPage() {
               {DESTINATIONS.map(
                 (destination) => (
                   <option
-                    key={destination.code}
-                    value={destination.code}
+                    key={
+                      destination.code
+                    }
+                    value={
+                      destination.code
+                    }
                   >
-                    {destination.country}
+                    {
+                      destination.country
+                    }
                   </option>
                 )
               )}
             </select>
           </div>
 
-          <div className="form-field">
+          <div className="fm-form-field">
             <label htmlFor="education-city">
               Preferred city
             </label>
@@ -294,9 +400,13 @@ export default function EducationTourismPage() {
             <select
               id="education-city"
               value={city}
-              disabled={!selectedDestination}
+              disabled={
+                !selectedDestination
+              }
               onChange={(event) =>
-                setCity(event.target.value)
+                setCity(
+                  event.target.value
+                )
               }
             >
               <option value="">
@@ -306,8 +416,12 @@ export default function EducationTourismPage() {
               {selectedDestination?.cities?.map(
                 (destinationCity) => (
                   <option
-                    key={destinationCity}
-                    value={destinationCity}
+                    key={
+                      destinationCity
+                    }
+                    value={
+                      destinationCity
+                    }
                   >
                     {destinationCity}
                   </option>
@@ -316,7 +430,7 @@ export default function EducationTourismPage() {
             </select>
           </div>
 
-          <div className="form-field">
+          <div className="fm-form-field">
             <label htmlFor="education-level">
               Study level
             </label>
@@ -325,21 +439,25 @@ export default function EducationTourismPage() {
               id="education-level"
               value={level}
               onChange={(event) =>
-                setLevel(event.target.value)
+                setLevel(
+                  event.target.value
+                )
               }
             >
-              {STUDY_LEVELS.map((item) => (
-                <option
-                  key={item}
-                  value={item}
-                >
-                  {item}
-                </option>
-              ))}
+              {STUDY_LEVELS.map(
+                (item) => (
+                  <option
+                    key={item}
+                    value={item}
+                  >
+                    {item}
+                  </option>
+                )
+              )}
             </select>
           </div>
 
-          <div className="form-field">
+          <div className="fm-form-field">
             <label htmlFor="education-field">
               Field of study
             </label>
@@ -348,21 +466,25 @@ export default function EducationTourismPage() {
               id="education-field"
               value={field}
               onChange={(event) =>
-                setField(event.target.value)
+                setField(
+                  event.target.value
+                )
               }
             >
-              {STUDY_FIELDS.map((item) => (
-                <option
-                  key={item}
-                  value={item}
-                >
-                  {item}
-                </option>
-              ))}
+              {STUDY_FIELDS.map(
+                (item) => (
+                  <option
+                    key={item}
+                    value={item}
+                  >
+                    {item}
+                  </option>
+                )
+              )}
             </select>
           </div>
 
-          <div className="form-field">
+          <div className="fm-form-field">
             <label htmlFor="education-budget">
               Estimated budget
             </label>
@@ -371,7 +493,9 @@ export default function EducationTourismPage() {
               id="education-budget"
               value={budget}
               onChange={(event) =>
-                setBudget(event.target.value)
+                setBudget(
+                  event.target.value
+                )
               }
             >
               <option value="">
@@ -400,7 +524,7 @@ export default function EducationTourismPage() {
             </select>
           </div>
 
-          <div className="form-field">
+          <div className="fm-form-field">
             <label htmlFor="education-duration">
               Study duration
             </label>
@@ -409,7 +533,9 @@ export default function EducationTourismPage() {
               id="education-duration"
               value={duration}
               onChange={(event) =>
-                setDuration(event.target.value)
+                setDuration(
+                  event.target.value
+                )
               }
             >
               <option value="1-3-months">
@@ -438,7 +564,7 @@ export default function EducationTourismPage() {
             </select>
           </div>
 
-          <div className="form-field">
+          <div className="fm-form-field">
             <label htmlFor="education-mode">
               Study mode
             </label>
@@ -447,98 +573,127 @@ export default function EducationTourismPage() {
               id="education-mode"
               value={studyMode}
               onChange={(event) =>
-                setStudyMode(event.target.value)
+                setStudyMode(
+                  event.target.value
+                )
               }
             >
-              {STUDY_MODES.map((item) => (
-                <option
-                  key={item}
-                  value={item}
-                >
-                  {item}
-                </option>
-              ))}
+              {STUDY_MODES.map(
+                (item) => (
+                  <option
+                    key={item}
+                    value={item}
+                  >
+                    {item}
+                  </option>
+                )
+              )}
             </select>
           </div>
+
         </div>
 
-        <section className="tourism-facilities fm-education-facilities">
-          <div>
-            <span className="section-kicker">
-              Travel preparation
+        <section className="fm-education-facilities">
+
+          <div className="fm-education-facilities-heading">
+
+            <span className="fm-eyebrow">
+              TRAVEL PREPARATION
             </span>
 
             <h3>
-              What would you like included?
+              What would you like
+              included?
             </h3>
 
             <p>
-              Select the travel and preparation
-              services you want to consider with
-              your education journey.
+              Select the travel and
+              preparation services you want
+              to consider with your
+              education journey.
             </p>
+
           </div>
 
-          <div className="facility-grid fm-education-facility-grid">
-            {FACILITIES.map((facility) => {
-              const selected =
-                selectedFacilities.includes(
-                  facility
-                );
+          <div className="fm-education-facility-grid">
 
-              return (
-                <label
-                  key={facility}
-                  className={`facility-option${
-                    selected
-                      ? " is-selected"
-                      : ""
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={selected}
-                    onChange={() =>
-                      toggleFacility(
-                        facility
-                      )
+            {FACILITIES.map(
+              (facility) => {
+                const selected =
+                  selectedFacilities.includes(
+                    facility
+                  );
+
+                return (
+                  <label
+                    key={facility}
+                    className={
+                      selected
+                        ? "fm-education-facility is-selected"
+                        : "fm-education-facility"
                     }
-                  />
+                  >
+                    <input
+                      type="checkbox"
+                      checked={
+                        selected
+                      }
+                      onChange={() =>
+                        toggleFacility(
+                          facility
+                        )
+                      }
+                    />
 
-                  <span>
-                    {facility}
-                  </span>
-                </label>
-              );
-            })}
+                    <span>
+                      {facility}
+                    </span>
+
+                  </label>
+                );
+              }
+            )}
+
           </div>
+
         </section>
 
-        <section className="tourism-form-actions fm-education-form-actions">
-          <div>
-            <span className="section-kicker">
-              Ready?
+        <section className="fm-education-form-actions">
+
+          <div className="fm-education-action-copy">
+
+            <span className="fm-eyebrow">
+              READY TO EXPLORE?
             </span>
 
             <strong>
-              Explore education options
+              Explore education
+              options
             </strong>
 
             <p>
-              Your selections will be passed to
-              the education results page.
+              Your selections will be
+              passed to the education
+              results page.
             </p>
+
           </div>
 
           <button
             type="button"
-            className="btn btn-primary"
-            onClick={handleExplore}
+            className="fm-btn fm-btn-primary"
+            onClick={
+              handleExplore
+            }
           >
-            Explore education options →
+            Explore education
+            options →
           </button>
+
         </section>
+
       </section>
+
     </main>
   );
 }
