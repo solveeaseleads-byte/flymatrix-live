@@ -16,7 +16,7 @@ export default function PassengerSelector({
     Math.max(0, Number(infants) || 0)
   );
 
-  const passengerTotal =
+  const total =
     safeAdults +
     safeChildren +
     safeInfants;
@@ -31,10 +31,7 @@ export default function PassengerSelector({
       }
     }
 
-    document.addEventListener(
-      "mousedown",
-      handleOutsideClick
-    );
+    document.addEventListener("mousedown", handleOutsideClick);
 
     return () => {
       document.removeEventListener(
@@ -44,7 +41,7 @@ export default function PassengerSelector({
     };
   }, []);
 
-  function updatePassenger(type, amount) {
+  function changePassenger(type, amount) {
     const current = {
       adults: safeAdults,
       children: safeChildren,
@@ -71,55 +68,62 @@ export default function PassengerSelector({
     }
   }
 
-  function getSummary() {
-    const parts = [];
+  function summary() {
+    const result = [];
 
-    parts.push(
-      `${safeAdults} adult${safeAdults !== 1 ? "s" : ""}`
+    result.push(
+      `${safeAdults} adult${safeAdults === 1 ? "" : "s"}`
     );
 
     if (safeChildren > 0) {
-      parts.push(
+      result.push(
         `${safeChildren} child${
-          safeChildren !== 1 ? "ren" : ""
+          safeChildren === 1 ? "" : "ren"
         }`
       );
     }
 
     if (safeInfants > 0) {
-      parts.push(
+      result.push(
         `${safeInfants} infant${
-          safeInfants !== 1 ? "s" : ""
+          safeInfants === 1 ? "" : "s"
         }`
       );
     }
 
-    return parts.join(", ");
+    return result.join(", ");
   }
 
   return (
     <div
-      className="passenger-selector"
       ref={wrapperRef}
+      className={`passenger-selector ${
+        open ? "passenger-selector-open" : ""
+      }`}
     >
       <button
         type="button"
         className="passenger-selector-trigger"
-        onClick={() =>
-          setOpen((current) => !current)
-        }
         aria-expanded={open}
         aria-haspopup="dialog"
+        onMouseDown={(event) => {
+          event.preventDefault();
+        }}
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          setOpen((previous) => !previous);
+        }}
       >
         <span className="passenger-selector-summary">
-          {getSummary()}
+          {summary()}
         </span>
 
         <span
-          aria-hidden="true"
           className={`passenger-chevron ${
             open ? "is-open" : ""
           }`}
+          aria-hidden="true"
         >
           ▾
         </span>
@@ -130,6 +134,9 @@ export default function PassengerSelector({
           className="passenger-selector-menu"
           role="dialog"
           aria-label="Passenger selection"
+          onClick={(event) => {
+            event.stopPropagation();
+          }}
         >
           <PassengerRow
             label="Adults"
@@ -137,16 +144,10 @@ export default function PassengerSelector({
             value={safeAdults}
             min={1}
             onDecrease={() =>
-              updatePassenger(
-                "adults",
-                -1
-              )
+              changePassenger("adults", -1)
             }
             onIncrease={() =>
-              updatePassenger(
-                "adults",
-                1
-              )
+              changePassenger("adults", 1)
             }
           />
 
@@ -156,16 +157,10 @@ export default function PassengerSelector({
             value={safeChildren}
             min={0}
             onDecrease={() =>
-              updatePassenger(
-                "children",
-                -1
-              )
+              changePassenger("children", -1)
             }
             onIncrease={() =>
-              updatePassenger(
-                "children",
-                1
-              )
+              changePassenger("children", 1)
             }
           />
 
@@ -176,33 +171,27 @@ export default function PassengerSelector({
             min={0}
             max={safeAdults}
             onDecrease={() =>
-              updatePassenger(
-                "infants",
-                -1
-              )
+              changePassenger("infants", -1)
             }
             onIncrease={() =>
-              updatePassenger(
-                "infants",
-                1
-              )
+              changePassenger("infants", 1)
             }
           />
 
           <div className="passenger-selector-footer">
             <span>
-              {passengerTotal} passenger
-              {passengerTotal !== 1
-                ? "s"
-                : ""}
+              {total} passenger
+              {total === 1 ? "" : "s"}
             </span>
 
             <button
               type="button"
               className="passenger-done-button"
-              onClick={() =>
-                setOpen(false)
-              }
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                setOpen(false);
+              }}
             >
               Done
             </button>
@@ -222,17 +211,10 @@ function PassengerRow({
   onDecrease,
   onIncrease
 }) {
-  const decreaseDisabled =
-    value <= min;
-
-  const increaseDisabled =
-    value >= max;
-
   return (
     <div className="passenger-row">
       <div className="passenger-info">
         <strong>{label}</strong>
-
         <span>{description}</span>
       </div>
 
@@ -240,8 +222,18 @@ function PassengerRow({
         <button
           type="button"
           className="passenger-control-button"
-          onClick={onDecrease}
-          disabled={decreaseDisabled}
+          disabled={value <= min}
+          onMouseDown={(event) => {
+            event.preventDefault();
+          }}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (value > min) {
+              onDecrease();
+            }
+          }}
           aria-label={`Decrease ${label}`}
         >
           −
@@ -257,8 +249,18 @@ function PassengerRow({
         <button
           type="button"
           className="passenger-control-button"
-          onClick={onIncrease}
-          disabled={increaseDisabled}
+          disabled={value >= max}
+          onMouseDown={(event) => {
+            event.preventDefault();
+          }}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (value < max) {
+              onIncrease();
+            }
+          }}
           aria-label={`Increase ${label}`}
         >
           +
