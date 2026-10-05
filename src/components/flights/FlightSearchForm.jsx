@@ -333,7 +333,7 @@ function ErrorMessage({
 
   return (
     <span
-      className="field-error"
+      className="fm-booking-field-error"
       role="alert"
     >
       {children}
@@ -350,27 +350,25 @@ function AirportDisplay({
     normalizeAirport(value);
 
   return (
-    <div className="airport-display">
-      <span className="airport-display-label">
+    <div className="fm-booking-airport-display">
+      <span className="fm-booking-field-label">
         {label}
       </span>
 
-      <div className="airport-display-main">
-        <strong className="airport-display-code">
-          {airport?.code ||
-            "---"}
+      <div className="fm-booking-airport-main">
+        <strong>
+          {airport?.code || "---"}
         </strong>
 
-        <div className="airport-display-location">
-          <span className="airport-display-city">
-            {airport?.city ||
-              fallback}
+        <div className="fm-booking-airport-location">
+          <span>
+            {airport?.city || fallback}
           </span>
 
           {airport?.name && (
-            <span className="airport-display-name">
+            <small>
               {airport.name}
-            </span>
+            </small>
           )}
         </div>
       </div>
@@ -531,10 +529,7 @@ export default function FlightSearchForm({
 
         return {
           ...current,
-
-          departureDate:
-            value,
-
+          departureDate: value,
           returnDate
         };
       }
@@ -651,10 +646,16 @@ export default function FlightSearchForm({
     }
   }
 
+  const totalTravelers =
+    Number(search.adults) +
+    Number(search.children) +
+    Number(search.infants);
+
   return (
     <form
       className={[
         "fm-flight-search-form",
+        "fm-wakanow-search",
         compact
           ? "fm-flight-search-form-compact"
           : ""
@@ -664,18 +665,16 @@ export default function FlightSearchForm({
       onSubmit={handleSubmit}
       noValidate
     >
-      {/* =================================================
-          TRIP TYPE
-          ================================================= */}
+      {/* SEARCH TYPE */}
 
-      <div className="fm-trip-switch">
+      <div className="fm-booking-tabs">
         <button
           type="button"
           className={
             search.tripType ===
             "roundtrip"
-              ? "fm-trip-option active"
-              : "fm-trip-option"
+              ? "active"
+              : ""
           }
           onClick={() =>
             handleTripTypeChange(
@@ -691,8 +690,8 @@ export default function FlightSearchForm({
           className={
             search.tripType ===
             "oneway"
-              ? "fm-trip-option active"
-              : "fm-trip-option"
+              ? "active"
+              : ""
           }
           onClick={() =>
             handleTripTypeChange(
@@ -702,24 +701,34 @@ export default function FlightSearchForm({
         >
           One way
         </button>
+
+        <button
+          type="button"
+          className="fm-booking-tab-disabled"
+          disabled
+          title="Multi-city search is coming soon"
+        >
+          Multi-city
+        </button>
       </div>
 
-      {/* =================================================
-          ROUTE AREA
-          ================================================= */}
+      {/* MAIN SEARCH */}
 
-      <div className="fm-route-panel">
-        <div className="fm-route-field">
+      <div className="fm-booking-main-row">
+
+        {/* FROM */}
+
+        <div className="fm-booking-route-field">
           <AirportDisplay
             value={search.origin}
-            fallback="Choose departure"
+            fallback="Select departure"
             label="From"
           />
 
           <AirportSearch
             id="flight-origin"
             value={search.origin}
-            placeholder="Search city or airport"
+            placeholder="City or airport"
             ariaLabel="Departure airport"
             onChange={(airport) =>
               updateField(
@@ -736,23 +745,26 @@ export default function FlightSearchForm({
           </ErrorMessage>
         </div>
 
-        <div className="fm-route-swap">
-          <button
-            type="button"
-            onClick={swapAirports}
-            title="Swap airports"
-            aria-label="Swap departure and destination airports"
-          >
-            ⇄
-          </button>
-        </div>
+        {/* SWAP */}
 
-        <div className="fm-route-field">
+        <button
+          type="button"
+          className="fm-booking-swap"
+          onClick={swapAirports}
+          title="Swap airports"
+          aria-label="Swap departure and destination airports"
+        >
+          ⇄
+        </button>
+
+        {/* TO */}
+
+        <div className="fm-booking-route-field">
           <AirportDisplay
             value={
               search.destination
             }
-            fallback="Choose destination"
+            fallback="Select destination"
             label="To"
           />
 
@@ -761,7 +773,7 @@ export default function FlightSearchForm({
             value={
               search.destination
             }
-            placeholder="Search city or airport"
+            placeholder="City or airport"
             ariaLabel="Destination airport"
             onChange={(airport) =>
               updateField(
@@ -779,13 +791,12 @@ export default function FlightSearchForm({
         </div>
       </div>
 
-      {/* =================================================
-          DATE + PASSENGER CONTROLS
-          ================================================= */}
+      {/* TRAVEL DETAILS */}
 
-      <div className="fm-search-controls">
-        <div className="fm-control-card">
-          <span className="fm-control-label">
+      <div className="fm-booking-details-row">
+
+        <div className="fm-booking-detail-field">
+          <span className="fm-booking-field-label">
             Departure
           </span>
 
@@ -806,12 +817,12 @@ export default function FlightSearchForm({
             }
           />
 
-          <span className="fm-control-value">
+          <span className="fm-booking-value">
             {search.departureDate
               ? formatDateForDisplay(
                   search.departureDate
                 )
-              : "Select date"}
+              : "Choose date"}
           </span>
 
           <ErrorMessage>
@@ -821,8 +832,16 @@ export default function FlightSearchForm({
           </ErrorMessage>
         </div>
 
-        <div className="fm-control-card">
-          <span className="fm-control-label">
+        <div
+          className={[
+            "fm-booking-detail-field",
+            search.tripType !==
+              "roundtrip"
+              ? "disabled"
+              : ""
+          ].join(" ")}
+        >
+          <span className="fm-booking-field-label">
             Return
           </span>
 
@@ -850,15 +869,15 @@ export default function FlightSearchForm({
             }
           />
 
-          <span className="fm-control-value">
+          <span className="fm-booking-value">
             {search.tripType !==
             "roundtrip"
-              ? "One-way"
+              ? "One way"
               : search.returnDate
                 ? formatDateForDisplay(
                     search.returnDate
                   )
-                : "Select date"}
+                : "Choose date"}
           </span>
 
           <ErrorMessage>
@@ -866,9 +885,9 @@ export default function FlightSearchForm({
           </ErrorMessage>
         </div>
 
-        <div className="fm-control-card">
-          <span className="fm-control-label">
-            Travelers
+        <div className="fm-booking-detail-field">
+          <span className="fm-booking-field-label">
+            Travellers
           </span>
 
           <PassengerSelector
@@ -884,26 +903,10 @@ export default function FlightSearchForm({
             }
           />
 
-          <span className="fm-control-value">
-            {Number(
-              search.adults
-            ) +
-              Number(
-                search.children
-              ) +
-              Number(
-                search.infants
-              )}{" "}
-            traveler
-            {Number(
-              search.adults
-            ) +
-              Number(
-                search.children
-              ) +
-              Number(
-                search.infants
-              ) !== 1
+          <span className="fm-booking-value">
+            {totalTravelers}{" "}
+            traveller
+            {totalTravelers !== 1
               ? "s"
               : ""}
           </span>
@@ -913,12 +916,12 @@ export default function FlightSearchForm({
           </ErrorMessage>
         </div>
 
-        <div className="fm-control-card">
+        <div className="fm-booking-detail-field">
           <label
-            className="fm-control-label"
+            className="fm-booking-field-label"
             htmlFor="cabin-class"
           >
-            Cabin
+            Class
           </label>
 
           <select
@@ -947,7 +950,7 @@ export default function FlightSearchForm({
             )}
           </select>
 
-          <span className="fm-control-value">
+          <span className="fm-booking-value">
             {
               CABIN_OPTIONS.find(
                 (item) =>
@@ -959,14 +962,13 @@ export default function FlightSearchForm({
         </div>
       </div>
 
-      {/* =================================================
-          ADVANCED OPTIONS
-          ================================================= */}
+      {/* ADVANCED */}
 
-      <div className="fm-advanced-area">
+      <div className="fm-booking-options">
+
         <button
           type="button"
-          className="fm-advanced-toggle"
+          className="fm-booking-options-toggle"
           onClick={() =>
             setShowAdvanced(
               (current) =>
@@ -979,11 +981,11 @@ export default function FlightSearchForm({
         >
           <span>
             {showAdvanced
-              ? "Hide advanced options"
+              ? "Hide search options"
               : "More search options"}
           </span>
 
-          <span className="fm-advanced-icon">
+          <span>
             {showAdvanced
               ? "−"
               : "+"}
@@ -991,100 +993,78 @@ export default function FlightSearchForm({
         </button>
 
         {showAdvanced && (
-          <div className="fm-advanced-panel">
-            <div className="fm-control-card">
-              <label
-                className="fm-control-label"
-                htmlFor="stops"
-              >
-                Stops
-              </label>
+          <div className="fm-booking-options-panel">
+            <label htmlFor="stops">
+              Stops
+            </label>
 
-              <select
-                id="stops"
-                value={search.stops}
-                onChange={(event) =>
-                  updateField(
-                    "stops",
-                    event.target.value
-                  )
-                }
-              >
-                {STOP_OPTIONS.map(
-                  (option) => (
-                    <option
-                      key={
-                        option.value
-                      }
-                      value={
-                        option.value
-                      }
-                    >
-                      {option.label}
-                    </option>
-                  )
-                )}
-              </select>
-
-              <span className="fm-control-value">
-                {
-                  STOP_OPTIONS.find(
-                    (item) =>
-                      item.value ===
-                      search.stops
-                  )?.label
-                }
-              </span>
-            </div>
+            <select
+              id="stops"
+              value={search.stops}
+              onChange={(event) =>
+                updateField(
+                  "stops",
+                  event.target.value
+                )
+              }
+            >
+              {STOP_OPTIONS.map(
+                (option) => (
+                  <option
+                    key={
+                      option.value
+                    }
+                    value={
+                      option.value
+                    }
+                  >
+                    {option.label}
+                  </option>
+                )
+              )}
+            </select>
           </div>
         )}
       </div>
 
-      {/* =================================================
-          FORM ERROR
-          ================================================= */}
+      {/* FORM ERROR */}
 
       {errors.form && (
         <div
-          className="fm-form-error"
+          className="fm-booking-form-error"
           role="alert"
         >
           {errors.form}
         </div>
       )}
 
-      {/* =================================================
-          PRIMARY SEARCH ACTION
-          ================================================= */}
+      {/* ACTION */}
 
-      <div className="fm-search-action">
+      <div className="fm-booking-action-row">
+        <p>
+          Search live flight options from
+          available travel providers.
+        </p>
+
         <button
           type="submit"
-          className="fm-search-primary"
+          className="fm-booking-search-button"
           disabled={
             isSubmitting
           }
         >
-          <span className="fm-search-primary-icon">
-            {isSubmitting
-              ? "…"
-              : "→"}
-          </span>
-
-          <span>
-            {isSubmitting
-              ? "Starting search..."
-              : "Search flights"}
-          </span>
+          {isSubmitting
+            ? "Searching..."
+            : "Search flights"}
         </button>
       </div>
 
-      <p className="fm-search-note">
+      <div className="fm-booking-disclaimer">
         Prices and availability are
         provided by the relevant travel
         provider. Final terms are confirmed
         before booking.
-      </p>
+      </div>
     </form>
   );
-      }
+}
