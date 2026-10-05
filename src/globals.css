@@ -10141,3 +10141,595 @@ p {
     padding: 20px;
   }
 }
+.fm-essentials-page {
+  width: 100%;
+}
+
+.fm-essentials-section {
+  padding-bottom: 72px;
+}
+
+.fm-essentials-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 30px;
+}
+
+.fm-essentials-header-content {
+  max-width: 760px;
+}
+
+.fm-essentials-header h1 {
+  max-width: 760px;
+  margin: 8px 0 10px;
+  color: #0f172a;
+  font-size: clamp(30px, 4vw, 46px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+
+.fm-essentials-header p {
+  max-width: 680px;
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.fm-essentials-header-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  min-width: 220px;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.fm-essentials-header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #fff;
+  color: #334155;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.fm-essentials-header-badge strong {
+  display: block;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.fm-essentials-header-badge span {
+  display: block;
+  margin-top: 3px;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.fm-essentials-planner-card {
+  padding: 28px;
+  border-radius: 20px;
+}
+
+.fm-essentials-planner-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.fm-essentials-planner-heading h2 {
+  margin: 7px 0 7px;
+  color: #0f172a;
+  font-size: 23px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.fm-essentials-planner-heading p {
+  max-width: 620px;
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.fm-essentials-progress {
+  min-width: 150px;
+  padding: 13px 15px;
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.fm-essentials-progress strong {
+  display: block;
+  color: #0f172a;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.fm-essentials-progress span {
+  display: block;
+  margin-top: 5px;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.fm-essentials-form-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(240px, 1.6fr)
+    minmax(150px, 0.7fr)
+    minmax(180px, 0.9fr);
+  gap: 16px;
+}
+
+.fm-essentials-actions {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.fm-essentials-actions .fm-btn {
+  min-width: 155px;
+}
+
+.fm-essentials-saved-message {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.fm-essentials-overview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  margin-top: 42px;
+  padding: 24px 28px;
+  border-radius: 18px;
+}
+
+.fm-essentials-overview-content {
+  min-width: 0;
+}
+
+.fm-essentials-overview-content h2 {
+  margin: 7px 0 5px;
+  color: #0f172a;
+  font-size: 25px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.fm-essentials-overview-content p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.fm-essentials-progress-area {
+  width: min(360px, 100%);
+  flex: 0 0 360px;
+}
+
+.fm-essentials-progress-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 11px;
+}
+
+.fm-essentials-progress-label strong {
+  color: #334155;
+  font-size: 12px;
+}
+
+.fm-essentials-progress-bar {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+.fm-essentials-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: #334155;
+  transition: width 180ms ease;
+}
+
+.fm-essentials-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.fm-essentials-card {
+  min-width: 0;
+  padding: 22px;
+  border-radius: 18px;
+}
+
+.fm-essentials-card-header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 15px;
+}
+
+.fm-essentials-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.fm-essentials-card-title {
+  min-width: 0;
+}
+
+.fm-essentials-card-title h2 {
+  margin: 0 0 3px;
+  color: #0f172a;
+  font-size: 17px;
+  line-height: 1.3;
+  font-weight: 800;
+}
+
+.fm-essentials-card-title span {
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.fm-essentials-card-description {
+  min-height: 63px;
+  margin: 0 0 17px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.fm-essentials-checklist {
+  display: grid;
+  gap: 7px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.fm-essentials-check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #475569;
+  font-size: 12px;
+  line-height: 1.45;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease;
+}
+
+.fm-essentials-check-item:hover {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+.fm-essentials-check-item input {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  margin: 1px 0 0;
+  accent-color: #334155;
+}
+
+.fm-essentials-check-item.is-checked {
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.fm-essentials-tools {
+  margin-top: 52px;
+  padding: 28px;
+  border-radius: 20px;
+}
+
+.fm-essentials-tools-heading {
+  margin-bottom: 20px;
+}
+
+.fm-essentials-tools-heading h2 {
+  margin: 7px 0 5px;
+  color: #0f172a;
+  font-size: 25px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.fm-essentials-tools-heading p {
+  max-width: 620px;
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.fm-essentials-service-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.fm-essentials-service-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.fm-essentials-service-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.fm-essentials-service-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #e2e8f0;
+  border-radius: 11px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.fm-essentials-service-top > span {
+  color: #cbd5e1;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.fm-essentials-service-card h3 {
+  margin: 0 0 7px;
+  color: #0f172a;
+  font-size: 16px;
+  line-height: 1.3;
+  font-weight: 800;
+}
+
+.fm-essentials-service-card p {
+  min-height: 42px;
+  margin: 0 0 18px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.fm-essentials-service-card .fm-btn {
+  width: 100%;
+  margin-top: auto;
+}
+
+.fm-essentials-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 22px 24px;
+}
+
+.fm-essentials-notice-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border: 1px solid #e2e8f0;
+  border-radius: 11px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.fm-essentials-notice strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.fm-essentials-notice p {
+  max-width: 900px;
+  margin: 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+@media (max-width: 1050px) {
+  .fm-essentials-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .fm-essentials-service-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .fm-essentials-section {
+    padding-bottom: 54px;
+  }
+
+  .fm-essentials-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .fm-essentials-header h1 {
+    font-size: 32px;
+  }
+
+  .fm-essentials-header-badge {
+    width: 100%;
+  }
+
+  .fm-essentials-planner-card {
+    padding: 22px;
+  }
+
+  .fm-essentials-planner-heading {
+    display: block;
+  }
+
+  .fm-essentials-progress {
+    display: inline-block;
+    margin-top: 17px;
+  }
+
+  .fm-essentials-form-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .fm-essentials-overview {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .fm-essentials-progress-area {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .fm-essentials-tools {
+    padding: 22px;
+  }
+
+  .fm-essentials-notice {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .fm-essentials-header h1 {
+    font-size: 28px;
+  }
+
+  .fm-essentials-planner-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .fm-essentials-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-essentials-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .fm-essentials-actions .fm-btn {
+    width: 100%;
+  }
+
+  .fm-essentials-saved-message {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .fm-essentials-overview {
+    padding: 20px;
+  }
+
+  .fm-essentials-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-essentials-card-description {
+    min-height: auto;
+  }
+
+  .fm-essentials-tools {
+    border-radius: 16px;
+  }
+
+  .fm-essentials-service-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-essentials-service-card {
+    padding: 18px;
+  }
+
+  .fm-essentials-service-card p {
+    min-height: auto;
+  }
+
+  .fm-essentials-notice {
+    display: block;
+  }
+
+  .fm-essentials-notice-icon {
+    margin-bottom: 13px;
+  }
+}
