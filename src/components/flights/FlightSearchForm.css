@@ -1,6 +1,394 @@
 /* =========================================================
-   PassengerSelector — actual component classes
+   FLYMATRIX FLIGHT SEARCH FORM
+   Compact professional booking widget
+   Dark navy + neutral palette
    ========================================================= */
+
+.fm-flight-search-form {
+  width: min(100%, 880px);
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 16px;
+  box-sizing: border-box;
+
+  border: 1px solid #dfe5ec;
+  border-radius: 15px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 8px 28px rgba(15, 23, 42, 0.08);
+
+  color: #0f172a;
+}
+
+/* Compact mode */
+
+.fm-flight-search-form.fm-flight-search-form-compact {
+  width: min(100%, 820px);
+  max-width: 820px;
+  padding: 14px;
+}
+
+/* =========================================================
+   TRIP TYPE TABS
+   ========================================================= */
+
+.fm-booking-tabs {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+
+  width: fit-content;
+  max-width: 100%;
+  margin-bottom: 14px;
+  padding: 3px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+
+  background: #f8fafc;
+}
+
+.fm-booking-tabs button {
+  min-height: 31px;
+  padding: 6px 13px;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: transparent;
+  color: #64748b;
+
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    color 150ms ease;
+}
+
+.fm-booking-tabs button:hover {
+  color: #0f172a;
+}
+
+.fm-booking-tabs button.active {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+/* =========================================================
+   FIELD LABELS
+   ========================================================= */
+
+.fm-booking-field-label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 800;
+
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   ROUTE AREA
+   ========================================================= */
+
+.fm-booking-route-stack {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    34px
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 8px;
+
+  width: 100%;
+}
+
+.fm-booking-route-field {
+  position: relative;
+
+  min-width: 0;
+  padding: 11px 12px;
+
+  border: 1px solid #dfe5ec;
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.fm-booking-route-field:focus-within {
+  border-color: #64748b;
+
+  box-shadow:
+    0 0 0 3px rgba(15, 23, 42, 0.05);
+}
+
+/* Airport summary */
+
+.fm-booking-airport-display {
+  width: 100%;
+  min-width: 0;
+  pointer-events: none;
+}
+
+.fm-booking-airport-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  min-width: 0;
+}
+
+.fm-booking-airport-main > strong {
+  flex: 0 0 auto;
+
+  color: #0f172a;
+
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 850;
+
+  letter-spacing: 0.025em;
+}
+
+.fm-booking-airport-location {
+  min-width: 0;
+}
+
+.fm-booking-airport-location > span {
+  display: block;
+
+  overflow: hidden;
+
+  color: #334155;
+
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fm-booking-airport-location small {
+  display: block;
+
+  overflow: hidden;
+
+  margin-top: 2px;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+  line-height: 1.2;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* AirportSearch is rendered below the visual airport display.
+   Keep its control compact and integrated with the card. */
+
+.fm-booking-route-field .airport-search,
+.fm-booking-route-field [class*="airport-search"] {
+  width: 100%;
+  min-width: 0;
+}
+
+/* =========================================================
+   SWAP BUTTON
+   ========================================================= */
+
+.fm-booking-swap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+
+  padding: 0;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 50%;
+
+  background: #ffffff;
+  color: #334155;
+
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 2px 8px rgba(15, 23, 42, 0.07);
+
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.fm-booking-swap:hover {
+  border-color: #0f172a;
+  background: #0f172a;
+  color: #ffffff;
+
+  transform: rotate(180deg);
+}
+
+.fm-booking-swap:focus-visible {
+  outline: 2px solid #475569;
+  outline-offset: 2px;
+}
+
+/* =========================================================
+   DATE ROW
+   ========================================================= */
+
+.fm-booking-date-row {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  gap: 8px;
+
+  margin-top: 8px;
+}
+
+.fm-booking-date-field {
+  position: relative;
+
+  min-width: 0;
+  min-height: 60px;
+
+  padding: 10px 12px;
+
+  border: 1px solid #dfe5ec;
+  border-radius: 11px;
+
+  background: #ffffff;
+
+  box-sizing: border-box;
+}
+
+.fm-booking-date-field:focus-within {
+  border-color: #64748b;
+
+  box-shadow:
+    0 0 0 3px rgba(15, 23, 42, 0.05);
+}
+
+.fm-booking-date-field.disabled {
+  background: #f8fafc;
+  opacity: 0.65;
+}
+
+.fm-booking-date-field input {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  opacity: 0;
+
+  cursor: pointer;
+}
+
+.fm-booking-date-field input:disabled {
+  cursor: not-allowed;
+}
+
+.fm-booking-value {
+  display: block;
+
+  overflow: hidden;
+
+  color: #1e293b;
+
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   TRAVELLERS
+   ========================================================= */
+
+.fm-booking-travellers {
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns:
+    82px
+    minmax(100px, 1fr)
+    auto;
+
+  align-items: center;
+
+  column-gap: 10px;
+
+  margin-top: 8px;
+  padding: 10px 12px;
+
+  border: 1px solid #dfe5ec;
+  border-radius: 11px;
+
+  background: #ffffff;
+}
+
+.fm-booking-travellers
+  .fm-booking-field-label {
+  margin: 0;
+}
+
+.fm-booking-travellers
+  .passenger-selector {
+  min-width: 0;
+}
+
+.fm-booking-travellers
+  > .fm-booking-value {
+  justify-self: end;
+
+  color: #334155;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Passenger selector supplied separately */
 
 .passenger-selector {
   position: relative;
@@ -13,17 +401,24 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+
   width: 100%;
   min-height: 20px;
+
   padding: 0;
+
   border: 0;
   outline: 0;
+
   background: transparent;
   color: #0f172a;
+
   font: inherit;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
+
   text-align: left;
+
   cursor: pointer;
 }
 
@@ -34,45 +429,55 @@
 .passenger-selector-trigger:focus-visible {
   outline: 2px solid #475569;
   outline-offset: 3px;
+
   border-radius: 4px;
 }
 
 .passenger-chevron {
   flex: 0 0 auto;
+
   color: #64748b;
+
   font-size: 13px;
   line-height: 1;
-  transition: transform 150ms ease;
+
+  transition:
+    transform 150ms ease;
 }
 
 .passenger-chevron.is-open {
   transform: rotate(180deg);
 }
 
-/* Dropdown */
-
 .passenger-selector-menu {
   position: absolute;
   z-index: 1000;
+
   top: calc(100% + 10px);
   right: 0;
+
   width: 290px;
   max-width: calc(100vw - 32px);
+
   padding: 8px;
+
   border: 1px solid #dfe5ec;
   border-radius: 13px;
-  background: #ffffff;
-  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.16);
-}
 
-/* Individual passenger row */
+  background: #ffffff;
+
+  box-shadow:
+    0 16px 38px rgba(15, 23, 42, 0.16);
+}
 
 .passenger-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+
   min-height: 58px;
+
   padding: 10px 8px;
 }
 
@@ -86,7 +491,9 @@
 
 .passenger-info strong {
   display: block;
+
   color: #0f172a;
+
   font-size: 13px;
   line-height: 1.3;
   font-weight: 800;
@@ -94,18 +501,20 @@
 
 .passenger-info span {
   display: block;
+
   margin-top: 3px;
+
   color: #94a3b8;
+
   font-size: 10px;
   line-height: 1.3;
 }
-
-/* Plus / minus controls */
 
 .passenger-controls {
   display: flex;
   align-items: center;
   gap: 9px;
+
   flex: 0 0 auto;
 }
 
@@ -113,19 +522,26 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   width: 30px;
   height: 30px;
   min-width: 30px;
+
   padding: 0;
+
   border: 1px solid #cbd5e1;
   border-radius: 50%;
+
   background: #ffffff;
   color: #334155;
+
   font-family: inherit;
   font-size: 17px;
   line-height: 1;
   font-weight: 700;
+
   cursor: pointer;
+
   transition:
     background 150ms ease,
     border-color 150ms ease,
@@ -149,40 +565,49 @@
 
 .passenger-count {
   min-width: 20px;
+
   color: #0f172a;
+
   font-size: 13px;
   font-weight: 800;
+
   text-align: center;
 }
-
-/* Dropdown footer */
 
 .passenger-selector-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+
   margin-top: 4px;
   padding: 12px 8px 5px;
+
   border-top: 1px solid #e2e8f0;
 }
 
 .passenger-selector-footer > span {
   color: #64748b;
+
   font-size: 11px;
   font-weight: 700;
 }
 
 .passenger-done-button {
   min-height: 34px;
+
   padding: 6px 13px;
+
   border: 1px solid #0f172a;
   border-radius: 8px;
+
   background: #0f172a;
   color: #ffffff;
+
   font: inherit;
   font-size: 11px;
   font-weight: 800;
+
   cursor: pointer;
 }
 
@@ -191,19 +616,506 @@
   border-color: #1e293b;
 }
 
-/* Mobile */
+/* =========================================================
+   BOTTOM ACTION ROW
+   ========================================================= */
 
-@media (max-width: 640px) {
-  .passenger-selector-menu {
-    right: 0;
-    width: min(290px, calc(100vw - 28px));
+.fm-booking-bottom-row {
+  display: grid;
+
+  grid-template-columns:
+    minmax(150px, 0.55fr)
+    minmax(180px, 0.8fr);
+
+  justify-content: end;
+
+  gap: 8px;
+
+  margin-top: 8px;
+}
+
+.fm-booking-class {
+  min-width: 0;
+}
+
+.fm-booking-class select {
+  width: 100%;
+  min-height: 42px;
+
+  padding: 0 12px;
+
+  border: 1px solid #dfe5ec;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #1e293b;
+
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.fm-booking-class select:focus {
+  outline: none;
+
+  border-color: #64748b;
+
+  box-shadow:
+    0 0 0 3px rgba(15, 23, 42, 0.05);
+}
+
+.fm-booking-search-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 42px;
+
+  padding: 0 20px;
+
+  border: 1px solid #0f172a;
+  border-radius: 10px;
+
+  background: #0f172a;
+  color: #ffffff;
+
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    background 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.fm-booking-search-button:hover:not(:disabled) {
+  background: #1e293b;
+  border-color: #1e293b;
+
+  transform: translateY(-1px);
+}
+
+.fm-booking-search-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.fm-booking-search-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* =========================================================
+   ADVANCED OPTIONS
+   ========================================================= */
+
+.fm-booking-options {
+  margin-top: 8px;
+
+  border-top: 1px solid #eef2f6;
+}
+
+.fm-booking-options-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  width: 100%;
+
+  padding: 9px 1px 2px;
+
+  border: 0;
+
+  background: transparent;
+  color: #64748b;
+
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.fm-booking-options-toggle:hover {
+  color: #0f172a;
+}
+
+.fm-booking-options-panel {
+  display: grid;
+
+  grid-template-columns: 90px minmax(140px, 220px);
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 10px 0 2px;
+}
+
+.fm-booking-options-panel label {
+  color: #64748b;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.fm-booking-options-panel select {
+  min-height: 34px;
+
+  padding: 5px 9px;
+
+  border: 1px solid #dfe5ec;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #334155;
+
+  font: inherit;
+  font-size: 11px;
+}
+
+/* =========================================================
+   ERRORS
+   ========================================================= */
+
+.fm-booking-field-error {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #991b1b;
+
+  font-size: 9px;
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.fm-booking-form-error {
+  margin-top: 10px;
+  padding: 9px 11px;
+
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+
+  background: #fef2f2;
+  color: #991b1b;
+
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+/* =========================================================
+   DISCLAIMER
+   ========================================================= */
+
+.fm-booking-disclaimer {
+  margin-top: 10px;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+  line-height: 1.45;
+
+  text-align: center;
+}
+
+/* =========================================================
+   MULTI-CITY
+   ========================================================= */
+
+.fm-multicity-container {
+  display: grid;
+  gap: 9px;
+}
+
+.fm-multicity-leg {
+  position: relative;
+
+  padding: 12px;
+
+  border: 1px solid #dfe5ec;
+  border-radius: 12px;
+
+  background: #ffffff;
+}
+
+.fm-multicity-leg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  margin-bottom: 9px;
+}
+
+.fm-multicity-leg-header strong {
+  color: #0f172a;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.fm-remove-leg {
+  padding: 4px 8px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+
+  background: #ffffff;
+  color: #64748b;
+
+  font: inherit;
+  font-size: 9px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.fm-remove-leg:hover {
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+.fm-multicity-route {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    24px
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+.fm-multicity-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #64748b;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.fm-multicity-date {
+  position: relative;
+
+  margin-top: 8px;
+  padding: 10px 12px;
+
+  border: 1px solid #dfe5ec;
+  border-radius: 10px;
+
+  background: #ffffff;
+}
+
+.fm-multicity-date input {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  opacity: 0;
+
+  cursor: pointer;
+}
+
+.fm-add-leg {
+  min-height: 34px;
+
+  padding: 7px 11px;
+
+  border: 1px dashed #cbd5e1;
+  border-radius: 9px;
+
+  background: #f8fafc;
+  color: #334155;
+
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.fm-add-leg:hover {
+  border-color: #64748b;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+.fm-flight-search-form .sr-only {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+
+  clip: rect(0, 0, 0, 0);
+
+  white-space: nowrap;
+
+  border: 0;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .fm-flight-search-form {
+    width: min(100%, 680px);
+    padding: 14px;
+  }
+
+  .fm-booking-route-stack {
+    grid-template-columns:
+      minmax(0, 1fr)
+      32px
+      minmax(0, 1fr);
+  }
+
+  .fm-booking-bottom-row {
+    grid-template-columns:
+      1fr
+      1fr;
   }
 }
 
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .fm-flight-search-form {
+    width: 100%;
+    padding: 12px;
+
+    border-radius: 13px;
+  }
+
+  .fm-booking-tabs {
+    width: 100%;
+  }
+
+  .fm-booking-tabs button {
+    flex: 1;
+
+    padding-inline: 8px;
+  }
+
+  .fm-booking-route-stack {
+    grid-template-columns: 1fr;
+
+    gap: 7px;
+  }
+
+  .fm-booking-swap {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+
+    margin: -2px auto;
+  }
+
+  .fm-booking-date-row {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-booking-travellers {
+    grid-template-columns:
+      75px
+      minmax(0, 1fr)
+      auto;
+
+    padding: 9px 10px;
+  }
+
+  .fm-booking-bottom-row {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-booking-search-button {
+    width: 100%;
+  }
+
+  .fm-multicity-route {
+    grid-template-columns: 1fr;
+  }
+
+  .fm-multicity-arrow {
+    height: 18px;
+
+    transform: rotate(90deg);
+  }
+
+  .fm-booking-options-panel {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
 @media (max-width: 420px) {
+  .fm-flight-search-form {
+    padding: 10px;
+  }
+
+  .fm-booking-tabs button {
+    font-size: 10px;
+  }
+
+  .fm-booking-route-field,
+  .fm-booking-date-field,
+  .fm-booking-travellers {
+    border-radius: 9px;
+  }
+
+  .fm-booking-airport-main > strong {
+    font-size: 18px;
+  }
+
+  .fm-booking-travellers {
+    grid-template-columns:
+      70px
+      minmax(0, 1fr);
+  }
+
+  .fm-booking-travellers
+    > .fm-booking-value {
+    display: none;
+  }
+
   .passenger-selector-menu {
     right: auto;
     left: 0;
-    width: min(280px, calc(100vw - 24px));
+
+    width: min(
+      280px,
+      calc(100vw - 24px)
+    );
   }
 }
