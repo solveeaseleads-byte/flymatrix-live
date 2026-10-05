@@ -8,8 +8,10 @@ import AirportSearch from "./AirportSearch.jsx";
 import PassengerSelector from "./PassengerSelector.jsx";
 import { navigate } from "../../router/AppRouter.jsx";
 
+import "./FlightSearchForm.css";
+
 /* =========================================================
-   DEFAULT SEARCH
+   DEFAULTS
    ========================================================= */
 
 const DEFAULT_SEARCH = {
@@ -28,7 +30,7 @@ const DEFAULT_SEARCH = {
   cabin: "economy",
   stops: "any",
 
-  multiCityLegs: [
+  multiCitySegments: [
     {
       origin: null,
       destination: null,
@@ -42,9 +44,7 @@ const DEFAULT_SEARCH = {
   ]
 };
 
-/* =========================================================
-   CABIN OPTIONS
-   ========================================================= */
+const MAX_MULTI_CITY_SEGMENTS = 4;
 
 const CABIN_OPTIONS = [
   {
@@ -64,10 +64,6 @@ const CABIN_OPTIONS = [
     label: "First Class"
   }
 ];
-
-/* =========================================================
-   STOP OPTIONS
-   ========================================================= */
 
 const STOP_OPTIONS = [
   {
@@ -92,26 +88,6 @@ const STOP_OPTIONS = [
    HELPERS
    ========================================================= */
 
-function formatDateForDisplay(value) {
-  if (!value) {
-    return "";
-  }
-
-  const date = new Date(
-    `${value}T00:00:00`
-  );
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return new Intl.DateTimeFormat("en", {
-    day: "numeric",
-    month: "short",
-    year: "numeric"
-  }).format(date);
-}
-
 function getToday() {
   const now = new Date();
 
@@ -126,6 +102,29 @@ function getToday() {
   ).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
+}
+
+function formatDateForDisplay(value) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(
+    `${value}T00:00:00`
+  );
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat(
+    "en",
+    {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    }
+  ).format(date);
 }
 
 function createSearchId() {
@@ -171,7 +170,7 @@ function normalizeAirport(value) {
 }
 
 /* =========================================================
-   SEARCH PAYLOAD
+   PAYLOAD
    ========================================================= */
 
 function buildSearchPayload(search) {
@@ -184,7 +183,7 @@ function buildSearchPayload(search) {
   const infants =
     Number(search.infants) || 0;
 
-  const payload = {
+  const basePayload = {
     searchId: createSearchId(),
 
     tripType:
@@ -194,7 +193,6 @@ function buildSearchPayload(search) {
       adults,
       children,
       infants,
-
       total:
         adults +
         children +
@@ -211,63 +209,59 @@ function buildSearchPayload(search) {
       new Date().toISOString()
   };
 
-  /*
-   * MULTI-CITY
-   */
-
   if (
     search.tripType ===
     "multicity"
   ) {
-    payload.multiCityLegs = (
-      search.multiCityLegs ||
-      []
-    ).map((leg) => ({
-      origin:
-        normalizeAirport(
-          leg.origin
-        ),
+    return {
+      ...basePayload,
 
-      destination:
-        normalizeAirport(
-          leg.destination
-        ),
+      segments:
+        search.multiCitySegments.map(
+          (segment) => ({
+            origin:
+              normalizeAirport(
+                segment.origin
+              ),
 
-      departureDate:
-        leg.departureDate || ""
-    }));
+            destination:
+              normalizeAirport(
+                segment.destination
+              ),
 
-    return payload;
+            departureDate:
+              segment.departureDate
+          })
+        )
+    };
   }
 
-  /*
-   * NORMAL SEARCH
-   */
+  return {
+    ...basePayload,
 
-  payload.origin =
-    normalizeAirport(
-      search.origin
-    );
+    origin:
+      normalizeAirport(
+        search.origin
+      ),
 
-  payload.destination =
-    normalizeAirport(
-      search.destination
-    );
+    destination:
+      normalizeAirport(
+        search.destination
+      ),
 
-  payload.departureDate =
-    search.departureDate;
+    departureDate:
+      search.departureDate,
 
-  payload.returnDate =
-    search.tripType ===
-    "roundtrip"
-      ? search.returnDate
-      : "";
-
-  return payload;
+    returnDate:
+      search.tripType ===
+      "roundtrip"
+        ? search.returnDate
+        : ""
+  };
 }
 
 /* =========================================================
-   QUERY STRING
+   QUERY
    ========================================================= */
 
 function buildSearchQuery(search) {
@@ -297,7 +291,9 @@ function buildSearchQuery(search) {
     params.set(
       "children",
       String(
-        Number(search.children)
+        Number(
+          search.children
+        )
       )
     );
   }
@@ -308,7 +304,9 @@ function buildSearchQuery(search) {
     params.set(
       "infants",
       String(
-        Number(search.infants)
+        Number(
+          search.infants
+        )
       )
     );
   }
@@ -319,8 +317,8 @@ function buildSearchQuery(search) {
   );
 
   if (
-    search.stops &&
-    search.stops !== "any"
+    search.stops !==
+    "any"
   ) {
     params.set(
       "stops",
@@ -328,45 +326,63 @@ function buildSearchQuery(search) {
     );
   }
 
-  /*
-   * MULTI-CITY QUERY
-   */
+  /* -------------------------------------
+     MULTI CITY
+     ------------------------------------- */
 
   if (
     search.tripType ===
     "multicity"
   ) {
-    const legs =
-      search.multiCityLegs ||
-      [];
+    search.multiCitySegments.forEach(
+      (segment, index) => {
+        if (
+          segment.origin?.code
+        ) {
+          params.set(
+            `segment${index + 1}Origin`,
+            segment.origin.code
+          );
+        }
+
+        if (
+          segment.destination?.code
+        ) {
+          params.set(
+            `segment${index + 1}Destination`,
+            segment.destination.code
+          );
+        }
+
+        if (
+          segment.departureDate
+        ) {
+          params.set(
+            `segment${index + 1}Departure`,
+            segment.departureDate
+          );
+        }
+      }
+    );
 
     params.set(
-      "legs",
-      JSON.stringify(
-        legs.map((leg) => ({
-          origin:
-            leg.origin?.code ||
-            "",
-
-          destination:
-            leg.destination?.code ||
-            "",
-
-          departureDate:
-            leg.departureDate ||
-            ""
-        }))
+      "segments",
+      String(
+        search.multiCitySegments
+          .length
       )
     );
 
     return params;
   }
 
-  /*
-   * NORMAL QUERY
-   */
+  /* -------------------------------------
+     NORMAL FLIGHT
+     ------------------------------------- */
 
-  if (search.origin?.code) {
+  if (
+    search.origin?.code
+  ) {
     params.set(
       "origin",
       search.origin.code
@@ -382,7 +398,9 @@ function buildSearchQuery(search) {
     );
   }
 
-  if (search.departureDate) {
+  if (
+    search.departureDate
+  ) {
     params.set(
       "departureDate",
       search.departureDate
@@ -420,169 +438,146 @@ function buildSearchQuery(search) {
 function validateSearch(search) {
   const errors = {};
 
-  /*
-   * MULTI-CITY
-   */
+  /* MULTI CITY */
 
   if (
     search.tripType ===
     "multicity"
   ) {
-    const legs =
-      search.multiCityLegs ||
-      [];
-
-    if (legs.length < 2) {
-      errors.form =
-        "Add at least two flights.";
-    }
-
-    legs.forEach(
-      (leg, index) => {
-        if (!leg.origin?.code) {
+    search.multiCitySegments.forEach(
+      (segment, index) => {
+        if (
+          !segment.origin?.code
+        ) {
           errors[
-            `leg-${index}-origin`
+            `segment${index}Origin`
           ] =
-            `Select the departure airport for Flight ${
-              index + 1
-            }.`;
+            "Select departure airport.";
         }
 
         if (
-          !leg.destination?.code
+          !segment.destination?.code
         ) {
           errors[
-            `leg-${index}-destination`
+            `segment${index}Destination`
           ] =
-            `Select the destination airport for Flight ${
-              index + 1
-            }.`;
+            "Select destination airport.";
         }
 
         if (
-          leg.origin?.code &&
-          leg.destination?.code &&
-          leg.origin.code ===
-            leg.destination.code
+          segment.origin?.code &&
+          segment.destination?.code &&
+          segment.origin.code ===
+            segment.destination.code
         ) {
           errors[
-            `leg-${index}-destination`
+            `segment${index}Destination`
           ] =
-            `Flight ${
-              index + 1
-            } cannot have the same departure and destination airport.`;
+            "Departure and destination cannot be the same.";
         }
 
         if (
-          !leg.departureDate
+          !segment.departureDate
         ) {
           errors[
-            `leg-${index}-date`
+            `segment${index}Date`
           ] =
-            `Select a departure date for Flight ${
-              index + 1
-            }.`;
+            "Select a departure date.";
         }
 
         if (
           index > 0 &&
-          legs[index - 1]
-            ?.departureDate &&
-          leg.departureDate &&
-          leg.departureDate <
-            legs[index - 1]
+          segment.departureDate &&
+          search
+            .multiCitySegments[
+            index - 1
+          ]
+            .departureDate &&
+          segment.departureDate <
+            search
+              .multiCitySegments[
+              index - 1
+            ]
               .departureDate
         ) {
           errors[
-            `leg-${index}-date`
+            `segment${index}Date`
           ] =
-            `Flight ${
-              index + 1
-            } cannot depart before Flight ${
-              index
-            }.`;
+            "This date cannot be before the previous flight.";
         }
       }
     );
+  }
 
-    /*
-     * Passenger validation
-     */
+  /* NORMAL */
 
-    if (
-      !search.adults ||
-      Number(search.adults) < 1
-    ) {
-      errors.passengers =
-        "At least one adult passenger is required.";
+  if (
+    search.tripType !==
+    "multicity"
+  ) {
+    if (!search.origin?.code) {
+      errors.origin =
+        "Select departure airport.";
     }
 
-    return errors;
-  }
+    if (
+      !search.destination?.code
+    ) {
+      errors.destination =
+        "Select destination airport.";
+    }
 
-  /*
-   * NORMAL SEARCH
-   */
+    if (
+      search.origin?.code &&
+      search.destination?.code &&
+      search.origin.code ===
+        search.destination.code
+    ) {
+      errors.destination =
+        "Departure and destination cannot be the same.";
+    }
 
-  if (!search.origin?.code) {
-    errors.origin =
-      "Select a departure airport.";
-  }
+    if (!search.departureDate) {
+      errors.departureDate =
+        "Select a departure date.";
+    }
 
-  if (!search.destination?.code) {
-    errors.destination =
-      "Select a destination airport.";
-  }
+    if (
+      search.tripType ===
+        "roundtrip" &&
+      !search.returnDate
+    ) {
+      errors.returnDate =
+        "Select a return date.";
+    }
 
-  if (
-    search.origin?.code &&
-    search.destination?.code &&
-    search.origin.code ===
-      search.destination.code
-  ) {
-    errors.destination =
-      "Departure and destination cannot be the same.";
-  }
-
-  if (!search.departureDate) {
-    errors.departureDate =
-      "Select a departure date.";
-  }
-
-  if (
-    search.tripType ===
-      "roundtrip" &&
-    !search.returnDate
-  ) {
-    errors.returnDate =
-      "Select a return date.";
-  }
-
-  if (
-    search.tripType ===
-      "roundtrip" &&
-    search.departureDate &&
-    search.returnDate &&
-    search.returnDate <
-      search.departureDate
-  ) {
-    errors.returnDate =
-      "Return date cannot be before departure.";
+    if (
+      search.tripType ===
+        "roundtrip" &&
+      search.departureDate &&
+      search.returnDate &&
+      search.returnDate <
+        search.departureDate
+    ) {
+      errors.returnDate =
+        "Return date cannot be before departure.";
+    }
   }
 
   if (
     !search.adults ||
-    Number(search.adults) < 1
+    Number(search.adults) <
+      1
   ) {
     errors.passengers =
-      "At least one adult passenger is required.";
+      "At least one adult is required.";
   }
 
   return errors;
 }
 
 /* =========================================================
-   ERROR MESSAGE
+   SMALL UI COMPONENTS
    ========================================================= */
 
 function ErrorMessage({
@@ -602,10 +597,6 @@ function ErrorMessage({
   );
 }
 
-/* =========================================================
-   AIRPORT DISPLAY
-   ========================================================= */
-
 function AirportDisplay({
   value,
   fallback,
@@ -623,7 +614,7 @@ function AirportDisplay({
       <div className="fm-booking-airport-main">
         <strong>
           {airport?.code ||
-            ""}
+            "---"}
         </strong>
 
         <div className="fm-booking-airport-location">
@@ -644,7 +635,7 @@ function AirportDisplay({
 }
 
 /* =========================================================
-   COMPONENT
+   MAIN COMPONENT
    ========================================================= */
 
 export default function FlightSearchForm({
@@ -670,14 +661,19 @@ export default function FlightSearchForm({
     setIsSubmitting
   ] = useState(false);
 
+  const [
+    showAdvanced,
+    setShowAdvanced
+  ] = useState(false);
+
   const today = useMemo(
     () => getToday(),
     []
   );
 
-  /*
-   * APPLY INITIAL SEARCH
-   */
+  /* -------------------------------------
+     INITIAL SEARCH
+     ------------------------------------- */
 
   useEffect(() => {
     if (!initialSearch) {
@@ -687,18 +683,14 @@ export default function FlightSearchForm({
     setSearch(
       (current) => ({
         ...current,
-        ...initialSearch,
-
-        multiCityLegs:
-          initialSearch.multiCityLegs ||
-          current.multiCityLegs
+        ...initialSearch
       })
     );
   }, [initialSearch]);
 
-  /* =======================================================
-     FIELD UPDATE
-     ======================================================= */
+  /* -------------------------------------
+     GENERAL UPDATE
+     ------------------------------------- */
 
   function updateField(
     field,
@@ -713,10 +705,6 @@ export default function FlightSearchForm({
 
     setErrors(
       (current) => {
-        if (!current[field]) {
-          return current;
-        }
-
         const next = {
           ...current
         };
@@ -728,33 +716,44 @@ export default function FlightSearchForm({
     );
   }
 
-  /* =======================================================
+  /* -------------------------------------
      TRIP TYPE
-     ======================================================= */
+     ------------------------------------- */
 
   function handleTripTypeChange(
     type
   ) {
     setSearch(
-      (current) => ({
-        ...current,
+      (current) => {
+        if (
+          type ===
+          "multicity"
+        ) {
+          return {
+            ...current,
+            tripType:
+              "multicity"
+          };
+        }
 
-        tripType:
-          type,
-
-        returnDate:
-          type === "roundtrip"
-            ? current.returnDate
-            : ""
-      })
+        return {
+          ...current,
+          tripType: type,
+          returnDate:
+            type ===
+            "roundtrip"
+              ? current.returnDate
+              : ""
+        };
+      }
     );
 
     setErrors({});
   }
 
-  /* =======================================================
+  /* -------------------------------------
      PASSENGERS
-     ======================================================= */
+     ------------------------------------- */
 
   function handlePassengerChange(
     passengers
@@ -793,9 +792,9 @@ export default function FlightSearchForm({
     );
   }
 
-  /* =======================================================
+  /* -------------------------------------
      DEPARTURE
-     ======================================================= */
+     ------------------------------------- */
 
   function handleDepartureChange(
     event
@@ -820,10 +819,8 @@ export default function FlightSearchForm({
 
         return {
           ...current,
-
           departureDate:
             value,
-
           returnDate
         };
       }
@@ -836,7 +833,6 @@ export default function FlightSearchForm({
         };
 
         delete next.departureDate;
-
         delete next.returnDate;
 
         return next;
@@ -844,22 +840,9 @@ export default function FlightSearchForm({
     );
   }
 
-  /* =======================================================
-     RETURN
-     ======================================================= */
-
-  function handleReturnChange(
-    event
-  ) {
-    updateField(
-      "returnDate",
-      event.target.value
-    );
-  }
-
-  /* =======================================================
+  /* -------------------------------------
      SWAP
-     ======================================================= */
+     ------------------------------------- */
 
   function swapAirports() {
     setSearch(
@@ -875,124 +858,124 @@ export default function FlightSearchForm({
     );
 
     setErrors(
-      (current) => {
-        const next = {
-          ...current
-        };
-
-        delete next.origin;
-
-        delete next.destination;
-
-        return next;
-      }
+      {}
     );
   }
 
-  /* =======================================================
-     MULTI-CITY LEG UPDATE
-     ======================================================= */
+  /* -------------------------------------
+     MULTI CITY UPDATE
+     ------------------------------------- */
 
-  function updateMultiCityLeg(
+  function updateMultiCitySegment(
     index,
     field,
     value
   ) {
     setSearch(
       (current) => {
-        const legs = [
-          ...(current.multiCityLegs ||
-            [])
-        ];
+        const segments =
+          [
+            ...current.multiCitySegments
+          ];
 
-        legs[index] = {
-          ...legs[index],
+        segments[index] = {
+          ...segments[index],
           [field]: value
         };
 
         return {
           ...current,
-
-          multiCityLegs:
-            legs
+          multiCitySegments:
+            segments
         };
       }
     );
 
-    setErrors({});
-  }
-
-  /* =======================================================
-     ADD MULTI-CITY LEG
-     ======================================================= */
-
-  function addMultiCityLeg() {
-    setSearch(
+    setErrors(
       (current) => {
-        const legs = [
-          ...(current.multiCityLegs ||
-            [])
+        const next = {
+          ...current
+        };
+
+        delete next[
+          `segment${index}Origin`
         ];
 
-        /*
-         * Maximum 4 legs.
-         */
+        delete next[
+          `segment${index}Destination`
+        ];
 
-        if (legs.length >= 4) {
-          return current;
-        }
+        delete next[
+          `segment${index}Date`
+        ];
 
-        legs.push({
-          origin: null,
-          destination: null,
-          departureDate: ""
-        });
-
-        return {
-          ...current,
-
-          multiCityLegs:
-            legs
-        };
+        return next;
       }
     );
   }
 
-  /* =======================================================
-     REMOVE MULTI-CITY LEG
-     ======================================================= */
+  /* -------------------------------------
+     ADD MULTI CITY LEG
+     ------------------------------------- */
 
-  function removeMultiCityLeg(
+  function addMultiCitySegment() {
+    if (
+      search.multiCitySegments
+        .length >=
+      MAX_MULTI_CITY_SEGMENTS
+    ) {
+      return;
+    }
+
+    setSearch(
+      (current) => ({
+        ...current,
+
+        multiCitySegments: [
+          ...current.multiCitySegments,
+
+          {
+            origin: null,
+            destination: null,
+            departureDate: ""
+          }
+        ]
+      })
+    );
+  }
+
+  /* -------------------------------------
+     REMOVE MULTI CITY LEG
+     ------------------------------------- */
+
+  function removeMultiCitySegment(
     index
   ) {
+    if (
+      search.multiCitySegments
+        .length <= 2
+    ) {
+      return;
+    }
+
     setSearch(
-      (current) => {
-        const legs = [
-          ...(current.multiCityLegs ||
-            [])
-        ];
+      (current) => ({
+        ...current,
 
-        if (legs.length <= 2) {
-          return current;
-        }
-
-        legs.splice(index, 1);
-
-        return {
-          ...current,
-
-          multiCityLegs:
-            legs
-        };
-      }
+        multiCitySegments:
+          current.multiCitySegments.filter(
+            (_, itemIndex) =>
+              itemIndex !== index
+          )
+      })
     );
 
     setErrors({});
   }
 
-  /* =======================================================
+  /* -------------------------------------
      SUBMIT
-     ======================================================= */
+     ------------------------------------- */
 
   async function handleSubmit(
     event
@@ -1005,7 +988,7 @@ export default function FlightSearchForm({
     if (
       Object.keys(
         validationErrors
-      ).length > 0
+      ).length
     ) {
       setErrors(
         validationErrors
@@ -1022,27 +1005,17 @@ export default function FlightSearchForm({
           search
         );
 
-      /*
-       * Save complete search.
-       */
-
       sessionStorage.setItem(
         "flymatrix:lastSearch",
-        JSON.stringify(payload)
+        JSON.stringify(
+          payload
+        )
       );
-
-      /*
-       * Build URL.
-       */
 
       const query =
         buildSearchQuery(
           search
         );
-
-      /*
-       * Optional callback.
-       */
 
       if (
         typeof onSearch ===
@@ -1052,10 +1025,6 @@ export default function FlightSearchForm({
           payload
         );
       }
-
-      /*
-       * Navigate to results.
-       */
 
       navigate(
         `/search?${query.toString()}`
@@ -1071,41 +1040,26 @@ export default function FlightSearchForm({
           "The search could not be started. Please try again."
       });
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(
+        false
+      );
     }
   }
-
-  /* =======================================================
-     TRAVELER TOTAL
-     ======================================================= */
 
   const totalTravelers =
     Number(search.adults) +
     Number(search.children) +
     Number(search.infants);
 
-  /* =======================================================
-     CURRENT CABIN
-     ======================================================= */
-
-  const currentCabin =
-    CABIN_OPTIONS.find(
-      (item) =>
-        item.value ===
-        search.cabin
-    ) ||
-    CABIN_OPTIONS[0];
-
-  /* =======================================================
+  /* =====================================================
      RENDER
-     ======================================================= */
+     ===================================================== */
 
   return (
     <form
       className={[
         "fm-flight-search-form",
         "fm-wakanow-search",
-
         compact
           ? "fm-flight-search-form-compact"
           : ""
@@ -1118,9 +1072,9 @@ export default function FlightSearchForm({
       noValidate
     >
 
-      {/* =================================================
+      {/* ===============================================
           TRIP TYPE
-          ================================================= */}
+          =============================================== */}
 
       <div className="fm-booking-tabs">
 
@@ -1177,16 +1131,14 @@ export default function FlightSearchForm({
 
       </div>
 
-      {/* =================================================
-          NORMAL ROUTE SEARCH
-          ================================================= */}
+      {/* ===============================================
+          STANDARD SEARCH
+          =============================================== */}
 
       {search.tripType !==
         "multicity" && (
         <>
-          <div className="fm-booking-main-row">
-
-            {/* FROM */}
+          <div className="fm-booking-route-stack">
 
             <div className="fm-booking-route-field">
 
@@ -1195,7 +1147,7 @@ export default function FlightSearchForm({
                   search.origin
                 }
                 fallback="City or airport"
-                label="From"
+                label="FROM"
               />
 
               <AirportSearch
@@ -1218,14 +1170,10 @@ export default function FlightSearchForm({
               />
 
               <ErrorMessage>
-                {
-                  errors.origin
-                }
+                {errors.origin}
               </ErrorMessage>
 
             </div>
-
-            {/* SWAP */}
 
             <button
               type="button"
@@ -1236,10 +1184,8 @@ export default function FlightSearchForm({
               title="Swap airports"
               aria-label="Swap departure and destination airports"
             >
-              ⇄
+              ⇅
             </button>
-
-            {/* TO */}
 
             <div className="fm-booking-route-field">
 
@@ -1248,7 +1194,7 @@ export default function FlightSearchForm({
                   search.destination
                 }
                 fallback="City or airport"
-                label="To"
+                label="TO"
               />
 
               <AirportSearch
@@ -1280,18 +1226,14 @@ export default function FlightSearchForm({
 
           </div>
 
-          {/* =================================================
-              DATES
-              ================================================= */}
+          {/* DATE ROW */}
 
-          <div className="fm-booking-details-row">
+          <div className="fm-booking-date-row">
 
-            {/* DEPARTURE */}
-
-            <div className="fm-booking-detail-field">
+            <div className="fm-booking-date-field">
 
               <span className="fm-booking-field-label">
-                Departure
+                DEPARTURE
               </span>
 
               <input
@@ -1304,9 +1246,6 @@ export default function FlightSearchForm({
                 onChange={
                   handleDepartureChange
                 }
-                aria-invalid={Boolean(
-                  errors.departureDate
-                )}
               />
 
               <span className="fm-booking-value">
@@ -1325,23 +1264,18 @@ export default function FlightSearchForm({
 
             </div>
 
-            {/* RETURN */}
-
             <div
               className={[
-                "fm-booking-detail-field",
-
+                "fm-booking-date-field",
                 search.tripType !==
                   "roundtrip"
                   ? "disabled"
                   : ""
-              ]
-                .filter(Boolean)
-                .join(" ")}
+              ].join(" ")}
             >
 
               <span className="fm-booking-field-label">
-                Return
+                RETURN
               </span>
 
               <input
@@ -1358,12 +1292,15 @@ export default function FlightSearchForm({
                   search.tripType !==
                   "roundtrip"
                 }
-                onChange={
-                  handleReturnChange
+                onChange={(
+                  event
+                ) =>
+                  updateField(
+                    "returnDate",
+                    event.target
+                      .value
+                  )
                 }
-                aria-invalid={Boolean(
-                  errors.returnDate
-                )}
               />
 
               <span className="fm-booking-value">
@@ -1386,44 +1323,43 @@ export default function FlightSearchForm({
             </div>
 
           </div>
+
         </>
       )}
 
-      {/* =================================================
-          MULTI-CITY
-          ================================================= */}
+      {/* ===============================================
+          MULTI CITY
+          =============================================== */}
 
       {search.tripType ===
         "multicity" && (
-        <div className="fm-booking-multicity">
+        <div className="fm-multicity-container">
 
-          {(search.multiCityLegs ||
-            []
-          ).map(
+          {search.multiCitySegments.map(
             (
-              leg,
+              segment,
               index
             ) => (
               <div
                 className="fm-multicity-leg"
-                key={
-                  `leg-${index}`
-                }
+                key={index}
               >
 
                 <div className="fm-multicity-leg-header">
-
                   <strong>
                     Flight{" "}
                     {index + 1}
                   </strong>
 
-                  {index >=
+                  {search
+                    .multiCitySegments
+                    .length >
                     2 && (
                     <button
                       type="button"
+                      className="fm-remove-leg"
                       onClick={() =>
-                        removeMultiCityLeg(
+                        removeMultiCitySegment(
                           index
                         )
                       }
@@ -1431,36 +1367,31 @@ export default function FlightSearchForm({
                       Remove
                     </button>
                   )}
-
                 </div>
 
-                <div className="fm-booking-main-row">
-
-                  {/* LEG FROM */}
+                <div className="fm-multicity-route">
 
                   <div className="fm-booking-route-field">
 
                     <AirportDisplay
                       value={
-                        leg.origin
+                        segment.origin
                       }
                       fallback="City or airport"
-                      label="From"
+                      label="FROM"
                     />
 
                     <AirportSearch
                       id={`multicity-origin-${index}`}
                       value={
-                        leg.origin
+                        segment.origin
                       }
                       placeholder="City or airport"
-                      ariaLabel={`Flight ${
-                        index + 1
-                      } departure airport`}
+                      ariaLabel={`Flight ${index + 1} departure airport`}
                       onChange={(
                         airport
                       ) =>
-                        updateMultiCityLeg(
+                        updateMultiCitySegment(
                           index,
                           "origin",
                           normalizeAirport(
@@ -1473,38 +1404,38 @@ export default function FlightSearchForm({
                     <ErrorMessage>
                       {
                         errors[
-                          `leg-${index}-origin`
+                          `segment${index}Origin`
                         ]
                       }
                     </ErrorMessage>
 
                   </div>
 
-                  {/* LEG TO */}
+                  <div className="fm-multicity-arrow">
+                    →
+                  </div>
 
                   <div className="fm-booking-route-field">
 
                     <AirportDisplay
                       value={
-                        leg.destination
+                        segment.destination
                       }
                       fallback="City or airport"
-                      label="To"
+                      label="TO"
                     />
 
                     <AirportSearch
                       id={`multicity-destination-${index}`}
                       value={
-                        leg.destination
+                        segment.destination
                       }
                       placeholder="City or airport"
-                      ariaLabel={`Flight ${
-                        index + 1
-                      } destination airport`}
+                      ariaLabel={`Flight ${index + 1} destination airport`}
                       onChange={(
                         airport
                       ) =>
-                        updateMultiCityLeg(
+                        updateMultiCitySegment(
                           index,
                           "destination",
                           normalizeAirport(
@@ -1517,7 +1448,7 @@ export default function FlightSearchForm({
                     <ErrorMessage>
                       {
                         errors[
-                          `leg-${index}-destination`
+                          `segment${index}Destination`
                         ]
                       }
                     </ErrorMessage>
@@ -1526,39 +1457,50 @@ export default function FlightSearchForm({
 
                 </div>
 
-                {/* LEG DATE */}
-
                 <div className="fm-multicity-date">
 
                   <span className="fm-booking-field-label">
-                    Departure
+                    DEPARTURE
                   </span>
 
                   <input
                     type="date"
-                    min={today}
+                    min={
+                      index > 0 &&
+                      search
+                        .multiCitySegments[
+                        index - 1
+                      ]
+                        .departureDate ||
+                      today
+                    }
                     value={
-                      leg.departureDate
+                      segment.departureDate
                     }
                     onChange={(
                       event
                     ) =>
-                      updateMultiCityLeg(
+                      updateMultiCitySegment(
                         index,
                         "departureDate",
                         event.target
                           .value
                       )
                     }
-                    aria-label={`Flight ${
-                      index + 1
-                    } departure date`}
                   />
+
+                  <span className="fm-booking-value">
+                    {segment.departureDate
+                      ? formatDateForDisplay(
+                          segment.departureDate
+                        )
+                      : "Select date"}
+                  </span>
 
                   <ErrorMessage>
                     {
                       errors[
-                        `leg-${index}-date`
+                        `segment${index}Date`
                       ]
                     }
                   </ErrorMessage>
@@ -1569,17 +1511,15 @@ export default function FlightSearchForm({
             )
           )}
 
-          {/* ADD FLIGHT */}
-
-          {(
-            search.multiCityLegs ||
-            []
-          ).length < 4 && (
+          {search
+            .multiCitySegments
+            .length <
+            MAX_MULTI_CITY_SEGMENTS && (
             <button
               type="button"
-              className="fm-add-flight"
+              className="fm-add-leg"
               onClick={
-                addMultiCityLeg
+                addMultiCitySegment
               }
             >
               + Add another flight
@@ -1589,42 +1529,38 @@ export default function FlightSearchForm({
         </div>
       )}
 
-      {/* =================================================
+      {/* ===============================================
           TRAVELLERS
-          ================================================= */}
+          =============================================== */}
 
       <div className="fm-booking-travellers">
 
-        <div className="fm-booking-travellers-content">
+        <span className="fm-booking-field-label">
+          TRAVELLERS
+        </span>
 
-          <span className="fm-booking-field-label">
-            Travellers
-          </span>
+        <PassengerSelector
+          adults={
+            search.adults
+          }
+          children={
+            search.children
+          }
+          infants={
+            search.infants
+          }
+          onChange={
+            handlePassengerChange
+          }
+        />
 
-          <PassengerSelector
-            adults={
-              search.adults
-            }
-            children={
-              search.children
-            }
-            infants={
-              search.infants
-            }
-            onChange={
-              handlePassengerChange
-            }
-          />
-
-          <span className="fm-booking-traveller-value">
-            {totalTravelers}{" "}
-            {totalTravelers ===
-            1
-              ? "Adult"
-              : "Travellers"}
-          </span>
-
-        </div>
+        <span className="fm-booking-value">
+          {totalTravelers}{" "}
+          {totalTravelers ===
+          1
+            ? "Adult"
+            : "Travellers"}
+        </span>
 
         <ErrorMessage>
           {errors.passengers}
@@ -1632,15 +1568,13 @@ export default function FlightSearchForm({
 
       </div>
 
-      {/* =================================================
+      {/* ===============================================
           BOTTOM ACTION ROW
-          ================================================= */}
+          =============================================== */}
 
-      <div className="fm-booking-action-row">
+      <div className="fm-booking-bottom-row">
 
-        {/* CABIN */}
-
-        <div className="fm-booking-cabin">
+        <div className="fm-booking-class">
 
           <label
             htmlFor="cabin-class"
@@ -1659,82 +1593,15 @@ export default function FlightSearchForm({
             ) =>
               updateField(
                 "cabin",
-                event.target.value
+                event.target
+                  .value
               )
             }
           >
             {CABIN_OPTIONS.map(
-              (option) => (
-                <option
-                  key={
-                    option.value
-                  }
-                  value={
-                    option.value
-                  }
-                >
-                  {option.label}
-                </option>
-              )
-            )}
-          </select>
-
-          <span className="fm-booking-cabin-current">
-            {
-              currentCabin.label
-            }
-          </span>
-
-        </div>
-
-        {/* SEARCH */}
-
-        <button
-          type="submit"
-          className="fm-booking-search-button"
-          disabled={
-            isSubmitting
-          }
-        >
-          {isSubmitting
-            ? "Searching..."
-            : "Search flights"}
-        </button>
-
-      </div>
-
-      {/* =================================================
-          OPTIONAL STOP FILTER
-          ================================================= */}
-
-      <details className="fm-booking-extra-options">
-
-        <summary>
-          More flight options
-        </summary>
-
-        <div className="fm-booking-extra-content">
-
-          <label htmlFor="stops">
-            Stops
-          </label>
-
-          <select
-            id="stops"
-            value={
-              search.stops
-            }
-            onChange={(
-              event
-            ) =>
-              updateField(
-                "stops",
-                event.target.value
-              )
-            }
-          >
-            {STOP_OPTIONS.map(
-              (option) => (
+              (
+                option
+              ) => (
                 <option
                   key={
                     option.value
@@ -1753,11 +1620,103 @@ export default function FlightSearchForm({
 
         </div>
 
-      </details>
+        <button
+          type="submit"
+          className="fm-booking-search-button"
+          disabled={
+            isSubmitting
+          }
+        >
+          {isSubmitting
+            ? "Searching..."
+            : "Search flights"}
+        </button>
 
-      {/* =================================================
-          FORM ERROR
-          ================================================= */}
+      </div>
+
+      {/* ===============================================
+          ADVANCED OPTIONS
+          =============================================== */}
+
+      <div className="fm-booking-options">
+
+        <button
+          type="button"
+          className="fm-booking-options-toggle"
+          onClick={() =>
+            setShowAdvanced(
+              (
+                current
+              ) => !current
+            )
+          }
+          aria-expanded={
+            showAdvanced
+          }
+        >
+          <span>
+            {showAdvanced
+              ? "Hide search options"
+              : "More search options"}
+          </span>
+
+          <span>
+            {showAdvanced
+              ? "−"
+              : "+"}
+          </span>
+        </button>
+
+        {showAdvanced && (
+          <div className="fm-booking-options-panel">
+
+            <label htmlFor="stops">
+              Stops
+            </label>
+
+            <select
+              id="stops"
+              value={
+                search.stops
+              }
+              onChange={(
+                event
+              ) =>
+                updateField(
+                  "stops",
+                  event.target
+                    .value
+                )
+              }
+            >
+              {STOP_OPTIONS.map(
+                (
+                  option
+                ) => (
+                  <option
+                    key={
+                      option.value
+                    }
+                    value={
+                      option.value
+                    }
+                  >
+                    {
+                      option.label
+                    }
+                  </option>
+                )
+              )}
+            </select>
+
+          </div>
+        )}
+
+      </div>
+
+      {/* ===============================================
+          ERROR
+          =============================================== */}
 
       {errors.form && (
         <div
@@ -1768,15 +1727,15 @@ export default function FlightSearchForm({
         </div>
       )}
 
-      {/* =================================================
+      {/* ===============================================
           DISCLAIMER
-          ================================================= */}
+          =============================================== */}
 
       <div className="fm-booking-disclaimer">
         Prices and availability are
-        provided by the relevant travel
-        provider. Final terms are confirmed
-        before booking.
+        provided by the relevant
+        travel provider. Final terms
+        are confirmed before booking.
       </div>
 
     </form>
