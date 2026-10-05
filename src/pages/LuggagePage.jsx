@@ -291,20 +291,38 @@ export default function LuggagePage() {
         <div className="fm-container">
 
           <header className="fm-page-header fm-luggage-header">
-            <span className="fm-eyebrow">
-              LUGGAGE STORAGE
-            </span>
+            <div className="fm-luggage-header-content">
+              <span className="fm-eyebrow">
+                LUGGAGE STORAGE
+              </span>
 
-            <h1>
-              Store Your Luggage While You Travel
-            </h1>
+              <h1>
+                Store Your Luggage While You Travel
+              </h1>
 
-            <p>
-              Find luggage-storage options at your
-              destination and continue to the
-              configured storage provider for current
-              availability and booking.
-            </p>
+              <p>
+                Find luggage-storage options at your
+                destination and continue to the
+                configured storage provider for current
+                availability and booking.
+              </p>
+            </div>
+
+            <div className="fm-luggage-header-badge">
+              <span className="fm-luggage-header-badge-icon">
+                🧳
+              </span>
+
+              <div>
+                <strong>
+                  Travel lighter
+                </strong>
+
+                <span>
+                  Keep your bags out of the way
+                </span>
+              </div>
+            </div>
           </header>
 
           <form
@@ -326,11 +344,18 @@ export default function LuggagePage() {
                   location and number of bags.
                 </p>
               </div>
+
+              <div className="fm-luggage-search-summary">
+                <span>SEARCH</span>
+                <strong>
+                  Storage options
+                </strong>
+              </div>
             </div>
 
             <div className="fm-search-grid fm-luggage-form-grid">
 
-              <div className="fm-field">
+              <div className="fm-field fm-luggage-field-primary">
                 <label htmlFor="luggage-destination">
                   Destination
                 </label>
@@ -454,70 +479,48 @@ export default function LuggagePage() {
 
           {loading && (
             <section
-              className="fm-card fm-luggage-status-card"
+              className="fm-card fm-luggage-status-card fm-luggage-loading-card"
               aria-live="polite"
               aria-busy="true"
             >
-              <span className="fm-eyebrow">
-                SEARCHING
-              </span>
+              <div className="fm-luggage-status-icon">
+                <span>⌕</span>
+              </div>
 
-              <h2>
-                Checking storage locations
-              </h2>
+              <div className="fm-luggage-status-content">
+                <span className="fm-eyebrow">
+                  SEARCHING
+                </span>
 
-              <p>
-                FlyMatrix is checking the configured
-                luggage-storage data source.
-              </p>
+                <h2>
+                  Checking storage locations
+                </h2>
+
+                <p>
+                  FlyMatrix is checking the configured
+                  luggage-storage data source.
+                </p>
+              </div>
             </section>
           )}
 
           {!loading && error && (
             <section className="fm-card fm-luggage-status-card fm-luggage-error-card">
+              <div className="fm-luggage-status-icon">
+                !
+              </div>
 
-              <span className="fm-badge">
-                Search unavailable
-              </span>
-
-              <h2>
-                Continue with the storage provider
-              </h2>
-
-              <p>
-                {error}
-              </p>
-
-              <button
-                type="button"
-                className="fm-btn fm-primary"
-                onClick={openProvider}
-              >
-                Open storage provider
-              </button>
-
-            </section>
-          )}
-
-          {!loading &&
-            searched &&
-            !error &&
-            locations.length === 0 && (
-              <section className="fm-card fm-luggage-status-card">
-
+              <div className="fm-luggage-status-content">
                 <span className="fm-badge">
-                  No live locations returned
+                  Search unavailable
                 </span>
 
                 <h2>
-                  No storage locations were returned
+                  Continue with the storage provider
                 </h2>
 
                 <p>
-                  The configured data source did not
-                  return locations for this search.
-                  Continue to the provider to check
-                  current locations and availability.
+                  {error}
                 </p>
 
                 <button
@@ -525,9 +528,45 @@ export default function LuggagePage() {
                   className="fm-btn fm-primary"
                   onClick={openProvider}
                 >
-                  Check provider locations
+                  Open storage provider
                 </button>
+              </div>
+            </section>
+          )}
 
+          {!loading &&
+            searched &&
+            !error &&
+            locations.length === 0 && (
+              <section className="fm-card fm-luggage-status-card fm-luggage-empty-card">
+                <div className="fm-luggage-status-icon">
+                  🧳
+                </div>
+
+                <div className="fm-luggage-status-content">
+                  <span className="fm-badge">
+                    No live locations returned
+                  </span>
+
+                  <h2>
+                    No storage locations were returned
+                  </h2>
+
+                  <p>
+                    The configured data source did not
+                    return locations for this search.
+                    Continue to the provider to check
+                    current locations and availability.
+                  </p>
+
+                  <button
+                    type="button"
+                    className="fm-btn fm-primary"
+                    onClick={openProvider}
+                  >
+                    Check provider locations
+                  </button>
+                </div>
               </section>
             )}
 
@@ -544,9 +583,14 @@ export default function LuggagePage() {
                     <h2>
                       Available luggage storage
                     </h2>
+
+                    <p className="fm-luggage-results-subtitle">
+                      Compare returned locations before
+                      continuing to the provider.
+                    </p>
                   </div>
 
-                  <span className="fm-meta">
+                  <span className="fm-meta fm-luggage-result-count">
                     {locations.length}{" "}
                     {locations.length === 1
                       ? "location"
@@ -606,44 +650,71 @@ export default function LuggagePage() {
 
                           <div className="fm-luggage-result-body">
 
-                            <span className="fm-badge">
-                              Luggage storage
-                            </span>
+                            <div className="fm-luggage-result-top">
+                              <span className="fm-badge">
+                                Luggage storage
+                              </span>
+
+                              {rating !== null &&
+                                rating !==
+                                  undefined && (
+                                  <span className="fm-luggage-rating">
+                                    ★ {rating}
+                                  </span>
+                                )}
+                            </div>
 
                             <h3>
                               {getName(item)}
                             </h3>
 
-                            <div className="fm-meta">
-                              {getAddress(item)}
+                            <div className="fm-luggage-location-line">
+                              <span className="fm-luggage-detail-icon">
+                                ⌖
+                              </span>
+
+                              <span>
+                                {getAddress(item)}
+                              </span>
                             </div>
 
-                            <div className="fm-meta">
-                              Provider:{" "}
-                              {provider}
-                            </div>
+                            <div className="fm-luggage-result-details">
 
-                            {rating !== null &&
-                              rating !==
-                                undefined && (
-                                <div className="fm-meta">
-                                  Rating:{" "}
-                                  {rating}
+                              <div>
+                                <span>
+                                  Provider
+                                </span>
+
+                                <strong>
+                                  {provider}
+                                </strong>
+                              </div>
+
+                              {distance && (
+                                <div>
+                                  <span>
+                                    Distance
+                                  </span>
+
+                                  <strong>
+                                    {distance}
+                                  </strong>
                                 </div>
                               )}
 
-                            {distance && (
-                              <div className="fm-meta">
-                                Distance:{" "}
-                                {distance}
-                              </div>
-                            )}
+                            </div>
 
                             <div className="fm-luggage-result-footer">
-                              <div className="fm-price">
-                                {price === null
-                                  ? "Price from provider"
-                                  : `${currency} ${price.toLocaleString()}`}
+                              <div className="fm-luggage-price-block">
+                                <span>
+                                  FROM
+                                </span>
+
+                                <div className="fm-price">
+                                  {price === null
+                                    ? "Provider pricing"
+                                    : `${currency} ${price.toLocaleString()}`}
+                                </div>
                               </div>
 
                               <a
@@ -678,6 +749,12 @@ export default function LuggagePage() {
                 <h2>
                   Useful situations for luggage storage
                 </h2>
+
+                <p className="fm-luggage-section-description">
+                  A simple way to keep your itinerary
+                  flexible when you cannot carry your
+                  bags with you.
+                </p>
               </div>
             </div>
 
@@ -687,6 +764,10 @@ export default function LuggagePage() {
                 <div className="fm-luggage-use-icon">
                   🧳
                 </div>
+
+                <span className="fm-luggage-use-number">
+                  01
+                </span>
 
                 <h3>
                   Early arrival
@@ -704,6 +785,10 @@ export default function LuggagePage() {
                   🕐
                 </div>
 
+                <span className="fm-luggage-use-number">
+                  02
+                </span>
+
                 <h3>
                   Late departure
                 </h3>
@@ -719,6 +804,10 @@ export default function LuggagePage() {
                 <div className="fm-luggage-use-icon">
                   🚆
                 </div>
+
+                <span className="fm-luggage-use-number">
+                  03
+                </span>
 
                 <h3>
                   Long connections
@@ -736,20 +825,22 @@ export default function LuggagePage() {
 
           <section className="fm-card fm-section-inner fm-luggage-planner-card">
 
-            <span className="fm-eyebrow">
-              TRIP PLANNER
-            </span>
+            <div className="fm-luggage-planner-content">
+              <span className="fm-eyebrow">
+                TRIP PLANNER
+              </span>
 
-            <h2>
-              Add luggage storage to your trip
-            </h2>
+              <h2>
+                Add luggage storage to your trip
+              </h2>
 
-            <p>
-              Keep your luggage plans together with
-              flights, hotels, activities, transfers,
-              connectivity and other travel
-              requirements.
-            </p>
+              <p>
+                Keep your luggage plans together with
+                flights, hotels, activities, transfers,
+                connectivity and other travel
+                requirements.
+              </p>
+            </div>
 
             <div className="fm-actions">
 
@@ -777,27 +868,35 @@ export default function LuggagePage() {
 
           <section className="fm-card fm-disclaimer fm-luggage-disclaimer">
 
-            <strong>
-              Provider information
-            </strong>
+            <div className="fm-luggage-disclaimer-heading">
+              <span className="fm-eyebrow">
+                PROVIDER INFORMATION
+              </span>
 
-            <p>
-              FlyMatrix does not directly operate
-              luggage-storage locations. Location
-              availability, opening hours, baggage
-              restrictions, insurance terms, pricing,
-              cancellation rules and final booking
-              conditions are determined by the selected
-              provider.
-            </p>
+              <strong>
+                Current storage terms come from the provider
+              </strong>
+            </div>
 
-            <p>
-              FlyMatrix does not invent current
-              storage prices. Where a configured live
-              or cached provider source does not return
-              pricing, the interface directs you to
-              the provider for current information.
-            </p>
+            <div className="fm-luggage-disclaimer-copy">
+              <p>
+                FlyMatrix does not directly operate
+                luggage-storage locations. Location
+                availability, opening hours, baggage
+                restrictions, insurance terms, pricing,
+                cancellation rules and final booking
+                conditions are determined by the selected
+                provider.
+              </p>
+
+              <p>
+                FlyMatrix does not invent current
+                storage prices. Where a configured live
+                or cached provider source does not return
+                pricing, the interface directs you to
+                the provider for current information.
+              </p>
+            </div>
 
           </section>
 
