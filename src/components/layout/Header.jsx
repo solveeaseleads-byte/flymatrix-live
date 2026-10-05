@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { navigate } from "../../router/AppRouter.jsx";
 
-/* =========================================================
-   PRIMARY NAVIGATION
-   ========================================================= */
+import { navigate, getCurrentPath } from "../../router/AppRouter.jsx";
 
 const PRIMARY_NAV_ITEMS = [
   {
@@ -23,10 +20,6 @@ const PRIMARY_NAV_ITEMS = [
     path: "/planner",
   },
 ];
-
-/* =========================================================
-   TRAVEL SERVICES
-   ========================================================= */
 
 const TRAVEL_SERVICES = [
   {
@@ -67,65 +60,69 @@ const TRAVEL_SERVICES = [
   },
 ];
 
-/* =========================================================
-   ACTIVE ROUTE
-   ========================================================= */
-
-function getCurrentPath() {
-  if (typeof window === "undefined") {
-    return "/";
-  }
-
-  return window.location.pathname;
-}
-
-function isActive(path) {
-  const current = getCurrentPath();
-
+function isActive(path, currentPath) {
   if (path === "/") {
-    return current === "/";
+    return currentPath === "/";
   }
 
   return (
-    current === path ||
-    current.startsWith(`${path}/`)
+    currentPath === path ||
+    currentPath.startsWith(`${path}/`)
   );
 }
 
-function isTravelServiceActive() {
+function isTravelServiceActive(currentPath) {
   return TRAVEL_SERVICES.some((item) =>
-    isActive(item.path)
+    isActive(item.path, currentPath)
   );
 }
-
-/* =========================================================
-   HEADER
-   ========================================================= */
 
 export default function Header() {
-  const [mobileOpen, setMobileOpen] =
-    useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
 
-  const [servicesOpen, setServicesOpen] =
-    useState(false);
+  const [currentPath, setCurrentPath] = useState(
+    () => getCurrentPath()
+  );
 
-  const [darkMode, setDarkMode] =
-    useState(() => {
-      try {
-        return (
-          localStorage.getItem(
-            "flymatrix:theme"
-          ) === "dark"
-        );
-      } catch {
-        return false;
-      }
-    });
+  const [darkMode, setDarkMode] = useState(() => {
+    try {
+      return (
+        localStorage.getItem("flymatrix:theme") ===
+        "dark"
+      );
+    } catch {
+      return false;
+    }
+  });
 
-  /* =======================================================
-     THEME
-     ======================================================= */
+  /*
+   * Keep header active states synchronized
+   * with the custom FlyMatrix router.
+   */
+  useEffect(() => {
+    function handleNavigation() {
+      setCurrentPath(getCurrentPath());
+      setMobileOpen(false);
+      setServicesOpen(false);
+    }
 
+    window.addEventListener(
+      "popstate",
+      handleNavigation
+    );
+
+    return () => {
+      window.removeEventListener(
+        "popstate",
+        handleNavigation
+      );
+    };
+  }, []);
+
+  /*
+   * Dark mode
+   */
   useEffect(() => {
     document.documentElement.classList.toggle(
       "dark",
@@ -143,14 +140,13 @@ export default function Header() {
         darkMode ? "dark" : "light"
       );
     } catch {
-      // Storage may be unavailable.
+      // Storage is optional.
     }
   }, [darkMode]);
 
-  /* =======================================================
-     CLOSE DROPDOWN WHEN CLICKING OUTSIDE
-     ======================================================= */
-
+  /*
+   * Close dropdown when clicking outside.
+   */
   useEffect(() => {
     function handleDocumentClick(event) {
       const target = event.target;
@@ -176,10 +172,9 @@ export default function Header() {
     };
   }, []);
 
-  /* =======================================================
-     KEYBOARD CONTROLS
-     ======================================================= */
-
+  /*
+   * Escape closes menus.
+   */
   useEffect(() => {
     function handleKeyDown(event) {
       if (event.key === "Escape") {
@@ -201,63 +196,26 @@ export default function Header() {
     };
   }, []);
 
-  /* =======================================================
-     CLOSE MENUS AFTER ROUTE CHANGE
-     ======================================================= */
-
-  useEffect(() => {
-    function handlePopState() {
-      setMobileOpen(false);
-      setServicesOpen(false);
-    }
-
-    window.addEventListener(
-      "popstate",
-      handlePopState
-    );
-
-    return () => {
-      window.removeEventListener(
-        "popstate",
-        handlePopState
-      );
-    };
-  }, []);
-
-  /* =======================================================
-     NAVIGATION HANDLER
-     ======================================================= */
-
-  function goTo(path) {
+  function handleNavigate(path) {
     setMobileOpen(false);
     setServicesOpen(false);
 
+    if (path === currentPath) {
+      return;
+    }
+
     navigate(path);
   }
-
-  /* =======================================================
-     THEME HANDLER
-     ======================================================= */
 
   function toggleTheme() {
     setDarkMode((current) => !current);
   }
 
-  /* =======================================================
-     SERVICES DROPDOWN
-     ======================================================= */
-
   function toggleServices(event) {
     event.stopPropagation();
 
-    setServicesOpen(
-      (current) => !current
-    );
+    setServicesOpen((current) => !current);
   }
-
-  /* =======================================================
-     RENDER
-     ======================================================= */
 
   return (
     <header className="fm-header">
@@ -270,7 +228,7 @@ export default function Header() {
         <button
           type="button"
           className="fm-brand"
-          onClick={() => goTo("/")}
+          onClick={() => handleNavigate("/")}
           aria-label="FlyMatrix home"
         >
           <span
@@ -281,13 +239,7 @@ export default function Header() {
           </span>
 
           <span className="fm-brand-text">
-            <strong>
-              FlyMatrix
-            </strong>
-
-            <small>
-              Search smarter. Travel prepared.
-            </small>
+            FlyMatrix
           </span>
         </button>
 
@@ -296,54 +248,58 @@ export default function Header() {
             ================================================= */}
 
         <nav
-          className="fm-desktop-nav"
+          className="fm-nav"
           aria-label="Main navigation"
         >
-          {PRIMARY_NAV_ITEMS.map(
-            (item) => (
+          {PRIMARY_NAV_ITEMS.map((item) => {
+            const active = isActive(
+              item.path,
+              currentPath
+            );
+
+            return (
               <button
                 type="button"
                 key={item.path}
                 className={
-                  isActive(item.path)
+                  active
                     ? "fm-nav-link active"
                     : "fm-nav-link"
                 }
                 onClick={() =>
-                  goTo(item.path)
+                  handleNavigate(item.path)
                 }
               >
                 {item.label}
               </button>
-            )
-          )}
+            );
+          })}
 
-          {/* ===============================================
-              TRAVEL SERVICES
-              =============================================== */}
+          {/* Travel Services dropdown */}
 
           <div className="fm-header-more">
             <button
               type="button"
               className={
                 servicesOpen ||
-                isTravelServiceActive()
+                isTravelServiceActive(
+                  currentPath
+                )
                   ? "fm-nav-link active"
                   : "fm-nav-link"
               }
-              onClick={
-                toggleServices
-              }
-              aria-expanded={
-                servicesOpen
-              }
+              onClick={toggleServices}
+              aria-expanded={servicesOpen}
               aria-haspopup="menu"
             >
               Travel Services
 
               <span
                 aria-hidden="true"
-                className="fm-dropdown-arrow"
+                style={{
+                  marginLeft: "5px",
+                  fontSize: "0.75rem",
+                }}
               >
                 ▾
               </span>
@@ -355,29 +311,30 @@ export default function Header() {
                 role="menu"
                 aria-label="Travel services"
               >
-                {TRAVEL_SERVICES.map(
-                  (item) => (
+                {TRAVEL_SERVICES.map((item) => {
+                  const active = isActive(
+                    item.path,
+                    currentPath
+                  );
+
+                  return (
                     <button
                       type="button"
                       role="menuitem"
                       key={item.path}
                       className={
-                        isActive(
-                          item.path
-                        )
-                          ? "active"
-                          : ""
+                        active ? "active" : ""
                       }
                       onClick={() =>
-                        goTo(
+                        handleNavigate(
                           item.path
                         )
                       }
                     >
                       {item.label}
                     </button>
-                  )
-                )}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -390,12 +347,11 @@ export default function Header() {
         <div className="fm-header-actions">
 
           {/* Theme */}
+
           <button
             type="button"
-            className="fm-theme-toggle"
-            onClick={
-              toggleTheme
-            }
+            className="fm-btn fm-btn-ghost"
+            onClick={toggleTheme}
             aria-label={
               darkMode
                 ? "Switch to light mode"
@@ -406,31 +362,35 @@ export default function Header() {
                 ? "Light mode"
                 : "Dark mode"
             }
+            style={{
+              minWidth: "44px",
+              paddingInline: "10px",
+              fontSize: "1.15rem",
+            }}
           >
-            {darkMode
-              ? "☀"
-              : "☾"}
+            {darkMode ? "☀" : "☾"}
           </button>
 
-          {/* Search */}
+          {/* Search flights */}
+
           <button
             type="button"
-            className="fm-btn fm-primary fm-header-cta"
+            className="fm-btn fm-btn-primary"
             onClick={() =>
-              goTo("/search")
+              handleNavigate("/search")
             }
           >
             Search flights
           </button>
 
           {/* Mobile menu */}
+
           <button
             type="button"
             className="fm-mobile-menu"
             onClick={() =>
               setMobileOpen(
-                (current) =>
-                  !current
+                (current) => !current
               )
             }
             aria-label={
@@ -438,21 +398,17 @@ export default function Header() {
                 ? "Close navigation"
                 : "Open navigation"
             }
-            aria-expanded={
-              mobileOpen
-            }
+            aria-expanded={mobileOpen}
             aria-controls="flymatrix-mobile-navigation"
           >
-            {mobileOpen
-              ? "✕"
-              : "☰"}
+            {mobileOpen ? "✕" : "☰"}
           </button>
         </div>
       </div>
 
-      {/* ===================================================
+      {/* =================================================
           MOBILE NAVIGATION
-          =================================================== */}
+          ================================================= */}
 
       {mobileOpen && (
         <div
@@ -465,21 +421,26 @@ export default function Header() {
           >
 
             {/* Home */}
+
             <button
               type="button"
               className={
-                isActive("/")
-                  ? "fm-mobile-nav-home active"
-                  : "fm-mobile-nav-home"
+                isActive(
+                  "/",
+                  currentPath
+                )
+                  ? "active"
+                  : ""
               }
               onClick={() =>
-                goTo("/")
+                handleNavigate("/")
               }
             >
               Home
             </button>
 
             {/* Explore */}
+
             <div className="fm-mobile-nav-section">
               <span>
                 Explore
@@ -493,13 +454,14 @@ export default function Header() {
                   key={item.path}
                   className={
                     isActive(
-                      item.path
+                      item.path,
+                      currentPath
                     )
                       ? "active"
                       : ""
                   }
                   onClick={() =>
-                    goTo(
+                    handleNavigate(
                       item.path
                     )
                   }
@@ -510,6 +472,7 @@ export default function Header() {
             )}
 
             {/* Travel Services */}
+
             <div className="fm-mobile-nav-section">
               <span>
                 Travel Services
@@ -523,13 +486,14 @@ export default function Header() {
                   key={item.path}
                   className={
                     isActive(
-                      item.path
+                      item.path,
+                      currentPath
                     )
                       ? "active"
                       : ""
                   }
                   onClick={() =>
-                    goTo(
+                    handleNavigate(
                       item.path
                     )
                   }
@@ -540,6 +504,7 @@ export default function Header() {
             )}
 
             {/* Appearance */}
+
             <div className="fm-mobile-nav-section">
               <span>
                 Appearance
@@ -549,15 +514,12 @@ export default function Header() {
             <button
               type="button"
               className="fm-mobile-theme"
-              onClick={
-                toggleTheme
-              }
+              onClick={toggleTheme}
             >
               {darkMode
                 ? "☀ Switch to light mode"
                 : "☾ Switch to dark mode"}
             </button>
-
           </nav>
         </div>
       )}
