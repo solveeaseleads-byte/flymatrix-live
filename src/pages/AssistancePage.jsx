@@ -31,16 +31,19 @@ const SERVICE_AREAS = [
     title: "Flight disruption",
     text:
       "Review available assistance when a flight is delayed, cancelled or otherwise disrupted.",
+    assistanceType: "flight-delay",
   },
   {
     title: "Missed connection",
     text:
       "Keep your itinerary details available when a disruption affects a connecting journey.",
+    assistanceType: "missed-connection",
   },
   {
     title: "Baggage problems",
     text:
       "Find information and provider assistance for baggage-related travel problems.",
+    assistanceType: "baggage",
   },
 ];
 
@@ -53,31 +56,19 @@ function buildProviderUrl({
   const params = new URLSearchParams();
 
   if (departure.trim()) {
-    params.set(
-      "departure",
-      departure.trim()
-    );
+    params.set("departure", departure.trim());
   }
 
   if (arrival.trim()) {
-    params.set(
-      "arrival",
-      arrival.trim()
-    );
+    params.set("arrival", arrival.trim());
   }
 
   if (flightDate) {
-    params.set(
-      "date",
-      flightDate
-    );
+    params.set("date", flightDate);
   }
 
   if (assistanceType) {
-    params.set(
-      "issue",
-      assistanceType
-    );
+    params.set("issue", assistanceType);
   }
 
   const query = params.toString();
@@ -89,10 +80,9 @@ function buildProviderUrl({
 
 function getSavedSearch() {
   try {
-    const value =
-      sessionStorage.getItem(
-        "flymatrix:lastSearch"
-      );
+    const value = sessionStorage.getItem(
+      "flymatrix:lastSearch"
+    );
 
     if (!value) {
       return null;
@@ -110,25 +100,21 @@ export default function AssistancePage() {
     []
   );
 
-  const [departure, setDeparture] =
-    useState(
-      savedSearch?.origin?.code ||
-        savedSearch?.origin ||
-        ""
-    );
+  const [departure, setDeparture] = useState(
+    savedSearch?.origin?.code ||
+      savedSearch?.origin ||
+      ""
+  );
 
-  const [arrival, setArrival] =
-    useState(
-      savedSearch?.destination?.code ||
-        savedSearch?.destination ||
-        ""
-    );
+  const [arrival, setArrival] = useState(
+    savedSearch?.destination?.code ||
+      savedSearch?.destination ||
+      ""
+  );
 
-  const [flightDate, setFlightDate] =
-    useState(
-      savedSearch?.departureDate ||
-        ""
-    );
+  const [flightDate, setFlightDate] = useState(
+    savedSearch?.departureDate || ""
+  );
 
   const [assistanceType, setAssistanceType] =
     useState("general");
@@ -152,8 +138,7 @@ export default function AssistancePage() {
   }
 
   function openPlanner() {
-    const params =
-      new URLSearchParams();
+    const params = new URLSearchParams();
 
     if (arrival.trim()) {
       params.set(
@@ -162,13 +147,15 @@ export default function AssistancePage() {
       );
     }
 
-    window.location.href =
-      `/planner?${params.toString()}`;
+    const query = params.toString();
+
+    window.location.href = query
+      ? `/planner?${query}`
+      : "/planner";
   }
 
   function loadSavedFlight() {
-    const search =
-      getSavedSearch();
+    const search = getSavedSearch();
 
     if (!search) {
       return;
@@ -187,8 +174,7 @@ export default function AssistancePage() {
     );
 
     setFlightDate(
-      search?.departureDate ||
-        ""
+      search?.departureDate || ""
     );
   }
 
@@ -198,20 +184,35 @@ export default function AssistancePage() {
         <div className="fm-container">
 
           <header className="fm-page-header fm-assistance-header">
-            <span className="fm-eyebrow">
-              TRAVEL ASSISTANCE
-            </span>
+            <div className="fm-assistance-header-content">
+              <span className="fm-eyebrow">
+                TRAVEL ASSISTANCE
+              </span>
 
-            <h1>
-              Flight & Travel Assistance
-            </h1>
+              <h1>
+                Flight & Travel Assistance
+              </h1>
 
-            <p>
-              Prepare for disruptions, baggage
-              problems and other flight-related
-              issues, with access to a configured
-              travel-assistance provider.
-            </p>
+              <p>
+                Prepare for disruptions, baggage
+                problems and other flight-related
+                issues, with access to a configured
+                travel-assistance provider.
+              </p>
+            </div>
+
+            <div className="fm-assistance-header-badge">
+              <span className="fm-assistance-header-icon">
+                🛟
+              </span>
+
+              <div>
+                <strong>Travel support</strong>
+                <span>
+                  Prepare before contacting a provider
+                </span>
+              </div>
+            </div>
           </header>
 
           <section className="fm-card fm-search-panel fm-assistance-search-card">
@@ -231,11 +232,16 @@ export default function AssistancePage() {
                   the type of assistance you need.
                 </p>
               </div>
+
+              <div className="fm-assistance-search-summary">
+                <span>PROVIDER</span>
+                <strong>AirHelp</strong>
+              </div>
             </div>
 
             <div className="fm-search-grid fm-assistance-form-grid">
 
-              <div className="fm-field">
+              <div className="fm-field fm-assistance-field-primary">
                 <label htmlFor="assistance-departure">
                   Departure airport
                 </label>
@@ -323,7 +329,7 @@ export default function AssistancePage() {
 
               <button
                 type="button"
-                className="fm-btn fm-primary"
+                className="fm-btn fm-btn-primary"
                 onClick={openProvider}
               >
                 Get assistance
@@ -331,7 +337,7 @@ export default function AssistancePage() {
 
               <button
                 type="button"
-                className="fm-btn fm-secondary"
+                className="fm-btn fm-btn-secondary"
                 onClick={loadSavedFlight}
               >
                 Load my last flight
@@ -352,20 +358,34 @@ export default function AssistancePage() {
                 <h2>
                   What can you prepare for?
                 </h2>
+
+                <p>
+                  Select an assistance category to
+                  prepare the provider search above.
+                </p>
               </div>
             </div>
 
             <div className="fm-grid fm-assistance-area-grid">
 
               {SERVICE_AREAS.map(
-                (item) => (
+                (item, index) => (
                   <article
                     className="fm-card fm-assistance-area-card"
                     key={item.title}
                   >
-                    <span className="fm-badge">
-                      Assistance
-                    </span>
+                    <div className="fm-assistance-area-top">
+                      <span className="fm-badge">
+                        Assistance
+                      </span>
+
+                      <span className="fm-assistance-area-number">
+                        {String(index + 1).padStart(
+                          2,
+                          "0"
+                        )}
+                      </span>
+                    </div>
 
                     <h3>
                       {item.title}
@@ -377,25 +397,12 @@ export default function AssistancePage() {
 
                     <button
                       type="button"
-                      className="fm-btn fm-secondary"
-                      onClick={() => {
-                        const match =
-                          ASSISTANCE_TYPES.find(
-                            (type) =>
-                              type.label
-                                .toLowerCase()
-                                .includes(
-                                  item.title
-                                    .toLowerCase()
-                                )
-                          );
-
-                        if (match) {
-                          setAssistanceType(
-                            match.value
-                          );
-                        }
-                      }}
+                      className="fm-btn fm-btn-secondary"
+                      onClick={() =>
+                        setAssistanceType(
+                          item.assistanceType
+                        )
+                      }
                     >
                       Select assistance
                     </button>
@@ -408,39 +415,41 @@ export default function AssistancePage() {
 
           <section className="fm-card fm-section-inner fm-assistance-checklist-card">
 
-            <div className="fm-section-heading fm-assistance-checklist-heading">
-              <div>
-                <span className="fm-eyebrow">
-                  BEFORE CONTACTING A PROVIDER
-                </span>
+            <div className="fm-assistance-checklist-header">
+              <div className="fm-section-heading fm-assistance-checklist-heading">
+                <div>
+                  <span className="fm-eyebrow">
+                    BEFORE CONTACTING A PROVIDER
+                  </span>
 
-                <h2>
-                  Keep your travel details ready
-                </h2>
+                  <h2>
+                    Keep your travel details ready
+                  </h2>
+                </div>
               </div>
+
+              <button
+                type="button"
+                className="fm-btn fm-btn-secondary"
+                onClick={() =>
+                  setShowGuide(
+                    (current) => !current
+                  )
+                }
+              >
+                {showGuide
+                  ? "Hide checklist"
+                  : "Show checklist"}
+              </button>
             </div>
 
-            <p>
+            <p className="fm-assistance-checklist-intro">
               Having your booking reference,
               flight number, departure date,
               airports and passenger details
               available can make it easier to
               explain a disruption.
             </p>
-
-            <button
-              type="button"
-              className="fm-btn fm-secondary"
-              onClick={() =>
-                setShowGuide(
-                  (current) => !current
-                )
-              }
-            >
-              {showGuide
-                ? "Hide checklist"
-                : "Show checklist"}
-            </button>
 
             {showGuide && (
               <div className="fm-grid fm-assistance-checklist-grid">
@@ -518,26 +527,28 @@ export default function AssistancePage() {
 
           <section className="fm-card fm-section-inner fm-assistance-planner-card">
 
-            <span className="fm-eyebrow">
-              TRIP PLANNER
-            </span>
+            <div className="fm-assistance-planner-content">
+              <span className="fm-eyebrow">
+                TRIP PLANNER
+              </span>
 
-            <h2>
-              Keep assistance alongside your itinerary
-            </h2>
+              <h2>
+                Keep assistance alongside your itinerary
+              </h2>
 
-            <p>
-              Combine flight details with hotels,
-              activities, transfers, connectivity,
-              luggage storage and other travel
-              preparations.
-            </p>
+              <p>
+                Combine flight details with hotels,
+                activities, transfers, connectivity,
+                luggage storage and other travel
+                preparations.
+              </p>
+            </div>
 
-            <div className="fm-actions">
+            <div className="fm-actions fm-assistance-planner-actions">
 
               <button
                 type="button"
-                className="fm-btn fm-primary"
+                className="fm-btn fm-btn-primary"
                 onClick={openPlanner}
               >
                 Open trip planner
@@ -545,7 +556,7 @@ export default function AssistancePage() {
 
               <button
                 type="button"
-                className="fm-btn fm-secondary"
+                className="fm-btn fm-btn-secondary"
                 onClick={() =>
                   (window.location.href =
                     "/essentials")
@@ -560,28 +571,36 @@ export default function AssistancePage() {
 
           <section className="fm-card fm-disclaimer fm-assistance-disclaimer">
 
-            <strong>
-              Assistance provider information
-            </strong>
+            <div className="fm-assistance-disclaimer-heading">
+              <span className="fm-eyebrow">
+                IMPORTANT INFORMATION
+              </span>
 
-            <p>
-              FlyMatrix does not itself provide
-              airline compensation, legal advice,
-              insurance decisions, claims handling or
-              emergency services. Assistance,
-              eligibility, claim requirements,
-              compensation decisions, pricing and
-              final terms are determined by the
-              relevant provider and applicable
-              conditions.
-            </p>
+              <strong>
+                Assistance provider information
+              </strong>
+            </div>
 
-            <p>
-              For an immediate emergency, contact
-              the appropriate local emergency
-              service or the airline directly rather
-              than relying on FlyMatrix.
-            </p>
+            <div className="fm-assistance-disclaimer-copy">
+              <p>
+                FlyMatrix does not itself provide
+                airline compensation, legal advice,
+                insurance decisions, claims handling
+                or emergency services. Assistance,
+                eligibility, claim requirements,
+                compensation decisions, pricing and
+                final terms are determined by the
+                relevant provider and applicable
+                conditions.
+              </p>
+
+              <p>
+                For an immediate emergency, contact
+                the appropriate local emergency
+                service or the airline directly rather
+                than relying on FlyMatrix.
+              </p>
+            </div>
 
           </section>
 
